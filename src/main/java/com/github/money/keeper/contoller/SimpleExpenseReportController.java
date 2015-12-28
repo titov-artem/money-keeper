@@ -1,9 +1,7 @@
-package com.github.money.keeper.service;
+package com.github.money.keeper.contoller;
 
 import com.github.money.keeper.clusterization.SimpleByNameClusterizer;
 import com.github.money.keeper.clusterization.StoreClusterizer;
-import com.github.money.keeper.contoller.ClusterizationConctroller;
-import com.github.money.keeper.contoller.ClusterizationConctroller.ClusterizationResult;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.Store;
@@ -15,6 +13,8 @@ import com.github.money.keeper.parser.RaiffeisenTransactionParser;
 import com.github.money.keeper.parser.TransactionParser;
 import com.github.money.keeper.serializer.html.SimpleExpenseReportHtmlSerializer;
 import com.github.money.keeper.serializer.html.TemplateSupport;
+import com.github.money.keeper.service.ClusterizationService;
+import com.github.money.keeper.service.ClusterizationService.ClusterizationResult;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
 import com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo;
@@ -25,10 +25,10 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
-public class SimpleExpenseReportService {
+public class SimpleExpenseReportController {
 
     private TransactionParser parser;
-    private ClusterizationConctroller clusterizationConctroller;
+    private ClusterizationService clusterizationService;
 
     private StoreRepo storeRepo;
     private CategoryRepo categoryRepo;
@@ -37,7 +37,7 @@ public class SimpleExpenseReportService {
         ParsingResult result = parseFile(fileName);
 
         List<Store> stores = storeRepo.loadAll();
-        ClusterizationResult clusterizationResult = clusterizationConctroller.clusterize(
+        ClusterizationResult clusterizationResult = clusterizationService.clusterize(
                 stores,
                 result.getTransactions().stream().map(RawTransaction::getSalePoint).collect(toList())
         );
@@ -64,8 +64,8 @@ public class SimpleExpenseReportService {
         this.parser = parser;
     }
 
-    public void setClusterizationConctroller(ClusterizationConctroller clusterizationConctroller) {
-        this.clusterizationConctroller = clusterizationConctroller;
+    public void setClusterizationService(ClusterizationService clusterizationService) {
+        this.clusterizationService = clusterizationService;
     }
 
     public void setStoreRepo(StoreRepo storeRepo) {
@@ -83,13 +83,13 @@ public class SimpleExpenseReportService {
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
-        SimpleExpenseReportService service = new SimpleExpenseReportService();
+        SimpleExpenseReportController service = new SimpleExpenseReportController();
 
         SimpleByNameClusterizer clusterizer = new SimpleByNameClusterizer();
         StoreClusterizer storeClusterizer = new StoreClusterizer(clusterizer);
-        ClusterizationConctroller clusterizationConctroller = new ClusterizationConctroller();
-        clusterizationConctroller.setStoreClusterizer(storeClusterizer);
-        service.setClusterizationConctroller(clusterizationConctroller);
+        ClusterizationService clusterizationService = new ClusterizationService();
+        clusterizationService.setStoreClusterizer(storeClusterizer);
+        service.setClusterizationService(clusterizationService);
 
         service.setParser(new RaiffeisenTransactionParser());
 
