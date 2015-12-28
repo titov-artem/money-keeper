@@ -8,6 +8,8 @@ public interface CategoryRepo {
 
     void save(Iterable<Category> categories);
 
+    void delete(String name);
+
     List<Category> loadAll();
 
 }

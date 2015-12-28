@@ -17,6 +17,7 @@ import com.github.money.keeper.serializer.html.SimpleExpenseReportHtmlSerializer
 import com.github.money.keeper.serializer.html.TemplateSupport;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
+import com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo;
 
 import java.io.*;
 import java.util.Collections;
@@ -75,6 +76,12 @@ public class SimpleExpenseReportService {
         this.categoryRepo = categoryRepo;
     }
 
+    /**
+     * Method for testing simple report and temporary simple application usage
+     *
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         SimpleExpenseReportService service = new SimpleExpenseReportService();
 
@@ -94,16 +101,20 @@ public class SimpleExpenseReportService {
                 return Collections.emptyList();
             }
         });
-        service.setCategoryRepo(new CategoryRepo() {
-            @Override public void save(Iterable<Category> categories) {
-            }
-
-            @Override public List<Category> loadAll() {
-                return Collections.emptyList();
-            }
-        });
+        InMemoryFileBackedCategoryRepo categoryRepo = new InMemoryFileBackedCategoryRepo();
+        String categoriesFileName = "categories.json";
+        if (!new File(categoriesFileName).exists()) {
+            new File(categoriesFileName).createNewFile();
+        }
+        categoryRepo.setStorageFileName(categoriesFileName);
+        categoryRepo.init();
+        service.setCategoryRepo(categoryRepo);
 
         SimpleExpenseReport report = service.buildSimpleReport("/Users/scorpion/Downloads/rba-card-statement-09-12.csv");
+        List<Category> categories = report.getReports().stream()
+                .map(SimpleExpenseReport.CategoryReport::getCategory)
+                .collect(toList());
+        categoryRepo.save(categories);
 
         TemplateSupport templateSupport = new TemplateSupport();
         templateSupport.initTemplateEngine();
@@ -115,5 +126,7 @@ public class SimpleExpenseReportService {
         try (BufferedWriter out = new BufferedWriter(new FileWriter("out.html"))) {
             out.write(serializedReport);
         }
+
+        categoryRepo.destroy();
     }
 }
