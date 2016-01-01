@@ -1,4 +1,4 @@
-package com.github.money.keeper.math;
+package com.github.money.keeper.util.math;
 
 public class LevenshteinDistance {
 

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- TODO change on local jquery library to prevent injecting -->
+    <script language="JavaScript" src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+</head>
+<body>
+<script language="JavaScript">
+    $(document).ready(function () {
+        $('#java').text(endpoint.get("/category", []));
+    });
+</script>
+<div id="java">
+
+</div>
+Hello world!
+</body>
+</html>

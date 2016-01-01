@@ -1,8 +1,8 @@
 package com.github.money.keeper;
 
 import com.github.money.keeper.clusterization.SimpleByNameClusterizer;
-import com.github.money.keeper.math.LevenshteinDistance;
 import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.util.math.LevenshteinDistance;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.junit.Test;

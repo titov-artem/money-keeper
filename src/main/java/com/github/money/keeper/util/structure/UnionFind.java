@@ -1,4 +1,4 @@
-package com.github.money.keeper.math;
+package com.github.money.keeper.util.structure;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;

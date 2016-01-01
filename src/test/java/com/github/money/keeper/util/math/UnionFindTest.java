@@ -1,5 +1,6 @@
-package com.github.money.keeper.math;
+package com.github.money.keeper.util.math;
 
+import com.github.money.keeper.util.structure.UnionFind;
 import com.google.common.collect.Lists;
 import org.junit.Test;
 
