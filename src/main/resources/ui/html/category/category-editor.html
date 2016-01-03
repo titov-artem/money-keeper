@@ -1,14 +1,13 @@
 <!DOCTYPE html>
-<html debug="true">
+<html>
 <head>
     <meta charset="UTF-8">
-    <!-- TODO change on local jquery library to prevent injecting -->
-    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
-
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/category-editor.css" type="text/css">
 
-    <!-- debugging -->
-    <!--<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>-->
+    <!-- TODO change on local jquery library to prevent injecting -->
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
 
 </head>
 <body>
@@ -23,7 +22,7 @@
     }
 
     function currentRow(child) {
-        return $(child).parents('.category-line');
+        return $(child).parents('.category-row');
     }
     $(document).ready(function () {
         var categories = JSON.parse(endpoint.get("/category", []));
@@ -31,26 +30,55 @@
             $('#categories').append(buildRow(category))
         });
         $('#categories').on('click', '.category-rename', function () {
-            currentRow(this).find('div.category-name').hide();
-            currentRow(this).find('input.category-name').show();
-            $(this).parents('.category-menu').hide();
-            $(this).parents('.category-control').find('.category-save-control').show();
+            var row = currentRow(this);
+            row.find('h4.category-name').addClass('hidden');
+            row.find('.category-menu').addClass('hidden');
+            row.find('.category-name-form').removeClass('hidden');
+            row.find('.category-save-control').removeClass('hidden');
         }).on('click', '.category-save', function () {
             var row = currentRow(this);
             var saved = JSON.parse(endpoint.post("/category/rename", [JSON.parse(row.attr('source')).name, row.find('input.category-name').val()]));
             var newRow = buildRow(saved);
             row.replaceWith(newRow);
-        }).on('click', '.category-cancel', function () {
+        }).on('click', '.category-save-cancel', function () {
             var row = currentRow(this);
             var source = row.attr('source');
             var originalRow = buildRow(JSON.parse(source));
             row.replaceWith(originalRow);
+        }).on('click', '.category-union', function () {
+            $('.category-union-checkbox').removeClass('hidden');
+            $('.category-control').addClass('hidden');
+            $('.category-union-control').addClass('hidden');
+        }).on('click', '.category-union-apply', function () {
+            var categories = [];
+            var selectedRows = $('.category-union-checkbox:checked');
+            selectedRows.forEach(function (e) {
+                categories.push(JSON.parse(currentRow(e).attr('source')));
+            })
+
         });
 
     });
 </script>
-<div id="categories">
+<div class="category-union-control hidden">
+    <div>Select categories to union</div>
+    <input class="category-union-apply" type="button" value="Union"/>
+    <input class="category-union-cancel" type="button" value="Cancel"/>
+</div>
 
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">Categories</h3>
+    </div>
+    <div class="panel-body">
+        <ul class="list-group" id="categories">
+
+        </ul>
+    </div>
+</div>
+<div class="category-union-control hidden">
+    <input class="category-union-apply" type="button" value="Union"/>
+    <input class="category-union-cancel" type="button" value="Cancel"/>
 </div>
 </body>
 </html>

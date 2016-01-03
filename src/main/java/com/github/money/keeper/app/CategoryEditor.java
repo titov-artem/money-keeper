@@ -32,7 +32,7 @@ public class CategoryEditor extends Application {
         stage.setTitle("Category editor");
         WebUIHolder uiHolder = new WebUIHolder(
                 categoryEditorFXMLFile,
-                750,
+                800,
                 500,
                 endpoint,
                 templateSupport

@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
@@ -35,10 +36,15 @@ public class CategoryController {
 
     @POST
     @Path("/union")
-    public void union(String name, CategoryDto c1, CategoryDto c2) {
-        categoryRepo.delete(c1.name);
-        categoryRepo.delete(c2.name);
-        categoryRepo.save(singleton(new Category(name, Sets.union(c1.alternatives, c2.alternatives))));
+    public CategoryDto union(String name, CategoryDto[] categories) {
+        Set<String> alternatives = Sets.newHashSet();
+        for (CategoryDto c : categories) {
+            categoryRepo.delete(c.name);
+            alternatives.addAll(c.alternatives);
+        }
+        Category category = new Category(name, alternatives);
+        categoryRepo.save(singleton(category));
+        return new CategoryDto(category);
     }
 
     public void setCategoryRepo(CategoryRepo categoryRepo) {

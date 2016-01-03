@@ -28,6 +28,12 @@ public final class WebUIHolder extends Region {
         this.preferredHeight = preferredHeight;
 
         URL resource = getClass().getClassLoader().getResource(htmlUiFile);
+//        URL resource = null;
+//        try {
+//            resource = new URL("http://getbootstrap.com/components/#input-groups");
+//        } catch (MalformedURLException e) {
+//            throw new RuntimeException(e);
+//        }
         Preconditions.checkNotNull(resource, "Failed to load UI from file " + htmlUiFile);
         webEngine.load(resource.toExternalForm());
         getChildren().add(webView);

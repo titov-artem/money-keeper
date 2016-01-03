@@ -1,24 +1,29 @@
-<div class="category-line">
-    <div class="category-merge-checkbox">
+<li class="list-group-item category-row">
+    <div class="category-union-checkbox hidden">
         <input type="checkbox"/>
     </div>
     <div class="category-control">
-        <div class="category-menu">
-            <input class="category-rename" type="button" value="Rename">
-            <input class="category-union" type="button" value="Union...">
+        <div class="btn-group category-menu">
+            <button class="btn btn-sm btn-default category-rename" type="button">Rename</button>
+            <button class="btn btn-sm btn-default category-union" type="button">Union...</button>
         </div>
         <div class="category-save-control hidden">
-            <input class="category-save" type="button" value="Save">
-            <input class="category-cancel" type="button" value="Cancel">
+            <button class="btn btn-sm btn-success category-save" type="button">Save</button>
+            <button class="btn btn-sm btn-danger category-save-cancel" type="button">Cancel</button>
         </div>
     </div>
-    <div class="category-name-wrapper">
-        <div class="category-name">${name}</div>
-        <input class="category-name hidden" type="text" value="${name}">
-        <div class="category-alternatives">
-        <#list alternatives as alternative>
+    <h4 class="list-group-item-heading category-name">${name}</h4>
+    <form class="form-inline category-name-form hidden">
+        <div class="form-group">
+            <div class="input-group input-group-sm">
+                <div class="input-group-addon">Name</div>
+                <input type="text" class="form-control category-name" placeholder="Name" value="${name}">
+            </div>
+        </div>
+    </form>
+    <div class="list-group-item-text category-alternatives">
+    <#list alternatives as alternative>
             ${alternative}
         </#list>
-        </div>
     </div>
-</div>
+</li>
