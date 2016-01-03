@@ -16,6 +16,7 @@ public class EndpointTest {
         StubController controller = new StubController();
         endpoint.register(controller);
 
+        // todo fixme
 //        assertThat(endpoint.get("/test", "1", "2", "3", "4"), is("1-2-3-4"));
 
 //        endpoint.post("/test/path/", "1.0", "2.0", "true");
