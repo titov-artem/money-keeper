@@ -1,5 +1,7 @@
 package com.github.money.keeper.ui;
 
+import netscape.javascript.JSException;
+import netscape.javascript.JSObject;
 import org.junit.Test;
 
 import javax.ws.rs.*;
@@ -16,17 +18,55 @@ public class EndpointTest {
         StubController controller = new StubController();
         endpoint.register(controller);
 
-        // todo fixme
-//        assertThat(endpoint.get("/test", "1", "2", "3", "4"), is("1-2-3-4"));
+        assertThat(endpoint.get("/test", arrayObject("1", "2", "3", "4")), is("1-2-3-4"));
 
-//        endpoint.post("/test/path/", "1.0", "2.0", "true");
+        endpoint.post("/test/path/", arrayObject("1.0", "2.0", "true"));
         assertThat(controller.postA, is(1.0F));
         assertThat(controller.postB, is(2.0));
         assertThat(controller.postC, is(true));
 
-//        assertThat(endpoint.put("/test", "good string"), is("good string"));
+        assertThat(endpoint.put("/test", arrayObject("good string")), is("good string"));
 
-//        assertThat(endpoint.delete("/test//path/good", "{\"a\": \"b\"}"), is("{\"a\":\"b\"}"));
+        assertThat(endpoint.delete("/test//path/good", arrayObject("{\"a\": \"b\"}")), is("{\"a\":\"b\"}"));
+    }
+
+    private JSObject arrayObject(String... a) {
+        return new JSObject() {
+            @Override
+            public Object call(String methodName, Object... args) throws JSException {
+                return null;
+            }
+
+            @Override
+            public Object eval(String s) throws JSException {
+                return null;
+            }
+
+            @Override
+            public Object getMember(String name) throws JSException {
+                return "length".equals(name) ? a.length : null;
+            }
+
+            @Override
+            public void setMember(String name, Object value) throws JSException {
+
+            }
+
+            @Override
+            public void removeMember(String name) throws JSException {
+
+            }
+
+            @Override
+            public Object getSlot(int index) throws JSException {
+                return a[index];
+            }
+
+            @Override
+            public void setSlot(int index, Object value) throws JSException {
+
+            }
+        };
     }
 
     @Path("/test")
