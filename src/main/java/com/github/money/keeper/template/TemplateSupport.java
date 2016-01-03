@@ -1,4 +1,4 @@
-package com.github.money.keeper.serializer.html;
+package com.github.money.keeper.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -9,11 +9,12 @@ import java.io.IOException;
 
 public class TemplateSupport {
 
+    public static final String TEMPLATES_PATH = "templates";
     private Configuration cfg;
 
-    public void initTemplateEngine() throws IOException {
+    public void init() throws IOException {
         cfg = new Configuration(Configuration.VERSION_2_3_23);
-        cfg.setDirectoryForTemplateLoading(new File(getClass().getClassLoader().getResource("templates").getFile()));
+        cfg.setDirectoryForTemplateLoading(new File(getClass().getClassLoader().getResource(TEMPLATES_PATH).getFile()));
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }

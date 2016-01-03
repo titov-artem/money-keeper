@@ -1,5 +1,6 @@
 package com.github.money.keeper.ui;
 
+import com.github.money.keeper.template.UITemplateSupport;
 import com.google.common.base.Preconditions;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
@@ -18,7 +19,11 @@ public final class WebUIHolder extends Region {
     private final int preferredWidth;
     private final int preferredHeight;
 
-    public WebUIHolder(String htmlUiFile, int preferredWidth, int preferredHeight) {
+    public WebUIHolder(String htmlUiFile,
+                       int preferredWidth,
+                       int preferredHeight,
+                       Endpoint endpoint,
+                       UITemplateSupport templateSupport) {
         this.preferredWidth = preferredWidth;
         this.preferredHeight = preferredHeight;
 
@@ -26,6 +31,8 @@ public final class WebUIHolder extends Region {
         Preconditions.checkNotNull(resource, "Failed to load UI from file " + htmlUiFile);
         webEngine.load(resource.toExternalForm());
         getChildren().add(webView);
+        setMember("endpoint", endpoint);
+        setMember("templates", templateSupport);
     }
 
     @Override

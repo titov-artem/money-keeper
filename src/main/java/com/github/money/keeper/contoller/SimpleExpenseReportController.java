@@ -12,12 +12,12 @@ import com.github.money.keeper.parser.ParsingResult;
 import com.github.money.keeper.parser.RaiffeisenTransactionParser;
 import com.github.money.keeper.parser.TransactionParser;
 import com.github.money.keeper.serializer.html.SimpleExpenseReportHtmlSerializer;
-import com.github.money.keeper.serializer.html.TemplateSupport;
 import com.github.money.keeper.service.ClusterizationService;
 import com.github.money.keeper.service.ClusterizationService.ClusterizationResult;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
 import com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo;
+import com.github.money.keeper.template.TemplateSupport;
 
 import java.io.*;
 import java.util.Collections;
@@ -117,7 +117,7 @@ public class SimpleExpenseReportController {
         categoryRepo.save(categories);
 
         TemplateSupport templateSupport = new TemplateSupport();
-        templateSupport.initTemplateEngine();
+        templateSupport.init();
 
         SimpleExpenseReportHtmlSerializer serializer = new SimpleExpenseReportHtmlSerializer();
         serializer.setTemplateSupport(templateSupport);

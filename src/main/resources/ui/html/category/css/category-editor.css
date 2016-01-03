@@ -1,0 +1,33 @@
+.category-line {
+    padding: 5px 10px 5px 10px;
+
+    /*border: 1px solid red;*/
+}
+
+.category-name-wrapper {
+}
+
+.category-name {
+    font-weight: bold;
+    max-height: 60px;
+
+    /*background-color: antiquewhite;*/
+}
+
+.category-alternatives {
+    font-size: small;
+
+    /*background-color: lavender;*/
+}
+
+.category-merge-checkbox {
+    float: left;
+}
+
+.category-control {
+    float: right;
+}
+
+.hidden {
+    display: none;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html debug="true">
+<head>
+    <meta charset="UTF-8">
+    <!-- TODO change on local jquery library to prevent injecting -->
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+
+    <link rel="stylesheet" href="css/category-editor.css" type="text/css">
+
+    <!-- debugging -->
+    <!--<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"></script>-->
+
+</head>
+<body>
+<script language="JavaScript">
+    function buildRow(category) {
+        var row = $(templates.applyTemplate('category-row.ftl', JSON.stringify({
+            name: category.name,
+            alternatives: category.alternatives
+        })));
+        row.attr('source', JSON.stringify(category));
+        return row;
+    }
+
+    function currentRow(child) {
+        return $(child).parents('.category-line');
+    }
+    $(document).ready(function () {
+        var categories = JSON.parse(endpoint.get("/category", []));
+        categories.forEach(function (category) {
+            $('#categories').append(buildRow(category))
+        });
+        $('#categories').on('click', '.category-rename', function () {
+            currentRow(this).find('div.category-name').hide();
+            currentRow(this).find('input.category-name').show();
+            $(this).parents('.category-menu').hide();
+            $(this).parents('.category-control').find('.category-save-control').show();
+        }).on('click', '.category-save', function () {
+            var row = currentRow(this);
+            var saved = JSON.parse(endpoint.post("/category/rename", [JSON.parse(row.attr('source')).name, row.find('input.category-name').val()]));
+            var newRow = buildRow(saved);
+            row.replaceWith(newRow);
+        }).on('click', '.category-cancel', function () {
+            var row = currentRow(this);
+            var source = row.attr('source');
+            var originalRow = buildRow(JSON.parse(source));
+            row.replaceWith(originalRow);
+        });
+
+    });
+</script>
+<div id="categories">
+
+</div>
+</body>
+</html>

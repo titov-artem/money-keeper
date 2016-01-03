@@ -12,4 +12,5 @@ public interface CategoryRepo {
 
     List<Category> loadAll();
 
+    Category load(String name);
 }

@@ -8,6 +8,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -107,6 +108,9 @@ public class SimpleExpenseReport {
 
         private Category determineCategory(UnifiedTransaction transaction) {
             String categoryDescription = transaction.getStore().getCategoryDescription();
+            if (StringUtils.isBlank(categoryDescription)) {
+                categoryDescription = "Unknown";
+            }
             Category category = alternativeToCategory.get(categoryDescription);
             if (category == null) {
                 category = new Category(categoryDescription, ImmutableSet.of(categoryDescription));

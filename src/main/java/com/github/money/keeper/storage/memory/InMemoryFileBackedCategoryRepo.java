@@ -56,7 +56,7 @@ public class InMemoryFileBackedCategoryRepo implements CategoryRepo {
                 Category category;
                 try {
                     Map<String, Object> data = objectMapper.readValue(line, Map.class);
-                    category = new Category((String) data.get("name"), ImmutableSet.copyOf((Collection) data.get("alternatives")));
+                    category = new Category((String) data.get("name"), ImmutableSet.<String>copyOf((Collection) data.get("alternatives")));
                 } catch (IOException e) {
                     log.error("Failed to parse category from line: " + line);
                     continue;
@@ -92,6 +92,11 @@ public class InMemoryFileBackedCategoryRepo implements CategoryRepo {
     @Override
     public List<Category> loadAll() {
         return Lists.newArrayList(categories.values());
+    }
+
+    @Override
+    public Category load(String name) {
+        return categories.get(name);
     }
 
     public void setStorageFileName(String storageFileName) {

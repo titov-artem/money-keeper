@@ -1,6 +1,7 @@
 package com.github.money.keeper.serializer.html;
 
 import com.github.money.keeper.model.report.SimpleExpenseReport;
+import com.github.money.keeper.template.TemplateSupport;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.Template;
 

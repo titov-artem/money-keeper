@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.money.keeper.util.structure.TrieMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import netscape.javascript.JSObject;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.Path;
@@ -17,6 +20,7 @@ import java.util.Map;
  * Idea: make web controller work in local application for future reuse in web application
  */
 public class Endpoint {
+    private static final Logger log = LoggerFactory.getLogger(Endpoint.class);
 
     private static final String[] EMPTY_ARGS = new String[0];
 
@@ -31,23 +35,32 @@ public class Endpoint {
         }
     }
 
-    public String get(@Nonnull String path, String... args) {
+    public String get(@Nonnull String path, JSObject args) {
         return invoke(RMethod.GET, path, args);
     }
 
-    public String post(@Nonnull String path, String... args) {
+    public String post(@Nonnull String path, JSObject args) {
         return invoke(RMethod.POST, path, args);
     }
 
-    public String put(@Nonnull String path, String... args) {
+    public String put(@Nonnull String path, JSObject args) {
         return invoke(RMethod.PUT, path, args);
     }
 
-    public String delete(@Nonnull String path, String... args) {
+    public String delete(@Nonnull String path, JSObject args) {
         return invoke(RMethod.DELETE, path, args);
     }
 
-    private String invoke(RMethod method, String path, String... args) {
+    private String invoke(RMethod method, String path, JSObject args) {
+        try {
+            return invokeUnsafe(method, path, args);
+        } catch (Exception e) {
+            log.error("Failed to invoke method for path " + path + " and args " + args + " due to exception", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String invokeUnsafe(RMethod method, String path, JSObject args) {
         path = slashEnded(path);
         Pair<String, ClassEndpoint> endpoint = endpoints.getByFirstPrefix(path);
         if (endpoint == null) {
@@ -55,7 +68,15 @@ public class Endpoint {
         }
         String methodPath = slashStarted(slashEnded(path.substring(endpoint.getKey().length())));
         MethodEndpoint methodEndpoint = endpoint.getValue().endpoints.get(Pair.of(method, methodPath));
-        return methodEndpoint.invoke(args == null ? EMPTY_ARGS : args);
+        return methodEndpoint.invoke(args == null ? EMPTY_ARGS : convert(args));
+    }
+
+    private static String[] convert(JSObject args) {
+        String[] out = new String[(Integer) args.getMember("length")];
+        for (int i = 0; i < out.length; i++) {
+            out[i] = (String) args.getSlot(i);
+        }
+        return out;
     }
 
     private static String slashStarted(String source) {
