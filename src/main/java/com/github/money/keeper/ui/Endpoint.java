@@ -55,7 +55,7 @@ public class Endpoint {
         try {
             return invokeUnsafe(method, path, args);
         } catch (Exception e) {
-            log.error("Failed to invoke method for path " + path + " and args " + args + " due to exception", e);
+            log.error("Failed to invoke method for path " + path + " and args [" + args + "] due to exception", e);
             throw new RuntimeException(e);
         }
     }

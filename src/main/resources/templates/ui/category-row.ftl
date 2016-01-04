@@ -20,13 +20,14 @@
         <div class="form-group">
             <div class="input-group input-group-sm">
                 <div class="input-group-addon">Name</div>
-                <input type="text" class="form-control category-name" placeholder="Name" value="${name}">
+                <input type="text" class="error form-control category-name" placeholder="Name" value="${name}">
             </div>
+            <span class="control-label category-save-error-label hidden">Category with this name already exists</span>
         </div>
     </form>
     <div class="list-group-item-text category-alternatives">
     <#list alternatives as alternative>
-            ${alternative}
+    ${alternative};
         </#list>
     </div>
 </li>

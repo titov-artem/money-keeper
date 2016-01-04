@@ -8,67 +8,15 @@
     <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/category-editor.css" type="text/css">
 
-    <!-- TODO change on local jquery library to prevent injecting -->
     <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
     <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
 
+    <script language="JavaScript" src="js/category-common.js"></script>
+    <script language="JavaScript" src="js/category-rename.js"></script>
+    <script language="JavaScript" src="js/category-union.js"></script>
 </head>
 <body>
-<script language="JavaScript">
-    function buildRow(category) {
-        var row = $(templates.applyTemplate('category-row.ftl', JSON.stringify({
-            name: category.name,
-            alternatives: category.alternatives
-        })));
-        row.attr('source', JSON.stringify(category));
-        return row;
-    }
-
-    function currentRow(child) {
-        return $(child).parents('.category-row');
-    }
-    $(document).ready(function () {
-        var categories = JSON.parse(endpoint.get("/category", []));
-        categories.forEach(function (category) {
-            $('#categories').append(buildRow(category))
-        });
-        $('body').on('click', '.category-rename', function () {
-            var row = currentRow(this);
-            row.find('h4.category-name').addClass('hidden');
-            row.find('.category-menu').addClass('hidden');
-            row.find('.category-name-form').removeClass('hidden');
-            row.find('.category-save-control').removeClass('hidden');
-        }).on('click', '.category-save', function () {
-            var row = currentRow(this);
-            var saved = JSON.parse(endpoint.post("/category/rename", [JSON.parse(row.attr('source')).name, row.find('input.category-name').val()]));
-            var newRow = buildRow(saved);
-            row.replaceWith(newRow);
-        }).on('click', '.category-save-cancel', function () {
-            var row = currentRow(this);
-            var source = row.attr('source');
-            var originalRow = buildRow(JSON.parse(source));
-            row.replaceWith(originalRow);
-        }).on('click', '.category-union', function () {
-            $('.category-union-checkbox').removeClass('hidden');
-            $('.category-union-control').removeClass('hidden');
-            $('.category-control').addClass('hidden');
-        }).on('click', '.category-union-apply', function () {
-            var categories = [];
-            var selectedRows = $('.category-union-checkbox input[type="checkbox"]:checked');
-            selectedRows.each(function () {
-                categories.push(JSON.parse(currentRow(this).attr('source')));
-            });
-        }).on('click', '.category-union-cancel', function () {
-            $('.category-union-checkbox').addClass('hidden');
-            $('.category-union-control').addClass('hidden');
-            $('.category-control').removeClass('hidden');
-            $('.category-union-checkbox input[type="checkbox"]').each(function () {
-                $(this).prop('checked', false);
-            });
-
-        });
-    });
-</script>
+<!--http://1000hz.github.io/bootstrap-validator/#validator-usage-->
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Categories</h3>
@@ -76,10 +24,45 @@
     <div class="panel-body">
         <ul class="list-group" id="categories">
         </ul>
+
+        <!-- category union controls and dialogs -->
+        <div class="alert alert-danger category-union-no-selection-error hidden" role="alert">
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+            You must select at least 2 categories to union
+        </div>
         <div class="category-union-control hidden">
-            <button class="btn btn-sm btn-success category-union-apply" type="button">Union</button>
+            <button class="btn btn-sm btn-success category-union-open-modal" type="button"
+                    data-toggle="modal" data-target=".category-union-modal">
+                Union
+            </button>
+            <div class="modal fade category-union-modal" tabindex="-1" role="dialog"
+                 aria-labelledby="categoryUnionModalLabel">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="categoryUnionModalLabel">Enter category name</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-danger category-union-name-error hidden" role="alert">
+                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                Name mustn't be empty and must be unique
+                            </div>
+                            <div class="input-group">
+                                <div class="input-group-addon">Name</div>
+                                <input type="text" class="form-control category-union-name" placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success category-union-apply">Union</button>
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button class="btn btn-sm btn-danger category-union-cancel" type="button">Cancel</button>
         </div>
+        <!-- category union controls and dialogs end -->
     </div>
 </div>
 <div id="log">
