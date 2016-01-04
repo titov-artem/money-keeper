@@ -1,6 +1,9 @@
 <li class="list-group-item category-row">
     <div class="category-union-checkbox hidden">
-        <input type="checkbox"/>
+        <div class="checkbox checkbox-success">
+            <input id="${name}" class="styled" type="checkbox">
+            <label for="${name}"></label>
+        </div>
     </div>
     <div class="category-control">
         <div class="btn-group category-menu">

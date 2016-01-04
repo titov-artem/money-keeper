@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/category-editor.css" type="text/css">
 
     <!-- TODO change on local jquery library to prevent injecting -->
@@ -29,7 +32,7 @@
         categories.forEach(function (category) {
             $('#categories').append(buildRow(category))
         });
-        $('#categories').on('click', '.category-rename', function () {
+        $('body').on('click', '.category-rename', function () {
             var row = currentRow(this);
             row.find('h4.category-name').addClass('hidden');
             row.find('.category-menu').addClass('hidden');
@@ -47,38 +50,40 @@
             row.replaceWith(originalRow);
         }).on('click', '.category-union', function () {
             $('.category-union-checkbox').removeClass('hidden');
+            $('.category-union-control').removeClass('hidden');
             $('.category-control').addClass('hidden');
-            $('.category-union-control').addClass('hidden');
         }).on('click', '.category-union-apply', function () {
             var categories = [];
-            var selectedRows = $('.category-union-checkbox:checked');
-            selectedRows.forEach(function (e) {
-                categories.push(JSON.parse(currentRow(e).attr('source')));
-            })
+            var selectedRows = $('.category-union-checkbox input[type="checkbox"]:checked');
+            selectedRows.each(function () {
+                categories.push(JSON.parse(currentRow(this).attr('source')));
+            });
+        }).on('click', '.category-union-cancel', function () {
+            $('.category-union-checkbox').addClass('hidden');
+            $('.category-union-control').addClass('hidden');
+            $('.category-control').removeClass('hidden');
+            $('.category-union-checkbox input[type="checkbox"]').each(function () {
+                $(this).prop('checked', false);
+            });
 
         });
-
     });
 </script>
-<div class="category-union-control hidden">
-    <div>Select categories to union</div>
-    <input class="category-union-apply" type="button" value="Union"/>
-    <input class="category-union-cancel" type="button" value="Cancel"/>
-</div>
-
 <div class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Categories</h3>
     </div>
     <div class="panel-body">
         <ul class="list-group" id="categories">
-
         </ul>
+        <div class="category-union-control hidden">
+            <button class="btn btn-sm btn-success category-union-apply" type="button">Union</button>
+            <button class="btn btn-sm btn-danger category-union-cancel" type="button">Cancel</button>
+        </div>
     </div>
 </div>
-<div class="category-union-control hidden">
-    <input class="category-union-apply" type="button" value="Union"/>
-    <input class="category-union-cancel" type="button" value="Cancel"/>
+<div id="log">
+
 </div>
 </body>
 </html>
