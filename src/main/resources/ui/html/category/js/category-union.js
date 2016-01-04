@@ -2,7 +2,7 @@ function getSelectedCategories() {
     var categories = [];
     var selectedRows = $('.category-union-checkbox input[type="checkbox"]:checked');
     selectedRows.each(function () {
-        categories.push(JSON.parse(currentRow(this).attr('source')));
+        categories.push(currentRow(this).prop('source'));
     });
     return categories;
 }
@@ -45,7 +45,16 @@ $(document).ready(function () {
         var unionCategory = JSON.parse(endpoint.post("/category/union", [name, JSON.stringify(categories)]));
         var unionCategoryRow = buildRow(unionCategory);
         removeSelectedCategories();
-        $('#categories').append(unionCategoryRow);
+        var inserted = false;
+        $('.category-row').each(function () {
+            if (!inserted && $(this).prop('source').name.localeCompare(unionCategory.name) > 0) {
+                $(this).before(unionCategoryRow);
+                inserted = true;
+            }
+        });
+        if (!inserted) {
+            $('#categories').prepend(unionCategoryRow);
+        }
         resetUnionControls();
         $('.category-union-modal').modal('hide');
     }).on('click', '.category-union-cancel', function () {

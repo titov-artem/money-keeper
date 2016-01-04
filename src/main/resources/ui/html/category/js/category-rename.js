@@ -7,7 +7,7 @@ $(document).ready(function () {
         row.find('.category-save-control').removeClass('hidden');
     }).on('click', '.category-save', function () {
         var row = currentRow(this);
-        var oldName = JSON.parse(row.attr('source')).name;
+        var oldName = row.prop('source').name;
         var newName = row.find('input.category-name').val();
         var nameCorrect = (endpoint.post("/category/check/name", [newName, JSON.stringify([oldName])]) === 'true');
         if (!nameCorrect) {
@@ -20,8 +20,8 @@ $(document).ready(function () {
         row.replaceWith(newRow);
     }).on('click', '.category-save-cancel', function () {
         var row = currentRow(this);
-        var source = row.attr('source');
-        var originalRow = buildRow(JSON.parse(source));
+        var source = row.prop('source');
+        var originalRow = buildRow(source);
         row.replaceWith(originalRow);
     });
 });

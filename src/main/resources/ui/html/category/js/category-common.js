@@ -3,7 +3,7 @@ function buildRow(category) {
         name: category.name,
         alternatives: category.alternatives
     })));
-    row.attr('source', JSON.stringify(category));
+    row.prop('source', category);
     return row;
 }
 

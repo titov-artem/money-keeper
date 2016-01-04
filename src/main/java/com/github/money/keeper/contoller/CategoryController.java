@@ -26,7 +26,7 @@ public class CategoryController {
 
     @GET
     public List<CategoryDto> getCategories() {
-        return categoryRepo.loadAll().stream().map(CategoryDto::new).collect(toList());
+        return categoryRepo.loadAll().stream().map(CategoryDto::new).sorted((o1, o2) -> o1.name.compareTo(o2.name)).collect(toList());
     }
 
     @POST
