@@ -1,20 +1,23 @@
 package com.github.money.keeper.app;
 
-import com.github.money.keeper.contoller.CategoryController;
-import com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo;
 import com.github.money.keeper.template.UITemplateSupport;
 import com.github.money.keeper.ui.Endpoint;
 import com.github.money.keeper.ui.WebUIHolder;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.File;
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class CategoryEditor extends Application {
 
+    // todo switch on property
     private static final String categoryEditorFXMLFile = "ui/html/category/category-editor.html";
+    private static final ClassPathXmlApplicationContext CONTEXT = new ClassPathXmlApplicationContext("context/application-context.xml");
+
+    private Endpoint endpoint;
+    private UITemplateSupport uiTemplateSupport;
 
     public static void main(String[] args) {
         launch(args);
@@ -22,46 +25,27 @@ public class CategoryEditor extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        CategoryController controller = buildContext();
-        Endpoint endpoint = new Endpoint();
-        endpoint.register(controller);
-
-        UITemplateSupport templateSupport = new UITemplateSupport();
-        templateSupport.init();
-
+        CONTEXT.getAutowireCapableBeanFactory().autowireBeanProperties(this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
         stage.setTitle("Category editor");
         WebUIHolder uiHolder = new WebUIHolder(
                 categoryEditorFXMLFile,
                 800,
                 500,
                 endpoint,
-                templateSupport
+                uiTemplateSupport
         );
         Scene scene = new Scene(uiHolder);
         stage.setScene(scene);
         stage.show();
     }
 
-    private CategoryController buildContext() throws IOException {
-        InMemoryFileBackedCategoryRepo categoryRepo = new InMemoryFileBackedCategoryRepo();
-        String categoriesFileName = "categories.json";
-        if (!new File(categoriesFileName).exists()) {
-            new File(categoriesFileName).createNewFile();
-        }
-        categoryRepo.setStorageFileName(categoriesFileName);
-        categoryRepo.init();
-
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                categoryRepo.destroy();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-
-        CategoryController categoryController = new CategoryController();
-        categoryController.setCategoryRepo(categoryRepo);
-        return categoryController;
+    @Required
+    public void setEndpoint(Endpoint endpoint) {
+        this.endpoint = endpoint;
     }
 
+    @Required
+    public void setUiTemplateSupport(UITemplateSupport uiTemplateSupport) {
+        this.uiTemplateSupport = uiTemplateSupport;
+    }
 }

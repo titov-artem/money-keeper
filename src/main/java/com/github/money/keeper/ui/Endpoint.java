@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +33,12 @@ public class Endpoint {
         String classPath = slashEnded(pathAnnotation == null ? cClass.getSimpleName() : pathAnnotation.value());
         if (endpoints.put(classPath, new ClassEndpoint(cClass, controller)) != null) {
             throw new IllegalArgumentException("Duplicate class endpoints for path " + classPath);
+        }
+    }
+
+    public void setControllers(List<?> controllers) {
+        for (Object controller : controllers) {
+            register(controller);
         }
     }
 

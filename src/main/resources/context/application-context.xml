@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
+    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+
+    <!-- ui -->
+    <bean id="endpoint" class="com.github.money.keeper.ui.Endpoint">
+        <property name="controllers">
+            <list>
+                <ref bean="categoryController"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- controller -->
+    <bean id="categoryController" class="com.github.money.keeper.contoller.CategoryController">
+        <property name="categoryRepo" ref="categoryRepo"/>
+    </bean>
+
+    <!-- service -->
+    <bean id="clusterizationService" class="com.github.money.keeper.service.ClusterizationService">
+        <property name="storeClusterizer" ref="storeClusterizer"/>
+    </bean>
+
+    <!-- storage -->
+    <bean id="categoryRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="categories.json"/>
+    </bean>
+
+    <!-- reports -->
+    <bean id="simpleExpenseReportHtmlSerializer"
+          class="com.github.money.keeper.serializer.html.SimpleExpenseReportHtmlSerializer">
+        <property name="templateSupport" ref="templateSupport"/>
+    </bean>
+
+    <!-- parsers -->
+    <bean id="raiffeisenTransactionParser" class="com.github.money.keeper.parser.RaiffeisenTransactionParser"/>
+
+    <bean id="transactionParserProvider" class="com.github.money.keeper.parser.TransactionParserProvider">
+        <property name="parsers">
+            <map>
+                <entry key="RAIFFEISEN_CARD" value-ref="raiffeisenTransactionParser"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- clusterization -->
+    <!-- TODO refactor hierarchy -->
+    <bean id="salePointClusterizer" class="com.github.money.keeper.clusterization.SimpleByNameClusterizer"/>
+
+    <bean id="storeClusterizer" class="com.github.money.keeper.clusterization.StoreClusterizer">
+        <constructor-arg ref="salePointClusterizer"/>
+    </bean>
+
+    <!-- templates -->
+    <bean id="templateSupport" class="com.github.money.keeper.template.TemplateSupport"/>
+
+    <bean id="uiTemplateSupport" class="com.github.money.keeper.template.UITemplateSupport">
+        <property name="templateSupport" ref="templateSupport"/>
+    </bean>
+
+</beans>

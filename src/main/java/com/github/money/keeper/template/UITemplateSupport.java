@@ -2,22 +2,20 @@ package com.github.money.keeper.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import freemarker.template.Template;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.StringWriter;
 import java.util.Map;
 
-public class UITemplateSupport extends TemplateSupport {
+public class UITemplateSupport {
+
+    private TemplateSupport templateSupport;
 
     private static final String UI_TEMPLATES_SUBPATH = "ui/";
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    @Override
-    public Template getTemplate(String fileName) {
-        return super.getTemplate(UI_TEMPLATES_SUBPATH + fileName);
-    }
-
     public String applyTemplate(String templateFileName, String templateParams) {
-        Template template = getTemplate(templateFileName);
+        Template template = templateSupport.getTemplate(UI_TEMPLATES_SUBPATH + templateFileName);
         StringWriter writer = new StringWriter();
         try {
             template.process(OBJECT_MAPPER.readValue(templateParams, Map.class), writer);
@@ -25,5 +23,10 @@ public class UITemplateSupport extends TemplateSupport {
             throw new RuntimeException("Failed to build report due to exception", e);
         }
         return writer.toString();
+    }
+
+    @Required
+    public void setTemplateSupport(TemplateSupport templateSupport) {
+        this.templateSupport = templateSupport;
     }
 }

@@ -7,6 +7,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -71,6 +72,7 @@ public class CategoryController {
         return category == null || affectedNames.contains(categoryName);
     }
 
+    @Required
     public void setCategoryRepo(CategoryRepo categoryRepo) {
         this.categoryRepo = categoryRepo;
     }

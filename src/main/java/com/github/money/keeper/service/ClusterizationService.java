@@ -6,6 +6,7 @@ import com.github.money.keeper.model.Store;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,7 @@ public class ClusterizationService {
         }
     }
 
+    @Required
     public void setStoreClusterizer(StoreClusterizer storeClusterizer) {
         this.storeClusterizer = storeClusterizer;
     }

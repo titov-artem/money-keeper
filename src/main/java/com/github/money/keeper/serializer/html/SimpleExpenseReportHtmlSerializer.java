@@ -4,6 +4,7 @@ import com.github.money.keeper.model.report.SimpleExpenseReport;
 import com.github.money.keeper.template.TemplateSupport;
 import com.google.common.collect.ImmutableMap;
 import freemarker.template.Template;
+import org.springframework.beans.factory.annotation.Required;
 
 import java.io.StringWriter;
 import java.util.Map;
@@ -24,6 +25,7 @@ public class SimpleExpenseReportHtmlSerializer {
         return writer.toString();
     }
 
+    @Required
     public void setTemplateSupport(TemplateSupport templateSupport) {
         this.templateSupport = templateSupport;
     }
