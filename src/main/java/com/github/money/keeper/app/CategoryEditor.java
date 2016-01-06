@@ -1,5 +1,6 @@
 package com.github.money.keeper.app;
 
+import com.github.money.keeper.contoller.ApplicationController;
 import com.github.money.keeper.template.UITemplateSupport;
 import com.github.money.keeper.ui.Endpoint;
 import com.github.money.keeper.ui.WebUIHolder;
@@ -18,6 +19,7 @@ public class CategoryEditor extends Application {
 
     private Endpoint endpoint;
     private UITemplateSupport uiTemplateSupport;
+    private ApplicationController applicationController;
 
     public static void main(String[] args) {
         launch(args);
@@ -26,17 +28,18 @@ public class CategoryEditor extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         CONTEXT.getAutowireCapableBeanFactory().autowireBeanProperties(this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
-        stage.setTitle("Category editor");
+        stage.setTitle("Money keeper");
         WebUIHolder uiHolder = new WebUIHolder(
-                categoryEditorFXMLFile,
                 800,
                 500,
                 endpoint,
                 uiTemplateSupport
         );
+        applicationController.setWebUIHolder(uiHolder);
         Scene scene = new Scene(uiHolder);
         stage.setScene(scene);
         stage.show();
+        applicationController.switchPage(ApplicationController.Page.CATEGORY);
     }
 
     @Required
@@ -47,5 +50,10 @@ public class CategoryEditor extends Application {
     @Required
     public void setUiTemplateSupport(UITemplateSupport uiTemplateSupport) {
         this.uiTemplateSupport = uiTemplateSupport;
+    }
+
+    @Required
+    public void setApplicationController(ApplicationController applicationController) {
+        this.applicationController = applicationController;
     }
 }

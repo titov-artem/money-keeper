@@ -5,19 +5,19 @@ import java.util.Objects;
 public class SalePoint {
 
     private final String name;
-    private final String description;
+    private final String categoryDescription;
 
-    public SalePoint(String name, String description) {
+    public SalePoint(String name, String categoryDescription) {
         this.name = name;
-        this.description = description;
+        this.categoryDescription = categoryDescription;
     }
 
     public String getName() {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCategoryDescription() {
+        return categoryDescription;
     }
 
     @Override public boolean equals(Object o) {
@@ -25,17 +25,17 @@ public class SalePoint {
         if (o == null || getClass() != o.getClass()) return false;
         SalePoint salePoint = (SalePoint) o;
         return Objects.equals(name, salePoint.name) &&
-                Objects.equals(description, salePoint.description);
+                Objects.equals(categoryDescription, salePoint.categoryDescription);
     }
 
     @Override public int hashCode() {
-        return Objects.hash(name, description);
+        return Objects.hash(name, categoryDescription);
     }
 
     @Override public String toString() {
         return "SalePoint{" +
                 "name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                ", categoryDescription='" + categoryDescription + '\'' +
                 '}';
     }
 }

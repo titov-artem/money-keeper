@@ -26,7 +26,7 @@ public class StoreClusterizer {
         List<Store> out = Lists.newArrayList();
         for (final Set<SalePoint> cluster : clusters) {
             SalePoint head = cluster.iterator().next();
-            out.add(new Store(head.getName(), head.getDescription(), cluster));
+            out.add(new Store(head.getName(), head.getCategoryDescription(), cluster));
         }
         return out;
     }
