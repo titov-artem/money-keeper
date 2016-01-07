@@ -94,11 +94,26 @@ public class SimpleExpenseReportController {
         service.setParser(new RaiffeisenTransactionParser());
 
         service.setStoreRepo(new StoreRepo() {
-            @Override public void save(Iterable<Store> stores) {
+            @Override
+            public List<Store> save(Iterable<Store> stores) {
+                return null;
+            }
+
+            @Override
+            public void delete(String key) {
             }
 
             @Override public List<Store> loadAll() {
                 return Collections.emptyList();
+            }
+
+            @Override
+            public Store load(String key) {
+                return null;
+            }
+
+            @Override
+            public void clear() {
             }
         });
         InMemoryFileBackedCategoryRepo categoryRepo = new InMemoryFileBackedCategoryRepo();

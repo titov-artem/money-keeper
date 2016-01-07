@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Required;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class ClusterizationService {
 
     private StoreClusterizer storeClusterizer;
 
-    public ClusterizationResult clusterize(final List<Store> source, final List<SalePoint> input) {
+    public ClusterizationResult clusterize(final List<Store> source, final Collection<SalePoint> input) {
         List<Store> stores = storeClusterizer.clusterize(source, input);
         Map<SalePoint, Store> spToStore = stores.stream()
                 .flatMap(s -> s.getSalePoints().stream().map(p -> Pair.of(p, s)))

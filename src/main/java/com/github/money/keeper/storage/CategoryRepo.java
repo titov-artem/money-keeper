@@ -1,16 +1,8 @@
 package com.github.money.keeper.storage;
 
 import com.github.money.keeper.model.Category;
+import com.github.money.keeper.storage.memory.BaseRepo;
 
-import java.util.List;
+public interface CategoryRepo extends BaseRepo<String, Category> {
 
-public interface CategoryRepo {
-
-    void save(Iterable<Category> categories);
-
-    void delete(String name);
-
-    List<Category> loadAll();
-
-    Category load(String name);
 }

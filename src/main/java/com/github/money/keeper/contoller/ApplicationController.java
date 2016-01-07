@@ -18,11 +18,6 @@ public class ApplicationController {
 
     @POST
     @Path("/switch")
-    public void switchPage(String rawPage) {
-        Page page = Page.valueOf(rawPage);
-        switchPage(page);
-    }
-
     public void switchPage(Page page) {
         Preconditions.checkState(webUIHolder != null,
                 "Application controller not initialized! Please inject JavaFX WebUIHolder for page switching");

@@ -149,6 +149,8 @@ public class Endpoint {
                         parsedArgs[i] = Boolean.parseBoolean(arg);
                     } else if (Character.class.equals(argType) || char.class.equals(argType)) {
                         parsedArgs[i] = arg.charAt(0);
+                    } else if (argType.isEnum()) {
+                        parsedArgs[i] = Enum.valueOf((Class<Enum>) argType, arg);
                     } else {
                         parsedArgs[i] = objectMapper.readValue(arg, argType);
                     }

@@ -5,6 +5,7 @@ import com.github.money.keeper.model.Store;
 import com.github.money.keeper.util.math.LevenshteinDistance;
 import com.google.common.collect.Lists;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,7 +20,7 @@ public class StoreClusterizer {
         this.salePointClusterizer = salePointClusterizer;
     }
 
-    public List<Store> clusterize(final List<Store> source, final List<SalePoint> input) {
+    public List<Store> clusterize(final List<Store> source, final Collection<SalePoint> input) {
         List<SalePoint> all = Lists.newArrayList(input);
         source.stream().forEach(s -> all.addAll(s.getSalePoints()));
         List<Set<SalePoint>> clusters = salePointClusterizer.clusterize(all, LevenshteinDistance::distance);

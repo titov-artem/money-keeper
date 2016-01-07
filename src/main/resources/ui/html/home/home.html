@@ -12,8 +12,82 @@
     <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
 
     <script language="JavaScript" src="../js/common.js"></script>
+    <style>
+        .upload-alerts-container {
+            margin-top: 20px;
+            margin-bottom: -20px;
+        }
+    </style>
 </head>
 <body>
-HOME PAGE
+<script language="JavaScript">
+    function showAlert(alertSelector) {
+        var alert = $(alertSelector);
+
+        var oldTimer = alert.prop('timer');
+        if (oldTimer !== undefined && oldTimer != null) {
+            clearTimeout(oldTimer);
+        }
+
+        alert.removeClass('hidden');
+        var timer = setTimeout(function () {
+            $(alertSelector).addClass('hidden');
+            alert.prop('timer', null);
+        }, 3000);
+        alert.prop('timer', timer);
+    }
+
+    $(document).ready(function () {
+        $('#upload-bank-statement').click(function () {
+            var uploadResult = JSON.parse(endpoint.post('/bank/statement', ['RAIFFEISEN_CARD']));
+            if (uploadResult === 'SUCCESS') {
+                showAlert('#file-uploaded');
+            } else if (uploadResult === 'FAILED') {
+                showAlert('#failed-to-upload-file-alert');
+            } else if (uploadResult === 'NO_FILE_CHOSEN') {
+                showAlert('#no-file-selected-alert');
+            }
+        });
+    });
+</script>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Upload bank statement
+    </div>
+    <div class="panel-body">
+        <form class="form-inline">
+            <div class="form-group">
+                <div class="dropdown">
+                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="true">
+                        Select bank
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#">Separated link</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="upload-bank-statement" class="btn btn-primary" type="button">Upload</button>
+            </div>
+        </form>
+        <div class="upload-alerts-container">
+            <div id="file-uploaded" class="alert alert-success hidden" role="alert">Bank statement uploaded
+                successfully
+            </div>
+            <div id="no-file-selected-alert" class="alert alert-warning hidden" role="alert">No file was selected</div>
+            <div id="failed-to-upload-file-alert" class="alert alert-danger hidden" role="alert">
+                Failed to upload bank statement file due to exception
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

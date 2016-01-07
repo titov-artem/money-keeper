@@ -12,6 +12,7 @@
             <list>
                 <ref bean="categoryController"/>
                 <ref bean="applicationController"/>
+                <ref bean="bankStatementController"/>
             </list>
         </property>
     </bean>
@@ -23,15 +24,37 @@
 
     <bean id="applicationController" class="com.github.money.keeper.contoller.ApplicationController"/>
 
+    <bean id="bankStatementController" class="com.github.money.keeper.contoller.BankStatementController">
+        <property name="transactionParserProvider" ref="transactionParserProvider"/>
+        <property name="storeService" ref="storeService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+    </bean>
+
     <!-- service -->
     <bean id="clusterizationService" class="com.github.money.keeper.service.ClusterizationService">
         <property name="storeClusterizer" ref="storeClusterizer"/>
+    </bean>
+
+    <bean id="storeService" class="com.github.money.keeper.service.StoreService">
+        <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="clusterizationService" ref="clusterizationService"/>
+        <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
     <!-- storage -->
     <bean id="categoryRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo">
         <!-- TODO use property -->
         <property name="storageFileName" value="categories.json"/>
+    </bean>
+
+    <bean id="transactionRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedTransactionRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="transactions.json"/>
+    </bean>
+
+    <bean id="storeRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedStoreRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="stores.json"/>
     </bean>
 
     <!-- reports -->

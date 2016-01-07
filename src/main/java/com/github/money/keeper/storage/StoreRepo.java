@@ -1,13 +1,9 @@
 package com.github.money.keeper.storage;
 
 import com.github.money.keeper.model.Store;
+import com.github.money.keeper.storage.memory.BaseRepo;
 
-import java.util.List;
+public interface StoreRepo extends BaseRepo<String, Store> {
 
-public interface StoreRepo {
-
-    void save(Iterable<Store> stores);
-
-    List<Store> loadAll();
-
+    void clear();
 }

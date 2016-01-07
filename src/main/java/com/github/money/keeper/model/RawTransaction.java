@@ -6,14 +6,31 @@ import java.util.Objects;
 
 public class RawTransaction {
 
+    private final Long id;
     private final LocalDate date;
     private final SalePoint salePoint;
     private final BigDecimal amount;
 
     public RawTransaction(LocalDate date, SalePoint salePoint, BigDecimal amount) {
+        this.id = null;
         this.date = date;
         this.salePoint = salePoint;
         this.amount = amount;
+    }
+
+    public RawTransaction(Long id, LocalDate date, SalePoint salePoint, BigDecimal amount) {
+        this.id = id;
+        this.date = date;
+        this.salePoint = salePoint;
+        this.amount = amount;
+    }
+
+    public RawTransaction withId(long id) {
+        return new RawTransaction(id, date, salePoint, amount);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public LocalDate getDate() {
@@ -28,22 +45,24 @@ public class RawTransaction {
         return amount;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RawTransaction that = (RawTransaction) o;
-        return Objects.equals(date, that.date) &&
-                Objects.equals(salePoint, that.salePoint) &&
-                Objects.equals(amount, that.amount);
+        return Objects.equals(id, that.id);
     }
 
-    @Override public int hashCode() {
-        return Objects.hash(date, salePoint, amount);
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "RawTransaction{" +
-                "date=" + date +
+                "id=" + id +
+                ", date=" + date +
                 ", salePoint=" + salePoint +
                 ", amount=" + amount +
                 '}';

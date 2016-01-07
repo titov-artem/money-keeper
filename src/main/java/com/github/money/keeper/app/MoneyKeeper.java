@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class CategoryEditor extends Application {
+public class MoneyKeeper extends Application {
 
-    // todo switch on property
-    private static final String categoryEditorFXMLFile = "ui/html/category/category-editor.html";
     private static final ClassPathXmlApplicationContext CONTEXT = new ClassPathXmlApplicationContext("context/application-context.xml");
+
+    static {
+        Runtime.getRuntime().addShutdownHook(new Thread(CONTEXT::close));
+    }
 
     private Endpoint endpoint;
     private UITemplateSupport uiTemplateSupport;
@@ -39,7 +41,7 @@ public class CategoryEditor extends Application {
         Scene scene = new Scene(uiHolder);
         stage.setScene(scene);
         stage.show();
-        applicationController.switchPage(ApplicationController.Page.CATEGORY);
+        applicationController.switchPage(ApplicationController.Page.HOME);
     }
 
     @Required
