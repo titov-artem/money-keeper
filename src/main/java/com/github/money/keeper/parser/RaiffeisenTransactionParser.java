@@ -4,6 +4,7 @@ import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.SalePoint;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,6 +56,9 @@ public class RaiffeisenTransactionParser implements TransactionParser {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return Optional.empty();
         }
+        if (spDescription.equals("Fin.Inst. - Merchandise")) {
+            return Optional.empty();
+        }
         return Optional.of(new RawTransaction(date, new SalePoint(spName, spDescription), amount));
     }
 
@@ -63,6 +67,6 @@ public class RaiffeisenTransactionParser implements TransactionParser {
     }
 
     private String unwrapField(String field) {
-        return field.substring(1, field.length() - 1).trim();
+        return StringUtils.strip(field.substring(1, field.length() - 1));
     }
 }

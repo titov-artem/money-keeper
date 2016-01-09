@@ -13,6 +13,7 @@
                 <ref bean="categoryController"/>
                 <ref bean="applicationController"/>
                 <ref bean="bankStatementController"/>
+                <ref bean="reportsController"/>
             </list>
         </property>
     </bean>
@@ -28,6 +29,13 @@
         <property name="transactionParserProvider" ref="transactionParserProvider"/>
         <property name="storeService" ref="storeService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="categoryService" ref="categoryService"/>
+    </bean>
+
+    <bean id="reportsController" class="com.github.money.keeper.contoller.ReportsController">
+        <property name="categoryRepo" ref="categoryRepo"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
     <!-- service -->
@@ -38,6 +46,11 @@
     <bean id="storeService" class="com.github.money.keeper.service.StoreService">
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="clusterizationService" ref="clusterizationService"/>
+        <property name="storeRepo" ref="storeRepo"/>
+    </bean>
+
+    <bean id="categoryService" class="com.github.money.keeper.service.CategoryService">
+        <property name="categoryRepo" ref="categoryRepo"/>
         <property name="storeRepo" ref="storeRepo"/>
     </bean>
 

@@ -32,8 +32,8 @@ public class MoneyKeeper extends Application {
         CONTEXT.getAutowireCapableBeanFactory().autowireBeanProperties(this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
         stage.setTitle("Money keeper");
         WebUIHolder uiHolder = new WebUIHolder(
-                800,
-                500,
+                1280,
+                900,
                 endpoint,
                 uiTemplateSupport
         );

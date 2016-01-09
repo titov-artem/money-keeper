@@ -12,26 +12,11 @@
     <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
 
     <script language="JavaScript" src="../js/common.js"></script>
-    <style>
-        .upload-alerts-container {
-            margin-top: 20px;
-            margin-bottom: -20px;
-        }
-    </style>
 </head>
 <body>
 <script language="JavaScript">
     $(document).ready(function () {
-        $('#upload-bank-statement').click(function () {
-            var uploadResult = JSON.parse(endpoint.post('/bank/statement', ['RAIFFEISEN_CARD']));
-            if (uploadResult === 'SUCCESS') {
-                showAlert('#file-uploaded', 3000);
-            } else if (uploadResult === 'FAILED') {
-                showAlert('#failed-to-upload-file-alert', 3000);
-            } else if (uploadResult === 'NO_FILE_CHOSEN') {
-                showAlert('#no-file-selected-alert', 3000);
-            }
-        });
+
     });
 </script>
 

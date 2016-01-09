@@ -4,6 +4,7 @@ import com.github.money.keeper.parser.ParsingResult;
 import com.github.money.keeper.parser.SupportedParsers;
 import com.github.money.keeper.parser.TransactionParser;
 import com.github.money.keeper.parser.TransactionParserProvider;
+import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.storage.TransactionRepo;
 import javafx.stage.FileChooser;
@@ -24,6 +25,7 @@ public class BankStatementController {
     private TransactionParserProvider transactionParserProvider;
     private TransactionRepo transactionRepo;
     private StoreService storeService;
+    private CategoryService categoryService;
 
     @POST
     public UploadResult upload(SupportedParsers parserType) {
@@ -49,6 +51,7 @@ public class BankStatementController {
             ParsingResult result = parser.parse(new FileInputStream(selectedFile));
             transactionRepo.save(result.getTransactions());
             storeService.rebuildFromTransactionsLog();
+            categoryService.updateCategories();
             return UploadResult.SUCCESS;
         } catch (Exception e) {
             log.error("Failed to parse file " + selectedFile + " due toe exception", e);
@@ -73,5 +76,10 @@ public class BankStatementController {
     @Required
     public void setStoreService(StoreService storeService) {
         this.storeService = storeService;
+    }
+
+    @Required
+    public void setCategoryService(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 }

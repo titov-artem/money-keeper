@@ -1,6 +1,9 @@
 package com.github.money.keeper.ui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.github.money.keeper.storage.memory.serialization.LocalDateDeserializer;
+import com.github.money.keeper.storage.memory.serialization.LocalDateSerializer;
 import com.github.money.keeper.util.structure.TrieMap;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -12,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.ws.rs.Path;
 import java.lang.reflect.Method;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +124,14 @@ public class Endpoint {
         public MethodEndpoint(Method method, Object controller) {
             this.method = method;
             this.controller = controller;
+            setupObjectMapper();
+        }
+
+        private void setupObjectMapper() {
+            SimpleModule modelModule = new SimpleModule();
+            modelModule.addSerializer(LocalDate.class, new LocalDateSerializer());
+            modelModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
+            objectMapper.registerModule(modelModule);
         }
 
         public String invoke(String... args) {

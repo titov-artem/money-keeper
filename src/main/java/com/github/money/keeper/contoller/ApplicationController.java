@@ -26,7 +26,7 @@ public class ApplicationController {
     }
 
     public enum Page {
-        HOME("ui/html/home/home.html"), CATEGORY("ui/html/category/category-editor.html"), REPORTS("");
+        HOME("ui/html/home/home.html"), CATEGORY("ui/html/category/category-editor.html"), REPORTS("ui/html/reports/period-expense-report-chart.html");
 
         private final String htmlFileName;
 
