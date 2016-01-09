@@ -1,16 +1,10 @@
 alert("command:inject");
 
-$(document).ready(function () {
-    var navigation = templates.applyTemplate('navigation.ftl', '{}');
-    $('body').prepend(navigation);
-    $('.navigation-link a').each(function () {
-        if ($(this).attr('href') === source) {
-            $(this).parent().addClass('active');
-        }
-    }).click(function () {
-        endpoint.post("/application/switch", [$(this).attr('href')]);
-    });
-});
+function getQueryParameters(str) {
+    return decodeURI((str || document.location.search)).replace(/(^\?)/, '').split("&").map(function (n) {
+        return n = n.split("="), this[n[0]] = n[1], this
+    }.bind({}))[0];
+}
 
 function showAlert(alertSelector, time) {
     var alert = $(alertSelector);
@@ -27,3 +21,15 @@ function showAlert(alertSelector, time) {
     }, time);
     alert.prop('timer', timer);
 }
+
+$(document).ready(function () {
+    var navigation = templates.applyTemplate('navigation.ftl', '{}');
+    $('body').prepend(navigation);
+    $('.navigation-link a').each(function () {
+        if ($(this).attr('href') === source) {
+            $(this).parent().addClass('active');
+        }
+    }).click(function () {
+        endpoint.post("/application/switch", [$(this).attr('href')]);
+    });
+});

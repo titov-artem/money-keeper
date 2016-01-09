@@ -5,10 +5,12 @@ import com.github.money.keeper.model.Category;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.google.common.collect.ImmutableSet;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
+@NotThreadSafe
 public class InMemoryFileBackedCategoryRepo extends AbstractInMemoryFileBackedRepo<String, Category> implements CategoryRepo {
 
     @Override

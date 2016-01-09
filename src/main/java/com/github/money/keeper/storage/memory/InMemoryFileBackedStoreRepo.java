@@ -5,12 +5,14 @@ import com.github.money.keeper.model.SalePoint;
 import com.github.money.keeper.model.Store;
 import com.github.money.keeper.storage.StoreRepo;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toSet;
 
+@NotThreadSafe
 public class InMemoryFileBackedStoreRepo extends AbstractInMemoryFileBackedRepo<String, Store> implements StoreRepo {
     @Override
     protected Store deserializeObject(ObjectMapper objectMapper, String source) throws IOException {

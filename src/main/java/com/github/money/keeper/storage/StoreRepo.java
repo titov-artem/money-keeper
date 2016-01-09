@@ -5,5 +5,4 @@ import com.github.money.keeper.storage.memory.BaseRepo;
 
 public interface StoreRepo extends BaseRepo<String, Store> {
 
-    void clear();
 }

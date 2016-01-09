@@ -4,16 +4,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.storage.TransactionRepo;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.sun.istack.internal.Nullable;
 
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.SortedMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.toList;
+
+@NotThreadSafe
 public class InMemoryFileBackedTransactionRepo extends AbstractInMemoryFileBackedRepo<Long, RawTransaction> implements TransactionRepo {
 
+    private final SortedMap<LocalDate, List<RawTransaction>> dateIndex = Maps.newTreeMap();
     private final AtomicLong idGenerator = new AtomicLong();
 
     @Override
@@ -27,7 +37,17 @@ public class InMemoryFileBackedTransactionRepo extends AbstractInMemoryFileBacke
         if (value.getId() > idGenerator.get()) {
             idGenerator.set(value.getId());
         }
+        getBucket(value.getDate()).add(value);
         return value;
+    }
+
+    private List<RawTransaction> getBucket(LocalDate date) {
+        List<RawTransaction> list = dateIndex.get(date);
+        if (list == null) {
+            list = Lists.newArrayList();
+            dateIndex.put(date, list);
+        }
+        return list;
     }
 
     @Override
@@ -38,13 +58,32 @@ public class InMemoryFileBackedTransactionRepo extends AbstractInMemoryFileBacke
     @Override
     public List<RawTransaction> save(Iterable<RawTransaction> values) {
         return super.save(StreamSupport.stream(values.spliterator(), false)
-                .map(v -> v.withId(idGenerator.incrementAndGet()))
-                .collect(Collectors.toList()));
+                .map(t -> t.withId(idGenerator.incrementAndGet()))
+                .peek(t -> getBucket(t.getDate()).add(t))
+                .collect(toList()));
     }
 
     @Override
-    public List<RawTransaction> load(Instant from, Instant to) {
-        // todo implement me when needed
-        return null;
+    public void delete(Long key) {
+        RawTransaction transaction = getData().get(key);
+        if (transaction != null) {
+            getBucket(transaction.getDate()).remove(transaction);
+        }
+        super.delete(key);
+    }
+
+    @Override
+    public void clear() {
+        dateIndex.clear();
+        super.clear();
+    }
+
+    @Override
+    public List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to) {
+        if (dateIndex.isEmpty()) return Collections.emptyList();
+
+        LocalDate left = from == null ? dateIndex.firstKey() : from;
+        LocalDate right = (to == null ? dateIndex.lastKey() : to).plusDays(1);
+        return dateIndex.subMap(left, right).values().stream().flatMap(Collection::stream).collect(toList());
     }
 }

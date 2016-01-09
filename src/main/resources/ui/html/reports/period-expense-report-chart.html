@@ -19,7 +19,8 @@
 <body>
 <script language="JavaScript">
     $(document).ready(function () {
-        var report = JSON.parse(endpoint.get('/reports/period', []));
+        var queryParams = getQueryParameters();
+        var report = JSON.parse(endpoint.get('/reports/period', [queryParams.from, queryParams.to]));
         var charData = [];
         var categoryCache = [];
         report.categoryReports.forEach(function (cReport) {
@@ -32,7 +33,7 @@
                 columns: charData,
                 type: 'donut',
                 onclick: function (e) {
-                    $('<a href="#' + categoryCache[e.name] + '"/>').click();
+                    $('<a href="#link-' + categoryCache[e.name] + '"/>').click();
                 }
             },
             legend: {

@@ -4,6 +4,7 @@ import com.github.money.keeper.contoller.ApplicationController;
 import com.github.money.keeper.template.UITemplateSupport;
 import com.github.money.keeper.ui.Endpoint;
 import com.github.money.keeper.ui.WebUIHolder;
+import com.github.money.keeper.ui.WebUIHolderProvider;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -37,7 +38,7 @@ public class MoneyKeeper extends Application {
                 endpoint,
                 uiTemplateSupport
         );
-        applicationController.setWebUIHolder(uiHolder);
+        WebUIHolderProvider.INSTANCE.setWebUIHolder(uiHolder);
         Scene scene = new Scene(uiHolder);
         stage.setScene(scene);
         stage.show();

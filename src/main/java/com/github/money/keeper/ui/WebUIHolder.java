@@ -15,7 +15,9 @@ import netscape.javascript.JSObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 
 public final class WebUIHolder extends Region {
@@ -69,14 +71,32 @@ public final class WebUIHolder extends Region {
 
     public void switchView(String htmlViewFileName) {
         URL resource = getClass().getClassLoader().getResource(htmlViewFileName);
-//        URL resource = null;
-//        try {
-//            resource = new URL("http://getbootstrap.com/components/#input-groups");
-//        } catch (MalformedURLException e) {
-//            throw new RuntimeException(e);
-//        }
         Preconditions.checkNotNull(resource, "Failed to load UI from file " + htmlViewFileName);
         Platform.runLater(() -> webEngine.load(resource.toExternalForm()));
+    }
+
+    public void switchView(String htmlViewFileName, Map<String, String> args) {
+        URL resource = getClass().getClassLoader().getResource(htmlViewFileName);
+        Preconditions.checkNotNull(resource, "Failed to load UI from file " + htmlViewFileName);
+        String urlParams = "";
+        if (args != null && !args.isEmpty()) {
+            StringBuilder urlBuilder = new StringBuilder("?");
+            args.forEach((k, v) -> urlBuilder.append(urlEncode(k)).append("=").append(urlEncode(v)).append("&"));
+            urlParams = urlBuilder.toString();
+        }
+        String url = resource.toExternalForm() + urlParams;
+        Platform.runLater(() -> {
+            webEngine.load(url);
+        });
+    }
+
+    private String urlEncode(String value) {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            log.error("Failed to ulr encode value " + value + " using UTF-8", e);
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

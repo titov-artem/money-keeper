@@ -5,54 +5,66 @@
     <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-datepicker3.min.css">
     <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/common.css">
 
     <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
     <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-datepicker.min.js"></script>
 
     <script language="JavaScript" src="../js/common.js"></script>
 </head>
 <body>
 <script language="JavaScript">
     $(document).ready(function () {
-
+        $('.input-group.date').datepicker({
+            format: "dd.mm.yyyy",
+            todayHighlight: true
+        });
+        $('#show-period-report').click(function () {
+            var from = $('#period-report-from').val();
+            var to = $('#period-report-to').val();
+            if (from === '' || to === '') {
+                showAlert('#no-date-selected', 5000);
+                return;
+            }
+            endpoint.get('/reports', ['PERIOD',
+                JSON.stringify({
+                    from: '"' + from + '"',
+                    to: '"' + to + '"'
+                })])
+        });
     });
 </script>
 
 <div class="panel panel-default">
     <div class="panel-heading">
-        Upload bank statement
+        Period report
     </div>
     <div class="panel-body">
         <form class="form-inline">
             <div class="form-group">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="true">
-                        Select bank
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                    </ul>
+                <div class="input-group date">
+                    <span class="input-group-addon">From</span>
+                    <input type="text" class="form-control" id="period-report-from"/>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
                 </div>
             </div>
             <div class="form-group">
-                <button id="upload-bank-statement" class="btn btn-primary" type="button">Upload</button>
+                <div class="input-group date">
+                    <span class="input-group-addon">To</span>
+                    <input type="text" class="form-control" id="period-report-to"/>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="show-period-report" class="btn btn-primary" type="button">Show</button>
             </div>
         </form>
-        <div class="upload-alerts-container">
-            <div id="file-uploaded" class="alert alert-success hidden" role="alert">Bank statement uploaded
-                successfully
-            </div>
-            <div id="no-file-selected-alert" class="alert alert-warning hidden" role="alert">No file was selected</div>
-            <div id="failed-to-upload-file-alert" class="alert alert-danger hidden" role="alert">
-                Failed to upload bank statement file due to exception
+        <div class="alerts-container">
+            <div id="no-date-selected" class="alert alert-danger hidden" role="alert">
+                Please select both from and to date to show report
             </div>
         </div>
     </div>

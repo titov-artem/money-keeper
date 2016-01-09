@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
+@NotThreadSafe
 public abstract class AbstractInMemoryFileBackedRepo<K, V> implements BaseRepo<K, V> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();

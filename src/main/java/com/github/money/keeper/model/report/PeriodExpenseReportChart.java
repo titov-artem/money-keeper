@@ -7,6 +7,7 @@ import com.github.money.keeper.model.UnifiedTransaction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.sun.istack.internal.Nullable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -105,8 +106,10 @@ public class PeriodExpenseReportChart {
         private LocalDate from;
         private LocalDate to;
 
-        public Builder(Account account, List<Category> categories) {
+        public Builder(Account account, List<Category> categories, @Nullable LocalDate from, @Nullable LocalDate to) {
             this.account = account;
+            this.from = from;
+            this.to = to;
             categories.stream().forEach(
                     c -> c.getAlternatives().forEach(
                             a -> Preconditions.checkState(alternativeToCategory.put(a, c) == null, "Duplicated alternative in different categories")
