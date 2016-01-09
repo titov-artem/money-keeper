@@ -18,29 +18,48 @@
 <body>
 <script language="JavaScript">
     $(document).ready(function () {
-        $('.input-group.date').datepicker({
+        $('#period-report-panel').find('.input-group.date').datepicker({
             format: "dd.mm.yyyy",
+            todayHighlight: true
+        });
+        $('#per-month-report-panel').find('.input-group.date').datepicker({
+            format: "mm.yyyy",
+            startView: 1,
+            minViewMode: 1,
             todayHighlight: true
         });
         $('#show-period-report').click(function () {
             var from = $('#period-report-from').val();
             var to = $('#period-report-to').val();
             if (from === '' || to === '') {
-                showAlert('#no-date-selected', 5000);
+                showAlert('#period-no-date-selected', 5000);
                 return;
             }
             endpoint.get('/reports', ['PERIOD',
                 JSON.stringify({
                     from: '"' + from + '"',
                     to: '"' + to + '"'
-                })])
+                })]);
+        });
+        $('#show-per-month-report').click(function () {
+            var from = $('#per-month-report-from').val();
+            var to = $('#per-month-report-to').val();
+            if (from === '' || to === '') {
+                showAlert('#per-month-no-date-selected', 5000);
+                return;
+            }
+            endpoint.get('/reports', ['PER_MONTH',
+                JSON.stringify({
+                    from: '"01.' + from + '"',
+                    to: '"01.' + to + '"'
+                })]);
         });
     });
 </script>
 
-<div class="panel panel-default">
+<div id="period-report-panel" class="panel panel-default">
     <div class="panel-heading">
-        Period report
+        <h4>Period report</h4>
     </div>
     <div class="panel-body">
         <form class="form-inline">
@@ -63,7 +82,39 @@
             </div>
         </form>
         <div class="alerts-container">
-            <div id="no-date-selected" class="alert alert-danger hidden" role="alert">
+            <div id="period-no-date-selected" class="alert alert-danger hidden" role="alert">
+                Please select both from and to date to show report
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="per-month-report-panel" class="panel panel-default">
+    <div class="panel-heading">
+        <h4>Per month chart</h4>
+    </div>
+    <div class="panel-body">
+        <form class="form-inline">
+            <div class="form-group">
+                <div class="input-group date">
+                    <span class="input-group-addon">From</span>
+                    <input type="text" class="form-control" id="per-month-report-from"/>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group date">
+                    <span class="input-group-addon">To</span>
+                    <input type="text" class="form-control" id="per-month-report-to"/>
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <button id="show-per-month-report" class="btn btn-primary" type="button">Show</button>
+            </div>
+        </form>
+        <div class="alerts-container">
+            <div id="per-month-no-date-selected" class="alert alert-danger hidden" role="alert">
                 Please select both from and to date to show report
             </div>
         </div>

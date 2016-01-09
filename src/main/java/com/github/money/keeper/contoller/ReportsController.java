@@ -4,6 +4,7 @@ import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.SalePoint;
 import com.github.money.keeper.model.Store;
 import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.report.PerMonthCategoryChart;
 import com.github.money.keeper.model.report.PeriodExpenseReportChart;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
@@ -32,22 +33,40 @@ public class ReportsController {
     @SuppressWarnings("VoidMethodAnnotatedWithGET")
     @GET
     public void switchToReport(Report report, Map<String, String> args) {
-        WebUIHolderProvider.INSTANCE.getWebUIHolder().switchView(Report.PERIOD.htmlFileName, args);
+        WebUIHolderProvider.INSTANCE.getWebUIHolder().switchView(report.htmlFileName, args);
     }
 
     @GET
     @Path("/period")
     public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to) {
-        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(null, categoryRepo.loadAll(), from, to);
+        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryRepo.loadAll(), from, to);
 
-        Map<SalePoint, Store> pointToStore = storeRepo.loadAll().stream()
-                .flatMap(s -> s.getSalePoints().stream().map(p -> Pair.of(p, s)))
-                .collect(toMap(Pair::getKey, Pair::getValue));
+        Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
 
         for (RawTransaction transaction : transactionRepo.load(from, to)) {
             builder.append(new UnifiedTransaction(transaction, pointToStore.get(transaction.getSalePoint())));
         }
         return builder.build();
+    }
+
+    @GET
+    @Path("/per-month")
+    public PerMonthCategoryChart perMonthCategoryChart(LocalDate from, LocalDate to) {
+        PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryRepo.loadAll());
+
+        Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
+
+        for (RawTransaction transaction : transactionRepo.load(from.withDayOfMonth(1), to.withDayOfMonth(1).plusMonths(1).minusDays(1))) {
+            builder.append(new UnifiedTransaction(transaction, pointToStore.get(transaction.getSalePoint())));
+        }
+        return builder.build();
+
+    }
+
+    private Map<SalePoint, Store> getSalePointStoreMap() {
+        return storeRepo.loadAll().stream()
+                .flatMap(s -> s.getSalePoints().stream().map(p -> Pair.of(p, s)))
+                .collect(toMap(Pair::getKey, Pair::getValue));
     }
 
     public enum Report {

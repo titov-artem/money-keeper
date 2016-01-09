@@ -33,7 +33,7 @@
                 columns: charData,
                 type: 'donut',
                 onclick: function (e) {
-                    $('<a href="#link-' + categoryCache[e.name] + '"/>').click();
+                    location.hash = "#" + 'link-' + categoryCache[e.name];
                 }
             },
             legend: {

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../lib/c3/css/c3.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/c3/js/d3.min.js"></script>
+    <script language="JavaScript" src="../lib/c3/js/c3.min.js"></script>
+
+    <script language="JavaScript" src="../js/common.js"></script>
+
+    <style>
+        #chart-switch {
+            padding: 0 0 20px 20px;
+        }
+
+        .chart-holder {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<script language="JavaScript">
+    function generatePercentageReport(report) {
+        return c3.generate({
+            bindto: '#percentage-chart',
+            data: {
+                xFormat: '%d.%m.%Y',
+                json: report.percentageChart,
+                keys: {
+                    x: 'date',
+                    value: report.percentageChartLabels
+                }
+            },
+            size: {
+                height: 750
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%m.%Y'
+                    }
+                }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return value + "%";
+                    }
+                }
+            }
+        });
+    }
+
+    function generateAbsoluteReport(report) {
+        return c3.generate({
+            bindto: '#absolute-chart',
+            data: {
+                xFormat: '%d.%m.%Y',
+                json: report.absoluteChart,
+                keys: {
+                    x: 'date',
+                    value: report.absoluteChartLabels
+                }
+            },
+            size: {
+                height: 750
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%m.%Y'
+                    }
+                }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return d3.format(",")(value);
+                    }
+                }
+            }
+        });
+    }
+
+    function switchCharts(chartToHide, chartToShow) {
+        var chartToHideSelector = '#' + chartToHide + '-chart';
+        var chartToShowSelector = '#' + chartToShow + '-chart';
+        var buttonToEnable = '#show-' + chartToHide + '-chart';
+        var buttonToDisable = '#show-' + chartToShow + '-chart';
+
+        $(chartToShowSelector).removeClass('hidden');
+        $(chartToHideSelector).addClass('hidden');
+
+//        $(buttonToDisable).addClass('disabled');
+        $(buttonToDisable).addClass('btn-primary');
+        $(buttonToDisable).removeClass('btn-default');
+
+//        $(buttonToEnable).removeClass('disabled');
+        $(buttonToEnable).removeClass('btn-primary');
+        $(buttonToEnable).addClass('btn-default');
+    }
+
+    $(document).ready(function () {
+        var queryParams = getQueryParameters();
+        var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to]));
+        var percentageChart = generatePercentageReport(report);
+        var absoluteChart = generateAbsoluteReport(report);
+        $('#show-percentage-chart').click(function () {
+            switchCharts('absolute', 'percentage')
+        });
+        $('#show-absolute-chart').click(function () {
+            switchCharts('percentage', 'absolute')
+        });
+        switchCharts('absolute', 'percentage');
+    });
+</script>
+<div id="chart-switch">
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" id="show-percentage-chart" class="btn btn-default">Percentage report</button>
+        <button type="button" id="show-absolute-chart" class="btn btn-default">Absolute report</button>
+    </div>
+</div>
+<div id="percentage-chart" class="chart-holder"></div>
+<div id="absolute-chart" class="chart-holder"></div>
+</body>
+</html>
