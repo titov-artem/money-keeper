@@ -1,7 +1,6 @@
 package com.github.money.keeper.model.report;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.Account;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.UnifiedTransaction;
 import com.google.common.base.Preconditions;
@@ -20,23 +19,16 @@ import static java.util.stream.Collectors.toList;
 
 public class PeriodExpenseReportChart {
 
-    private final Account account;
     private final LocalDate from;
     private final LocalDate to;
     private final List<CategoryReport> reports;
     private final BigDecimal total;
 
-    private PeriodExpenseReportChart(Account account, LocalDate from, LocalDate to, List<CategoryReport> reports, BigDecimal total) {
-        this.account = account;
+    private PeriodExpenseReportChart(LocalDate from, LocalDate to, List<CategoryReport> reports, BigDecimal total) {
         this.from = from;
         this.to = to;
         this.reports = reports;
         this.total = total;
-    }
-
-    @JsonGetter
-    public Account getAccount() {
-        return account;
     }
 
     @JsonGetter
@@ -100,14 +92,12 @@ public class PeriodExpenseReportChart {
     }
 
     public static final class Builder {
-        private final Account account;
         private final Map<String, Category> alternativeToCategory = Maps.newHashMap();
         private final Map<Category, CRBuilder> crBuilders = Maps.newHashMap();
         private LocalDate from;
         private LocalDate to;
 
-        public Builder(Account account, List<Category> categories, @Nullable LocalDate from, @Nullable LocalDate to) {
-            this.account = account;
+        public Builder(List<Category> categories, @Nullable LocalDate from, @Nullable LocalDate to) {
             this.from = from;
             this.to = to;
             categories.stream().forEach(
@@ -138,7 +128,6 @@ public class PeriodExpenseReportChart {
                     .map(b -> b.amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             return new PeriodExpenseReportChart(
-                    account,
                     from,
                     to,
                     crBuilders.values().stream()

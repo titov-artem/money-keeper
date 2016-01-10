@@ -14,33 +14,33 @@
     <script language="JavaScript" src="../lib/c3/js/d3.min.js"></script>
     <script language="JavaScript" src="../lib/c3/js/c3.min.js"></script>
 
-    <!--<script language="JavaScript" src="../js/common.js"></script>-->
+    <script language="JavaScript" src="../js/common.js"></script>
+
+    <style>
+        #chart-switch {
+            padding: 0 0 20px 20px;
+        }
+
+        .chart-holder {
+            margin-right: 20px;
+        }
+    </style>
 </head>
 <body>
 <script language="JavaScript">
-    $(document).ready(function () {
-        var chart = c3.generate({
-            bindto: '#chart',
+    function generatePercentageReport(report) {
+        return c3.generate({
+            bindto: '#percentage-chart',
             data: {
-//                x: 'x',
-//                xFormat: '%d.%m.%Y',
-//                columns: [
-//                    ['x', '01.01.2013', '02.01.2013', '03.01.2013', '04.01.2013', '05.01.2013', '06.01.2013'],
-//                    ['data1', 30, 200, 100, 400, 150, 250],
-//                    ['data2', 130, 340, 200, 500, 250, 350]
-//                ]
                 xFormat: '%d.%m.%Y',
-                json: [
-                    {'date': '01.01.2013', 'ATM': '50.23', 'Одежда': '30.1'},
-                    {'date': '01.02.2013', 'ATM': '55.23', 'Одежда': '20.1'},
-                    {'date': '01.03.2013', 'ATM': '40.23', 'Одежда': '10.1'},
-                    {'date': '01.04.2013', 'ATM': '60.23', 'Кино': '40.1'},
-                    {'date': '01.05.2013', 'ATM': '50.23', 'Кино': '30.1'}
-                ],
+                json: report.percentageChart,
                 keys: {
-                    x: 'date', // it's possible to specify 'x' when category axis
-                    value: ['ATM', 'Одежда', 'Кино']
+                    x: 'date',
+                    value: report.percentageChartLabels
                 }
+            },
+            size: {
+                height: 750
             },
             axis: {
                 x: {
@@ -49,10 +49,90 @@
                         format: '%m.%Y'
                     }
                 }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return value + "%";
+                    }
+                }
             }
         });
+    }
+
+    function generateAbsoluteReport(report) {
+        return c3.generate({
+            bindto: '#absolute-chart',
+            data: {
+                xFormat: '%d.%m.%Y',
+                json: report.absoluteChart,
+                keys: {
+                    x: 'date',
+                    value: report.absoluteChartLabels
+                }
+            },
+            size: {
+                height: 750
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%m.%Y'
+                    }
+                }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return d3.format(",")(value);
+                    }
+                }
+            }
+        });
+    }
+
+    function switchCharts(chartToHide, chartToShow) {
+        var chartToHideSelector = '#' + chartToHide + '-chart';
+        var chartToShowSelector = '#' + chartToShow + '-chart';
+        var buttonToEnable = '#show-' + chartToHide + '-chart';
+        var buttonToDisable = '#show-' + chartToShow + '-chart';
+
+        $(chartToShowSelector).removeClass('hidden');
+        $(chartToHideSelector).addClass('hidden');
+
+//        $(buttonToDisable).addClass('disabled');
+        $(buttonToDisable).addClass('btn-primary');
+        $(buttonToDisable).removeClass('btn-default');
+
+//        $(buttonToEnable).removeClass('disabled');
+        $(buttonToEnable).removeClass('btn-primary');
+        $(buttonToEnable).addClass('btn-default');
+    }
+
+    $(document).ready(function () {
+        var queryParams = getQueryParameters();
+        var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to]));
+        var percentageChart = generatePercentageReport(report);
+        var absoluteChart = generateAbsoluteReport(report);
+        $('#show-percentage-chart').click(function () {
+            switchCharts('absolute', 'percentage')
+        });
+        $('#show-absolute-chart').click(function () {
+            switchCharts('percentage', 'absolute')
+        });
+        switchCharts('absolute', 'percentage');
     });
 </script>
-<div id="chart"></div>
+<div id="chart-switch">
+    <div class="btn-group" role="group" aria-label="...">
+        <button type="button" id="show-percentage-chart" class="btn btn-default">Percentage report</button>
+        <button type="button" id="show-absolute-chart" class="btn btn-default">Absolute report</button>
+    </div>
+</div>
+<div id="percentage-chart" class="chart-holder"></div>
+<div id="absolute-chart" class="chart-holder"></div>
 </body>
 </html>
