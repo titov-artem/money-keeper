@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,7 +26,7 @@ public class TinkoffTransactionParser implements TransactionParser {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<RawTransaction> transactions = Lists.newArrayList();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(source))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(source, Charset.forName("CP1251")))) {
             String line;
             while ((line = in.readLine()) != null) {
                 if (isBlank(line)) continue;
@@ -50,10 +51,13 @@ public class TinkoffTransactionParser implements TransactionParser {
         if (!checkField(rawDate) || !checkField(rawSpName) || !checkField(rawSpDescription) || !checkField(rawAmount)) {
             return Optional.empty();
         }
-        LocalDate date = LocalDate.from(DateTimeFormatter.ofPattern("dd.MM.yyyy hh:mm:ss").parse(unwrapField(rawDate)));
+        LocalDate date = LocalDate.from(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").parse(unwrapField(rawDate)));
         String spName = unwrapField(rawSpName);
         String spDescription = unwrapField(rawSpDescription);
-        BigDecimal amount = new BigDecimal(unwrapField(rawAmount)).negate();
+        BigDecimal amount = new BigDecimal(unwrapField(rawAmount.replace(",", "."))).negate();
+        if (spName.equals("Перевод c карты другого банка")) {
+            return Optional.empty();
+        }
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return Optional.empty();
         }

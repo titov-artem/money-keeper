@@ -6,7 +6,10 @@ import com.github.money.keeper.util.math.LevenshteinDistance;
 import com.google.common.collect.*;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -25,9 +28,10 @@ public class StoreClusterizer {
         // TODO here we need to use old known stores to provide ability to specify store for sale point
         List<SalePoint> all = getAllSalePoints(source, input);
         List<Store> clusterizedStores = clusterize(all);
-        List<Store> out = mergeStores(source, clusterizedStores);
+//        List<Store> out = mergeStores(source, clusterizedStores);
 
-        return buildClusterizationResult(out);
+//        return buildClusterizationResult(out);
+        return buildClusterizationResult(clusterizedStores);
     }
 
     private List<SalePoint> getAllSalePoints(List<Store> source, Collection<SalePoint> input) {
@@ -41,9 +45,9 @@ public class StoreClusterizer {
                 all,
                 (p1, p2) -> {
                     // if points in different categories distance between them is infinity
-                    if (!Objects.equals(p1.getCategoryDescription(), p2.getCategoryDescription())) {
-                        return Integer.MAX_VALUE;
-                    }
+//                    if (!Objects.equals(p1.getCategoryDescription(), p2.getCategoryDescription())) {
+//                        return Integer.MAX_VALUE;
+//                    }
                     return LevenshteinDistance.distance(p1.getName(), p2.getName());
                 });
         List<Store> clusterizedStores = Lists.newArrayList();
