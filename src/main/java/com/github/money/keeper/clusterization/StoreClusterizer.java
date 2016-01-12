@@ -28,10 +28,10 @@ public class StoreClusterizer {
         // TODO here we need to use old known stores to provide ability to specify store for sale point
         List<SalePoint> all = getAllSalePoints(source, input);
         List<Store> clusterizedStores = clusterize(all);
-//        List<Store> out = mergeStores(source, clusterizedStores);
+        List<Store> out = mergeStores(source, clusterizedStores);
 
-//        return buildClusterizationResult(out);
-        return buildClusterizationResult(clusterizedStores);
+        return buildClusterizationResult(out);
+//        return buildClusterizationResult(clusterizedStores);
     }
 
     private List<SalePoint> getAllSalePoints(List<Store> source, Collection<SalePoint> input) {
@@ -48,6 +48,7 @@ public class StoreClusterizer {
 //                    if (!Objects.equals(p1.getCategoryDescription(), p2.getCategoryDescription())) {
 //                        return Integer.MAX_VALUE;
 //                    }
+                    // TODO select description by voting
                     return LevenshteinDistance.distance(p1.getName(), p2.getName());
                 });
         List<Store> clusterizedStores = Lists.newArrayList();

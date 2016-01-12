@@ -5,11 +5,13 @@
     <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/common.css">
 
     <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
     <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-select.min.js"></script>
 
     <script language="JavaScript" src="../js/common.js"></script>
 
@@ -18,7 +20,7 @@
 <script language="JavaScript">
     $(document).ready(function () {
         $('#upload-bank-statement').click(function () {
-            var uploadResult = JSON.parse(endpoint.post('/bank/statement', ['RAIFFEISEN_CARD']));
+            var uploadResult = JSON.parse(endpoint.post('/bank/statement', [$('#bank-type').val()]));
             if (uploadResult === 'SUCCESS') {
                 showAlert('#file-uploaded', 3000);
             } else if (uploadResult === 'FAILED') {
@@ -37,20 +39,10 @@
     <div class="panel-body">
         <form class="form-inline">
             <div class="form-group">
-                <div class="dropdown">
-                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="true">
-                        Select bank
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                        <li><a href="#">Action</a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                    </ul>
-                </div>
+                <select id="bank-type" class="selectpicker">
+                    <option value="RAIFFEISEN_CARD" selected>Raiffeisen card</option>
+                    <option value="TINKOFF">Tinkoff</option>
+                </select>
             </div>
             <div class="form-group">
                 <button id="upload-bank-statement" class="btn btn-primary" type="button">Upload</button>
