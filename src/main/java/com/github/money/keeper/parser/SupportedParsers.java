@@ -1,7 +1,8 @@
 package com.github.money.keeper.parser;
 
 public enum SupportedParsers {
-    RAIFFEISEN_CARD("Raiffeisen Card Statement", "*.csv");
+    RAIFFEISEN_CARD("Raiffeisen Card Statement", "*.csv"),
+    TINKOFF("Tinkoff statement", "*.csv");
 
     private String name;
     private String fileExtensionPattern;

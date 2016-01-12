@@ -39,13 +39,9 @@
     </bean>
 
     <!-- service -->
-    <bean id="clusterizationService" class="com.github.money.keeper.service.ClusterizationService">
-        <property name="storeClusterizer" ref="storeClusterizer"/>
-    </bean>
-
     <bean id="storeService" class="com.github.money.keeper.service.StoreService">
         <property name="transactionRepo" ref="transactionRepo"/>
-        <property name="clusterizationService" ref="clusterizationService"/>
+        <property name="storeClusterizer" ref="storeClusterizer"/>
         <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
@@ -79,10 +75,13 @@
     <!-- parsers -->
     <bean id="raiffeisenTransactionParser" class="com.github.money.keeper.parser.RaiffeisenTransactionParser"/>
 
+    <bean id="tinkoffTransactionParser" class="com.github.money.keeper.parser.TinkoffTransactionParser"/>
+
     <bean id="transactionParserProvider" class="com.github.money.keeper.parser.TransactionParserProvider">
         <property name="parsers">
             <map>
                 <entry key="RAIFFEISEN_CARD" value-ref="raiffeisenTransactionParser"/>
+                <entry key="TINKOFF" value-ref="tinkoffTransactionParser"/>
             </map>
         </property>
     </bean>

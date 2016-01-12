@@ -9,5 +9,5 @@ import java.util.function.BiFunction;
 public interface SalePointClusterizer {
 
     List<Set<SalePoint>> clusterize(List<SalePoint> source,
-                                    BiFunction<String, String, Integer> distance);
+                                    BiFunction<SalePoint, SalePoint, Integer> distance);
 }

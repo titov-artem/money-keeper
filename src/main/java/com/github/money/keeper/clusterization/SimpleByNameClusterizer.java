@@ -13,11 +13,11 @@ import java.util.function.BiFunction;
 public class SimpleByNameClusterizer implements SalePointClusterizer {
 
     @Override
-    public List<Set<SalePoint>> clusterize(List<SalePoint> source, BiFunction<String, String, Integer> distance) {
+    public List<Set<SalePoint>> clusterize(List<SalePoint> source, BiFunction<SalePoint, SalePoint, Integer> distance) {
         SetMultimap<Integer, UnorderedPair<SalePoint>> distanceToPair = HashMultimap.create();
         for (final SalePoint first : source) {
             for (final SalePoint second : source) {
-                Integer d = distance.apply(first.getName(), second.getName());
+                Integer d = distance.apply(first, second);
                 distanceToPair.put(d, pair(first, second));
             }
         }
