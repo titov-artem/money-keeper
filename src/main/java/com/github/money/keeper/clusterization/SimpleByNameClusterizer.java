@@ -12,6 +12,8 @@ import java.util.function.BiFunction;
 
 public class SimpleByNameClusterizer implements SalePointClusterizer {
 
+    private static final double DISTANCE_THRESHOLD = 0.3;
+
     @Override
     public List<Set<SalePoint>> clusterize(List<SalePoint> source, BiFunction<SalePoint, SalePoint, Integer> distance) {
         SetMultimap<Integer, UnorderedPair<SalePoint>> distanceToPair = HashMultimap.create();
@@ -50,7 +52,7 @@ public class SimpleByNameClusterizer implements SalePointClusterizer {
      * @return
      */
     private boolean checkDistance(SalePoint t1, SalePoint t2, int distance) {
-        return distance <= t1.getName().length() / 2 && distance <= t2.getName().length() / 2;
+        return distance <= t1.getName().length() * DISTANCE_THRESHOLD && distance <= t2.getName().length() * DISTANCE_THRESHOLD;
     }
 
     private UnorderedPair<SalePoint> pair(SalePoint t1, SalePoint t2) {

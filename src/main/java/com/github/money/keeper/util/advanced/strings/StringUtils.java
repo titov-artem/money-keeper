@@ -13,29 +13,36 @@ public class StringUtils {
         GeneralSuffixTree suffixTree = new GeneralSuffixTree(source);
         Node root = suffixTree.getRoot();
         GreatestSubstringLookupResult result = greatestCommonSubstring(root, "", source.size());
-        return Optional.ofNullable(result.greatestSubstring).orElse("");
+        String greatestSubstring = Optional.ofNullable(result.greatestSubstring).orElse("");
+        return greatestSubstring.endsWith(Character.toString(GeneralSuffixTree.FINAL_TERMINATOR))
+                ? greatestSubstring.substring(0, greatestSubstring.length() - 1)
+                : greatestSubstring;
     }
 
     // really never return null for greatestSubstring because node with only terminal symbols has endings of all strings :)
     private static GreatestSubstringLookupResult greatestCommonSubstring(Node node, String prefix, int stringsCount) {
+        String currentSubstring = prefix + node.getValue();
+
         if (node.getChildren().isEmpty()) {
-            return new GreatestSubstringLookupResult(null, node.getEndedStrings());
+            return new GreatestSubstringLookupResult(
+                    node.getContainsInStrings().size() == stringsCount ? currentSubstring : null,
+                    node.getContainsInStrings()
+            );
         }
 
-        String currentSubstring = prefix + node.getValue();
-        Set<Integer> endedStrings = Sets.newHashSet();
+        Set<Integer> containsInStrings = Sets.newHashSet();
         String maxSubstring = null;
         for (final Node child : node.getChildren().values()) {
             GreatestSubstringLookupResult result = greatestCommonSubstring(child, currentSubstring, stringsCount);
-            endedStrings.addAll(result.endedStrings);
+            containsInStrings.addAll(result.containsInStrings);
             if (lengthZeroIfNull(maxSubstring) < lengthZeroIfNull(result.greatestSubstring)) {
                 maxSubstring = result.greatestSubstring;
             }
         }
-        if (endedStrings.size() == stringsCount) {
-            return new GreatestSubstringLookupResult(maxSubstring == null ? currentSubstring : maxSubstring, endedStrings);
+        if (containsInStrings.size() == stringsCount) {
+            return new GreatestSubstringLookupResult(maxSubstring == null ? currentSubstring : maxSubstring, containsInStrings);
         } else {
-            return new GreatestSubstringLookupResult(null, endedStrings);
+            return new GreatestSubstringLookupResult(null, containsInStrings);
         }
     }
 
@@ -45,11 +52,11 @@ public class StringUtils {
 
     private static class GreatestSubstringLookupResult {
         final String greatestSubstring;
-        final Set<Integer> endedStrings;
+        final Set<Integer> containsInStrings;
 
-        public GreatestSubstringLookupResult(String greatestSubstring, Set<Integer> endedStrings) {
+        public GreatestSubstringLookupResult(String greatestSubstring, Set<Integer> containsInStrings) {
             this.greatestSubstring = greatestSubstring;
-            this.endedStrings = endedStrings;
+            this.containsInStrings = containsInStrings;
         }
     }
 

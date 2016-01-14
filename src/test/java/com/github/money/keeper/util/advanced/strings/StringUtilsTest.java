@@ -10,8 +10,11 @@ public class StringUtilsTest {
 
     @Test
     public void testGreatestCommonSubstring() throws Exception {
+        assertThat(gcs(), is(""));
+        assertThat(gcs("abc"), is("abc"));
         assertThat(gcs("abc", "def"), is(""));
         assertThat(gcs("abc", "aef"), is("a"));
+        assertThat(gcs("cef", "aef"), is("ef"));
         assertThat(gcs("ABABC", "BABCA", "ABCBA"), is("ABC"));
     }
 

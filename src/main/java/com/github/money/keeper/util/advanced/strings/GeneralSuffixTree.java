@@ -7,7 +7,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class GeneralSuffixTree {
 
-    private static final char TERMINATOR = 'ø';
+    static final char FINAL_TERMINATOR = 'ø';
+    private static final char ADDING_TERMINATOR = '∆';
     private static final int INFINITY = -1;
 
     private StringBuilder source = new StringBuilder();
@@ -33,37 +34,36 @@ class GeneralSuffixTree {
         int sourceStartPos = this.source.length();
         lastNotEmptyRule = sourceStartPos - 1;
         for (char c : source.toCharArray()) {
-            extend(c);
+            extend(c, n);
         }
-        extend(TERMINATOR);
+        extend(ADDING_TERMINATOR, n);
         terminate(n);
     }
 
     private void terminate(int n) {
-        // TODO: better control of leafNodes during construction
-        for (final Node leaf : leafNodes) {
-            if (leaf.right == INFINITY) {
-                leaf.endedStrings.add(n);
-                leaf.right = source.length();
-            }
+        for (final Node leaf : Sets.newHashSet(leafNodes)) {
+            assert leaf.charAt(leaf.length() - 1) == ADDING_TERMINATOR;
+            leaf.containsInStrings.add(n);
+            leaf.setRight(source.length());
         }
-        leafNodes.clear();
+        source.replace(source.length() - 1, source.length(), Character.toString(FINAL_TERMINATOR));
+        assert leafNodes.isEmpty();
     }
 
-    private void extend(char c) {
+    private void extend(char c, int stringNumber) {
         // extend all current leafs
         source.append(c);
         // process suffixes from previous first empty rule to cur last not empty rule inclusively
-        lastNotEmptyRule = processSuffixes(lastNotEmptyRule + 1);
+        lastNotEmptyRule = processSuffixes(lastNotEmptyRule + 1, stringNumber);
     }
 
-    private int processSuffixes(int startSuffix) {
+    private int processSuffixes(int startSuffix, int stringNumber) {
         AtomicReference<Node> lastSplitNode = new AtomicReference<>();
         int curSuffixStart = startSuffix;
         Node prevEndNode = root;
         while (curSuffixStart < source.length()) {
             Suffix curSuffix = new Suffix(curSuffixStart);
-            SuffixProcessingResult result = processSuffix(curSuffix, prevEndNode, lastSplitNode);
+            SuffixProcessingResult result = processSuffix(curSuffix, prevEndNode, lastSplitNode, stringNumber);
             prevEndNode = result.node;
             if (result.rule == Rule.EMPTY) {
                 break;
@@ -76,7 +76,8 @@ class GeneralSuffixTree {
 
     private SuffixProcessingResult processSuffix(Suffix curSuf,
                                                  Node prevEndNode,
-                                                 AtomicReference<Node> lastSplitNode) {
+                                                 AtomicReference<Node> lastSplitNode,
+                                                 int stringNumber) {
         Node curNode = prevEndNode;
         while (curNode.sufLink == null && curNode.parent != null) {
             curNode = curNode.parent;
@@ -101,14 +102,17 @@ class GeneralSuffixTree {
                 sufPos++;
             }
             if (nodePos == curNode.length() && sufPos == curSuf.length()) {
+                // we stop in the end of current node
                 rule = Rule.EMPTY;
                 break;
             }
             if (sufPos == curSuf.length()) {
+                // we stop in the middle of the current node
                 rule = Rule.EMPTY;
                 break;
             }
             if (nodePos == curNode.length()) {
+                // the node ended, but source not. We need to move to the child or create one
                 if (curNode.children.containsKey(curSuf.get(sufPos))) {
                     curNode = curNode.children.get(curSuf.get(sufPos));
                     nodePos = 0;
@@ -193,7 +197,7 @@ class GeneralSuffixTree {
         private int left;
         private int right; // INFINITY means global right;
         private final Map<Character, Node> children = new HashMap<>();
-        private final Set<Integer> endedStrings = new HashSet<>();
+        private final Set<Integer> containsInStrings = new HashSet<>();
 
         private Node parent;
         private Node sufLink;
@@ -203,6 +207,16 @@ class GeneralSuffixTree {
             this.left = left;
             this.right = right;
             this.deep = deep;
+            if (this.right == INFINITY) {
+                leafNodes.add(this);
+            }
+        }
+
+        void setRight(int right) {
+            if (this.right == INFINITY && right != INFINITY) {
+                leafNodes.remove(this);
+            }
+            this.right = right;
         }
 
         public char charAt(int i) {
@@ -231,8 +245,8 @@ class GeneralSuffixTree {
         /**
          * @return view of numbers of strings, which suffixes ends in this node
          */
-        public Set<Integer> getEndedStrings() {
-            return Collections.unmodifiableSet(endedStrings);
+        public Set<Integer> getContainsInStrings() {
+            return Collections.unmodifiableSet(containsInStrings);
         }
 
         @Override
@@ -243,7 +257,7 @@ class GeneralSuffixTree {
         }
 
         private void appendToWithPadding(String padding, StringBuilder out) {
-            out.append(padding).append("Node[").append(source.substring(left, left + length())).append(endedStrings).append(": \n");
+            out.append(padding).append("Node[").append(source.substring(left, left + length())).append(containsInStrings).append(": \n");
             for (final Map.Entry<Character, Node> entry : children.entrySet()) {
                 out.append(padding).append(entry.getKey()).append(": ");
                 entry.getValue().appendToWithPadding(padding + "    ", out);
