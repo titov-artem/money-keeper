@@ -2,14 +2,12 @@ package com.github.money.keeper.clusterization;
 
 import com.github.money.keeper.model.SalePoint;
 import com.github.money.keeper.model.Store;
+import com.github.money.keeper.util.advanced.strings.StringUtils;
 import com.github.money.keeper.util.math.LevenshteinDistance;
 import com.google.common.collect.*;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -25,7 +23,6 @@ public class StoreClusterizer {
     }
 
     public ClusterizationResult clusterize(final List<Store> source, final Collection<SalePoint> input) {
-        // TODO here we need to use old known stores to provide ability to specify store for sale point
         List<SalePoint> all = getAllSalePoints(source, input);
         List<Store> clusterizedStores = clusterize(all);
         List<Store> out = mergeStores(source, clusterizedStores);
@@ -41,20 +38,11 @@ public class StoreClusterizer {
     }
 
     private List<Store> clusterize(List<SalePoint> all) {
-        List<Set<SalePoint>> clusters = salePointClusterizer.clusterize(
-                all,
-                (p1, p2) -> {
-                    // if points in different categories distance between them is infinity
-//                    if (!Objects.equals(p1.getCategoryDescription(), p2.getCategoryDescription())) {
-//                        return Integer.MAX_VALUE;
-//                    }
-                    // TODO select description by voting
-                    return LevenshteinDistance.distance(p1.getName(), p2.getName());
-                });
+        List<Set<SalePoint>> clusters = salePointClusterizer.clusterize(all,
+                (p1, p2) -> LevenshteinDistance.distance(p1.getName(), p2.getName()));
         List<Store> clusterizedStores = Lists.newArrayList();
         for (final Set<SalePoint> cluster : clusters) {
-            SalePoint head = cluster.iterator().next();
-            clusterizedStores.add(new Store(getStoreName(cluster), head.getCategoryDescription(), cluster));
+            clusterizedStores.add(buildStoreFromCluster(cluster));
         }
         return clusterizedStores;
     }
@@ -170,9 +158,27 @@ public class StoreClusterizer {
         return aToB;
     }
 
-    private String getStoreName(Set<SalePoint> cluster) {
-        // TODO change on greatest common substring
-        return cluster.iterator().next().getName();
+    private Store buildStoreFromCluster(Set<SalePoint> cluster) {
+        SortedMultiset<String> categoryDescriptions = TreeMultiset.create();
+        Set<String> names = Sets.newHashSet();
+        for (SalePoint point : cluster) {
+            categoryDescriptions.add(point.getCategoryDescription());
+            names.add(point.getName());
+        }
+        int maxCount = -1;
+        SortedSet<String> categoryDescriptionsWithEqualCount = Sets.newTreeSet();
+        for (Multiset.Entry<String> entry : categoryDescriptions.entrySet()) {
+            if (entry.getCount() > maxCount) {
+                maxCount = entry.getCount();
+                categoryDescriptionsWithEqualCount.clear();
+                categoryDescriptionsWithEqualCount.add(entry.getElement());
+            } else if (entry.getCount() == maxCount) {
+                categoryDescriptionsWithEqualCount.add(entry.getElement());
+            }
+        }
+        String categoryDescription = categoryDescriptionsWithEqualCount.first();
+
+        return new Store(StringUtils.greatestCommonSubstring(names), categoryDescription, cluster);
     }
 
     private ClusterizationResult buildClusterizationResult(List<Store> out) {
