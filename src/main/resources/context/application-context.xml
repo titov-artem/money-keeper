@@ -20,7 +20,7 @@
 
     <!-- controller -->
     <bean id="categoryController" class="com.github.money.keeper.contoller.CategoryController">
-        <property name="categoryRepo" ref="categoryRepo"/>
+        <property name="categoryService" ref="categoryService"/>
     </bean>
 
     <bean id="applicationController" class="com.github.money.keeper.contoller.ApplicationController"/>
@@ -33,7 +33,7 @@
     </bean>
 
     <bean id="reportsController" class="com.github.money.keeper.contoller.ReportsController">
-        <property name="categoryRepo" ref="categoryRepo"/>
+        <property name="categoryService" ref="categoryService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="storeRepo" ref="storeRepo"/>
     </bean>
@@ -48,6 +48,7 @@
     <bean id="categoryService" class="com.github.money.keeper.service.CategoryService">
         <property name="categoryRepo" ref="categoryRepo"/>
         <property name="storeRepo" ref="storeRepo"/>
+        <property name="storeToCategoryRepo" ref="storeToCategoryRepo"/>
     </bean>
 
     <!-- storage -->
@@ -66,10 +67,9 @@
         <property name="storageFileName" value="stores.json"/>
     </bean>
 
-    <!-- reports -->
-    <bean id="simpleExpenseReportHtmlSerializer"
-          class="com.github.money.keeper.serializer.html.SimpleExpenseReportHtmlSerializer">
-        <property name="templateSupport" ref="templateSupport"/>
+    <bean id="storeToCategoryRepo" class="com.github.money.keeper.storage.StoreToCategoryRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="storeToCategory.json"/>
     </bean>
 
     <!-- parsers -->

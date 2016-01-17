@@ -6,7 +6,7 @@ import com.github.money.keeper.model.Store;
 import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.model.report.PerMonthCategoryChart;
 import com.github.money.keeper.model.report.PeriodExpenseReportChart;
-import com.github.money.keeper.storage.CategoryRepo;
+import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.storage.StoreRepo;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.github.money.keeper.ui.WebUIHolderProvider;
@@ -26,7 +26,7 @@ import static java.util.stream.Collectors.toMap;
 @Path("/reports")
 public class ReportsController {
 
-    private CategoryRepo categoryRepo;
+    private CategoryService categoryService;
     private StoreRepo storeRepo;
     private TransactionRepo transactionRepo;
 
@@ -39,7 +39,7 @@ public class ReportsController {
     @GET
     @Path("/period")
     public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to) {
-        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryRepo.loadAll(), from, to);
+        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryService.getCategorizationHelper(), from, to);
 
         Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
 
@@ -52,7 +52,7 @@ public class ReportsController {
     @GET
     @Path("/per-month")
     public PerMonthCategoryChart perMonthCategoryChart(LocalDate from, LocalDate to) {
-        PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryRepo.loadAll());
+        PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryService.getCategorizationHelper());
 
         Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
 
@@ -81,8 +81,8 @@ public class ReportsController {
     }
 
     @Required
-    public void setCategoryRepo(CategoryRepo categoryRepo) {
-        this.categoryRepo = categoryRepo;
+    public void setCategoryService(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 
     @Required

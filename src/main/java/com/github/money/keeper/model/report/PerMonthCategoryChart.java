@@ -3,7 +3,7 @@ package com.github.money.keeper.model.report;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.UnifiedTransaction;
-import com.google.common.base.Preconditions;
+import com.github.money.keeper.service.CategorizationHelper;
 import com.google.common.collect.Maps;
 
 import java.math.BigDecimal;
@@ -80,20 +80,16 @@ public class PerMonthCategoryChart {
         public static final String DEFAULT_TOTAL_CHART_NAME = "TOTAL";
 
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
-        private final Map<String, Category> alternativeToCategory = Maps.newHashMap();
+        private final CategorizationHelper categorizationHelper;
         private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = Maps.newTreeMap();
 
-        public Builder(List<Category> categories) {
+        public Builder(CategorizationHelper categorizationHelper) {
             // todo do something if category name clashes with DEFAULT_TOTAL_CHART_NAME
-            categories.stream().forEach(
-                    c -> c.getAlternatives().forEach(
-                            a -> Preconditions.checkState(alternativeToCategory.put(a, c) == null, "Duplicated alternative in different categories")
-                    )
-            );
+            this.categorizationHelper = categorizationHelper;
         }
 
         public void append(UnifiedTransaction transaction) {
-            Category category = ReportUtils.determineCategory(transaction, alternativeToCategory);
+            Category category = categorizationHelper.determineCategory(transaction);
             LocalDate month = getMonth(transaction.getDate());
             updateAmount(category.getName(), getMonthBucket(month), transaction.getAmount());
             updateAmount(totalChartName, getMonthBucket(month), transaction.getAmount());

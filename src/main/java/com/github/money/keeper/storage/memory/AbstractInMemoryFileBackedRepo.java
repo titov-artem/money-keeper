@@ -2,13 +2,7 @@ package com.github.money.keeper.storage.memory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.SalePoint;
-import com.github.money.keeper.storage.memory.serialization.LocalDateDeserializer;
-import com.github.money.keeper.storage.memory.serialization.LocalDateSerializer;
-import com.github.money.keeper.storage.memory.serialization.RawTransactionDeserializer;
-import com.github.money.keeper.storage.memory.serialization.SalePointDeserializer;
+import com.github.money.keeper.storage.BaseRepo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +12,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.*;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -30,9 +23,8 @@ import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @NotThreadSafe
-public abstract class AbstractInMemoryFileBackedRepo<K, V> implements BaseRepo<K, V> {
+public abstract class AbstractInMemoryFileBackedRepo<K, V> extends AbstractFileBackedRepo implements BaseRepo<K, V> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private String storageFileName;
     private final ConcurrentMap<K, V> data = new ConcurrentHashMap<>();
 
@@ -46,18 +38,6 @@ public abstract class AbstractInMemoryFileBackedRepo<K, V> implements BaseRepo<K
         if (storageFileName != null) {
             data.putAll(loadDataFromFile(storageFileName));
         }
-    }
-
-    private void setUpObjectMapper() {
-        SimpleModule modelModule = new SimpleModule();
-
-        modelModule.addSerializer(LocalDate.class, new LocalDateSerializer());
-
-        modelModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
-        modelModule.addDeserializer(SalePoint.class, new SalePointDeserializer());
-        modelModule.addDeserializer(RawTransaction.class, new RawTransactionDeserializer());
-
-        objectMapper.registerModule(modelModule);
     }
 
     @PreDestroy

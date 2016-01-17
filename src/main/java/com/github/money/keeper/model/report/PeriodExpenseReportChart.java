@@ -3,7 +3,7 @@ package com.github.money.keeper.model.report;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.UnifiedTransaction;
-import com.google.common.base.Preconditions;
+import com.github.money.keeper.service.CategorizationHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sun.istack.internal.Nullable;
@@ -92,24 +92,20 @@ public class PeriodExpenseReportChart {
     }
 
     public static final class Builder {
-        private final Map<String, Category> alternativeToCategory = Maps.newHashMap();
+        private final CategorizationHelper categorizationHelper;
         private final Map<Category, CRBuilder> crBuilders = Maps.newHashMap();
         private LocalDate from;
         private LocalDate to;
 
-        public Builder(List<Category> categories, @Nullable LocalDate from, @Nullable LocalDate to) {
+        public Builder(CategorizationHelper categorizationHelper, @Nullable LocalDate from, @Nullable LocalDate to) {
             this.from = from;
             this.to = to;
-            categories.stream().forEach(
-                    c -> c.getAlternatives().forEach(
-                            a -> Preconditions.checkState(alternativeToCategory.put(a, c) == null, "Duplicated alternative in different categories")
-                    )
-            );
+            this.categorizationHelper = categorizationHelper;
         }
 
         public void append(UnifiedTransaction transaction) {
             updateReportPeriod(transaction);
-            Category category = ReportUtils.determineCategory(transaction, alternativeToCategory);
+            Category category = categorizationHelper.determineCategory(transaction);
             CRBuilder crBuilder = summonBuilder(category);
             crBuilder.append(transaction);
         }

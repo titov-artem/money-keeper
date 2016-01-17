@@ -2,10 +2,9 @@ package com.github.money.keeper.contoller;
 
 import com.github.money.keeper.contoller.dto.CategoryDto;
 import com.github.money.keeper.model.Category;
-import com.github.money.keeper.storage.CategoryRepo;
+import com.github.money.keeper.service.CategoryService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -16,18 +15,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 @Path("/category")
 public class CategoryController {
 
-    private CategoryRepo categoryRepo;
+    private CategoryService categoryService;
 
     @GET
     public List<CategoryDto> getCategories() {
-        return categoryRepo.loadAll().stream().map(CategoryDto::new).sorted((o1, o2) -> o1.name.compareTo(o2.name)).collect(toList());
+        return categoryService.loadAll().stream().map(CategoryDto::new).sorted((o1, o2) -> o1.name.compareTo(o2.name)).collect(toList());
     }
 
     @POST
@@ -43,37 +41,34 @@ public class CategoryController {
         oldName = StringUtils.strip(oldName);
         newName = StringUtils.strip(newName);
 
-        Category oldCategory = categoryRepo.load(oldName);
-        categoryRepo.delete(oldName);
-        Category newCategory = new Category(newName, oldCategory.getAlternatives());
-        categoryRepo.save(singleton(newCategory));
+        Category newCategory = categoryService.rename(oldName, newName);
         return new CategoryDto(newCategory);
     }
 
     @POST
     @Path("/union")
     public CategoryDto union(String name, CategoryDto[] categories) {
-        Preconditions.checkArgument(checkNameInternal(name, Arrays.asList(categories).stream().map(c -> c.name).collect(toSet())), "Name must be not empty and unique");
+        List<CategoryDto> categoriesList = Arrays.asList(categories);
+        Preconditions.checkArgument(checkNameInternal(name, categoriesList.stream().map(c -> c.name).collect(toSet())), "Name must be not empty and unique");
         Preconditions.checkArgument(categories.length >= 2, "At least 2 categories can be united");
         name = StringUtils.strip(name);
-        Set<String> alternatives = Sets.newHashSet();
-        for (CategoryDto c : categories) {
-            categoryRepo.delete(c.name);
-            alternatives.addAll(c.alternatives);
-        }
-        Category category = new Category(name, alternatives);
-        categoryRepo.save(singleton(category));
+        Category category = categoryService.union(
+                name,
+                categoriesList.stream()
+                        .map(c -> new Category(c.name, c.alternatives))
+                        .collect(toList())
+        );
         return new CategoryDto(category);
     }
 
     private boolean checkNameInternal(String categoryName, Set<String> affectedNames) {
         if (StringUtils.isBlank(categoryName)) return false;
-        Category category = categoryRepo.load(categoryName);
+        Category category = categoryService.load(categoryName);
         return category == null || affectedNames.contains(categoryName);
     }
 
     @Required
-    public void setCategoryRepo(CategoryRepo categoryRepo) {
-        this.categoryRepo = categoryRepo;
+    public void setCategoryService(CategoryService categoryService) {
+        this.categoryService = categoryService;
     }
 }

@@ -1,4 +1,4 @@
-package com.github.money.keeper.storage.memory;
+package com.github.money.keeper.storage;
 
 import java.util.List;
 
