@@ -6,20 +6,17 @@ import com.github.money.keeper.model.Category;
 
 import java.util.Set;
 
-public class CategoryDto {
+public class ExtendedCategoryDto extends CategoryDto {
 
     @JsonProperty
-    public String name;
-    @JsonProperty
-    public Set<String> alternatives;
+    public Set<String> stores;
 
     @JsonCreator
-    public CategoryDto() {
+    public ExtendedCategoryDto() {
     }
 
-    public CategoryDto(Category category) {
-        this.name = category.getName();
-        alternatives = category.getAlternatives();
+    public ExtendedCategoryDto(Category category, Set<String> stores) {
+        super(category);
+        this.stores = stores;
     }
-
 }

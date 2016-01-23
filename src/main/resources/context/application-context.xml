@@ -21,6 +21,7 @@
     <!-- controller -->
     <bean id="categoryController" class="com.github.money.keeper.contoller.CategoryController">
         <property name="categoryService" ref="categoryService"/>
+        <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
     <bean id="applicationController" class="com.github.money.keeper.contoller.ApplicationController"/>

@@ -1,10 +1,16 @@
 package com.github.money.keeper.contoller;
 
 import com.github.money.keeper.contoller.dto.CategoryDto;
+import com.github.money.keeper.contoller.dto.ExtendedCategoryDto;
 import com.github.money.keeper.model.Category;
+import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.service.CategoryService;
+import com.github.money.keeper.storage.StoreRepo;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -22,10 +28,21 @@ import static java.util.stream.Collectors.toSet;
 public class CategoryController {
 
     private CategoryService categoryService;
+    private StoreRepo storeRepo;
 
     @GET
-    public List<CategoryDto> getCategories() {
-        return categoryService.loadAll().stream().map(CategoryDto::new).sorted((o1, o2) -> o1.name.compareTo(o2.name)).collect(toList());
+    public List<ExtendedCategoryDto> getCategories() {
+        CategorizationHelper categorizationHelper = categoryService.getCategorizationHelper();
+        SetMultimap<Category, String> storeByCategory = storeRepo.loadAll().stream()
+                .collect(
+                        HashMultimap::create,
+                        (m, s) -> m.put(categorizationHelper.determineCategory(s), s.getName()),
+                        Multimap::putAll
+                );
+        return categoryService.loadAll().stream()
+                .map(c -> new ExtendedCategoryDto(c, storeByCategory.get(c)))
+                .sorted((o1, o2) -> o1.name.compareTo(o2.name))
+                .collect(toList());
     }
 
     @POST
@@ -70,5 +87,10 @@ public class CategoryController {
     @Required
     public void setCategoryService(CategoryService categoryService) {
         this.categoryService = categoryService;
+    }
+
+    @Required
+    public void setStoreRepo(StoreRepo storeRepo) {
+        this.storeRepo = storeRepo;
     }
 }

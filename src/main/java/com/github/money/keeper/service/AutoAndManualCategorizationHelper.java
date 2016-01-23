@@ -2,7 +2,6 @@ package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.Store;
-import com.github.money.keeper.model.UnifiedTransaction;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -26,8 +25,7 @@ public class AutoAndManualCategorizationHelper implements CategorizationHelper {
     }
 
     @Override
-    public Category determineCategory(UnifiedTransaction transaction) {
-        Store store = transaction.getStore();
+    public Category determineCategory(Store store) {
         Category category = manualMapping.get(store.getName());
         if (category != null) {
             return category;
@@ -41,6 +39,7 @@ public class AutoAndManualCategorizationHelper implements CategorizationHelper {
             category = new Category(categoryDescription, ImmutableSet.of(categoryDescription));
         }
         return category;
+
     }
 
 }

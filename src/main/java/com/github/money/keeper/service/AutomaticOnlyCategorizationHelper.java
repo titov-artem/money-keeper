@@ -1,7 +1,7 @@
 package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.Category;
-import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.Store;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -24,8 +24,8 @@ public class AutomaticOnlyCategorizationHelper implements CategorizationHelper {
     }
 
     @Override
-    public Category determineCategory(UnifiedTransaction transaction) {
-        String categoryDescription = transaction.getStore().getCategoryDescription();
+    public Category determineCategory(Store store) {
+        String categoryDescription = store.getCategoryDescription();
         if (StringUtils.isBlank(categoryDescription)) {
             categoryDescription = CategoryService.UNKNOWN_CATEGORY_NAME;
         }

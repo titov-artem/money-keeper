@@ -26,6 +26,19 @@ public class PerMonthCategoryChart {
     public PerMonthCategoryChart(SortedMap<LocalDate, Map<String, BigDecimal>> absoluteChart, SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart) {
         this.absoluteChart = absoluteChart;
         this.percentageChart = percentageChart;
+        fillMissedWithZero(this.absoluteChart);
+        fillMissedWithZero(this.percentageChart);
+    }
+
+    private void fillMissedWithZero(SortedMap<LocalDate, Map<String, BigDecimal>> chart) {
+        List<String> labels = getLabels(chart);
+        for (final Map.Entry<LocalDate, Map<String, BigDecimal>> entry : chart.entrySet()) {
+            for (final String label : labels) {
+                if (!entry.getValue().containsKey(label)) {
+                    entry.getValue().put(label, BigDecimal.ZERO);
+                }
+            }
+        }
     }
 
     @JsonGetter
@@ -89,7 +102,7 @@ public class PerMonthCategoryChart {
         }
 
         public void append(UnifiedTransaction transaction) {
-            Category category = categorizationHelper.determineCategory(transaction);
+            Category category = categorizationHelper.determineCategory(transaction.getStore());
             LocalDate month = getMonth(transaction.getDate());
             updateAmount(category.getName(), getMonthBucket(month), transaction.getAmount());
             updateAmount(totalChartName, getMonthBucket(month), transaction.getAmount());

@@ -26,8 +26,16 @@
         </div>
     </form>
     <div class="list-group-item-text category-alternatives">
-    <#list alternatives as alternative>
-    ${alternative};
-        </#list>
+        <div class="collapse-group">
+            <a class="show-stores" href="#">Show stores &raquo;</a>
+            <div class="collapse stores">
+            <#list stores as store>
+            ${store}<br/>
+            </#list>
+            </div>
+        </div>
+    <#--<#list alternatives as alternative>-->
+    <#--${alternative};-->
+    <#--</#list>-->
     </div>
 </li>

@@ -105,7 +105,7 @@ public class PeriodExpenseReportChart {
 
         public void append(UnifiedTransaction transaction) {
             updateReportPeriod(transaction);
-            Category category = categorizationHelper.determineCategory(transaction);
+            Category category = categorizationHelper.determineCategory(transaction.getStore());
             CRBuilder crBuilder = summonBuilder(category);
             crBuilder.append(transaction);
         }
