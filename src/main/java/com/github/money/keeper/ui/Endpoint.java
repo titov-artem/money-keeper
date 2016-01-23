@@ -1,5 +1,6 @@
 package com.github.money.keeper.ui;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.github.money.keeper.storage.memory.serialization.LocalDateDeserializer;
@@ -132,6 +133,7 @@ public class Endpoint {
             modelModule.addSerializer(LocalDate.class, new LocalDateSerializer());
             modelModule.addDeserializer(LocalDate.class, new LocalDateDeserializer());
             objectMapper.registerModule(modelModule);
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         }
 
         public String invoke(String... args) {

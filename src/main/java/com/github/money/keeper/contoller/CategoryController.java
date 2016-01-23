@@ -32,13 +32,7 @@ public class CategoryController {
 
     @GET
     public List<ExtendedCategoryDto> getCategories() {
-        CategorizationHelper categorizationHelper = categoryService.getCategorizationHelper();
-        SetMultimap<Category, String> storeByCategory = storeRepo.loadAll().stream()
-                .collect(
-                        HashMultimap::create,
-                        (m, s) -> m.put(categorizationHelper.determineCategory(s), s.getName()),
-                        Multimap::putAll
-                );
+        SetMultimap<Category, String> storeByCategory = getCategoryToStoreName();
         return categoryService.loadAll().stream()
                 .map(c -> new ExtendedCategoryDto(c, storeByCategory.get(c)))
                 .sorted((o1, o2) -> o1.name.compareTo(o2.name))
@@ -53,18 +47,19 @@ public class CategoryController {
 
     @POST
     @Path("/rename")
-    public CategoryDto rename(String oldName, String newName) {
+    public ExtendedCategoryDto rename(String oldName, String newName) {
         Preconditions.checkArgument(checkNameInternal(newName, ImmutableSet.of(oldName)), "Name must be not empty and unique");
         oldName = StringUtils.strip(oldName);
         newName = StringUtils.strip(newName);
 
         Category newCategory = categoryService.rename(oldName, newName);
-        return new CategoryDto(newCategory);
+        SetMultimap<Category, String> categoryToStoreName = getCategoryToStoreName();
+        return new ExtendedCategoryDto(newCategory, categoryToStoreName.get(newCategory));
     }
 
     @POST
     @Path("/union")
-    public CategoryDto union(String name, CategoryDto[] categories) {
+    public ExtendedCategoryDto union(String name, CategoryDto[] categories) {
         List<CategoryDto> categoriesList = Arrays.asList(categories);
         Preconditions.checkArgument(checkNameInternal(name, categoriesList.stream().map(c -> c.name).collect(toSet())), "Name must be not empty and unique");
         Preconditions.checkArgument(categories.length >= 2, "At least 2 categories can be united");
@@ -75,7 +70,18 @@ public class CategoryController {
                         .map(c -> new Category(c.name, c.alternatives))
                         .collect(toList())
         );
-        return new CategoryDto(category);
+        SetMultimap<Category, String> categoryToStoreName = getCategoryToStoreName();
+        return new ExtendedCategoryDto(category, categoryToStoreName.get(category));
+    }
+
+    private SetMultimap<Category, String> getCategoryToStoreName() {
+        CategorizationHelper categorizationHelper = categoryService.getCategorizationHelper();
+        return storeRepo.loadAll().stream()
+                .collect(
+                        HashMultimap::create,
+                        (m, s) -> m.put(categorizationHelper.determineCategory(s), s.getName()),
+                        Multimap::putAll
+                );
     }
 
     private boolean checkNameInternal(String categoryName, Set<String> affectedNames) {
