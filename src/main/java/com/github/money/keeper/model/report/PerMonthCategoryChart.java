@@ -5,6 +5,8 @@ import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -91,9 +93,11 @@ public class PerMonthCategoryChart {
     }
 
     public static final class Builder {
+        private static final Logger log = LoggerFactory.getLogger(Builder.class);
+
         public static final String DEFAULT_TOTAL_CHART_NAME = "TOTAL";
         public static final String DEFAULT_OTHER_CHART_NAME = "OTHER";
-        public static final BigDecimal CATEGORY_CHART_REDUCE_THRESHOLD = BigDecimal.valueOf(1000);
+        public static final BigDecimal CATEGORY_CHART_REDUCE_THRESHOLD = BigDecimal.valueOf(5000);
 
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
         private String otherChartName = DEFAULT_OTHER_CHART_NAME;
@@ -151,15 +155,28 @@ public class PerMonthCategoryChart {
         }
 
         private SortedMap<LocalDate, Map<String, BigDecimal>> reduceChart(SortedMap<LocalDate, Map<String, BigDecimal>> chart) {
+            // get whole chart's categories list
             Set<String> categoriesToReduce = chart.values().stream()
                     .flatMap(m -> m.keySet().stream())
                     .collect(toSet());
+            // now we will remove categories which has at least CATEGORY_CHART_REDUCE_THRESHOLD in some month
             chart.values().stream()
                     .flatMap(m -> m.entrySet().stream())
                     .forEach(e -> {
                         if (e.getValue().compareTo(CATEGORY_CHART_REDUCE_THRESHOLD) > 0) {
                             categoriesToReduce.remove(e.getKey());
                         }
+                    });
+            log.info("Will be reduced {} categories: {}", categoriesToReduce.size(), categoriesToReduce);
+            chart.values().stream()
+                    .forEach(categoryToAmount -> {
+                        BigDecimal reducedAmount = BigDecimal.ZERO;
+                        for (final String category : categoriesToReduce) {
+                            BigDecimal amount = categoryToAmount.remove(category);
+                            if (amount == null) continue;
+                            reducedAmount = reducedAmount.add(amount);
+                        }
+                        categoryToAmount.put(otherChartName, reducedAmount);
                     });
             return chart;
         }
