@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import static java.util.stream.Collectors.toList;
@@ -91,8 +92,11 @@ public class PerMonthCategoryChart {
 
     public static final class Builder {
         public static final String DEFAULT_TOTAL_CHART_NAME = "TOTAL";
+        public static final String DEFAULT_OTHER_CHART_NAME = "OTHER";
+        public static final BigDecimal CATEGORY_CHART_REDUCE_THRESHOLD = BigDecimal.valueOf(1000);
 
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
+        private String otherChartName = DEFAULT_OTHER_CHART_NAME;
         private final CategorizationHelper categorizationHelper;
         private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = Maps.newTreeMap();
 
@@ -129,6 +133,7 @@ public class PerMonthCategoryChart {
         }
 
         public PerMonthCategoryChart build() {
+            SortedMap<LocalDate, Map<String, BigDecimal>> chart = reduceChart(this.chart);
             SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart = Maps.newTreeMap();
             for (Map.Entry<LocalDate, Map<String, BigDecimal>> entry : chart.entrySet()) {
                 BigDecimal total = entry.getValue().get(totalChartName);
@@ -143,6 +148,20 @@ public class PerMonthCategoryChart {
                 percentageChart.put(entry.getKey(), monthValues);
             }
             return new PerMonthCategoryChart(chart, percentageChart);
+        }
+
+        private SortedMap<LocalDate, Map<String, BigDecimal>> reduceChart(SortedMap<LocalDate, Map<String, BigDecimal>> chart) {
+            Set<String> categoriesToReduce = chart.values().stream()
+                    .flatMap(m -> m.keySet().stream())
+                    .collect(toSet());
+            chart.values().stream()
+                    .flatMap(m -> m.entrySet().stream())
+                    .forEach(e -> {
+                        if (e.getValue().compareTo(CATEGORY_CHART_REDUCE_THRESHOLD) > 0) {
+                            categoriesToReduce.remove(e.getKey());
+                        }
+                    });
+            return chart;
         }
 
     }

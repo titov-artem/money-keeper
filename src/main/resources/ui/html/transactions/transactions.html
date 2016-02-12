@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="css/transactions.css">
+
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-datepicker.min.js"></script>
+
+    <script language="JavaScript" src="../js/common.js"></script>
+</head>
+<body>
+<script language="JavaScript">
+
+    function showTransactions() {
+        $('#transactions').html('');
+
+        var from = $('#transactions-from').val();
+        var to = $('#transactions-to').val();
+
+        var transactions = JSON.parse(endpoint.get("/transactions", [
+            from === '' ? null : '"' + from + '"',
+            to === '' ? null : '"' + to + '"'
+        ]));
+        if (transactions.length == 0) {
+            showAlert('#period-no-transactions-found', 3000);
+            return;
+        }
+        transactions.forEach(function (transaction) {
+            $('#transactions').append($(templates.applyTemplate('transaction-row.ftl', JSON.stringify(transaction))));
+        });
+    }
+
+    function addZero(i) {
+        return i < 10 ? '0' + i : i;
+    }
+
+    $(document).ready(function () {
+        $('#transactions-panel').find('.input-group.date').datepicker({
+            format: "dd.mm.yyyy",
+            todayHighlight: true
+        });
+        $('#show-transactions').click(showTransactions);
+        var today = new Date();
+        $('#transactions-from').val('01.' + addZero(today.getMonth() + 1) + '.' + today.getFullYear());
+        $('#transactions-to').val(addZero(today.getDate()) + '.' + addZero(today.getMonth() + 1) + '.' + today.getFullYear());
+    });
+</script>
+
+<div id="transactions-panel" class="panel panel-default">
+    <div class="panel-heading">
+        <h4>Transactions</h4>
+    </div>
+    <div class="panel-body">
+        <div>
+            <form class="form-inline">
+                <div class="input-group">
+                    Select period
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">From</span>
+                        <input type="text" class="form-control" id="transactions-from"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">To</span>
+                        <input type="text" class="form-control" id="transactions-to"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id="show-transactions" class="btn btn-primary" type="button">Show</button>
+                </div>
+            </form>
+        </div>
+        <div class="alerts-container">
+            <div id="period-no-transactions-found" class="alert alert-warning hidden" role="alert">
+                Now transactions found for specified period
+            </div>
+        </div>
+        <div id="transactions-container">
+            <div id="transactions" class="list-group">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

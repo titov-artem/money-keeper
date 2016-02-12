@@ -1,24 +1,19 @@
 package com.github.money.keeper.contoller;
 
 import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.SalePoint;
-import com.github.money.keeper.model.Store;
-import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.model.report.PerMonthCategoryChart;
 import com.github.money.keeper.model.report.PeriodExpenseReportChart;
 import com.github.money.keeper.service.CategoryService;
-import com.github.money.keeper.storage.StoreRepo;
+import com.github.money.keeper.service.StoreService;
+import com.github.money.keeper.service.TransactionStoreInjector;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.github.money.keeper.ui.WebUIHolderProvider;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.time.LocalDate;
 import java.util.Map;
-
-import static java.util.stream.Collectors.toMap;
 
 /**
  * @author Artem Titov
@@ -27,7 +22,7 @@ import static java.util.stream.Collectors.toMap;
 public class ReportsController {
 
     private CategoryService categoryService;
-    private StoreRepo storeRepo;
+    private StoreService storeService;
     private TransactionRepo transactionRepo;
 
     @SuppressWarnings("VoidMethodAnnotatedWithGET")
@@ -41,10 +36,10 @@ public class ReportsController {
     public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to) {
         PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryService.getCategorizationHelper(), from, to);
 
-        Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
+        TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
         for (RawTransaction transaction : transactionRepo.load(from, to)) {
-            builder.append(new UnifiedTransaction(transaction, pointToStore.get(transaction.getSalePoint())));
+            builder.append(storeInjector.injectStore(transaction));
         }
         return builder.build();
     }
@@ -54,19 +49,13 @@ public class ReportsController {
     public PerMonthCategoryChart perMonthCategoryChart(LocalDate from, LocalDate to) {
         PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryService.getCategorizationHelper());
 
-        Map<SalePoint, Store> pointToStore = getSalePointStoreMap();
+        TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
         for (RawTransaction transaction : transactionRepo.load(from.withDayOfMonth(1), to.withDayOfMonth(1).plusMonths(1).minusDays(1))) {
-            builder.append(new UnifiedTransaction(transaction, pointToStore.get(transaction.getSalePoint())));
+            builder.append(storeInjector.injectStore(transaction));
         }
         return builder.build();
 
-    }
-
-    private Map<SalePoint, Store> getSalePointStoreMap() {
-        return storeRepo.loadAll().stream()
-                .flatMap(s -> s.getSalePoints().stream().map(p -> Pair.of(p, s)))
-                .collect(toMap(Pair::getKey, Pair::getValue));
     }
 
     public enum Report {
@@ -86,8 +75,8 @@ public class ReportsController {
     }
 
     @Required
-    public void setStoreRepo(StoreRepo storeRepo) {
-        this.storeRepo = storeRepo;
+    public void setStoreService(StoreService storeService) {
+        this.storeService = storeService;
     }
 
     @Required

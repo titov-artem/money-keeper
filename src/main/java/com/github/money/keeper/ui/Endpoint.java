@@ -166,7 +166,11 @@ public class Endpoint {
                     } else if (argType.isEnum()) {
                         parsedArgs[i] = Enum.valueOf((Class<Enum>) argType, arg);
                     } else {
-                        parsedArgs[i] = objectMapper.readValue(arg, argType);
+                        if (arg == null) {
+                            parsedArgs[i] = null;
+                        } else {
+                            parsedArgs[i] = objectMapper.readValue(arg, argType);
+                        }
                     }
                 } catch (Exception e) {
                     throw new IllegalArgumentException(String.format("Failed to parse parameter %s as type %s from source ",

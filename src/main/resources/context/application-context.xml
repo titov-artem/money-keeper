@@ -14,6 +14,7 @@
                 <ref bean="applicationController"/>
                 <ref bean="bankStatementController"/>
                 <ref bean="reportsController"/>
+                <ref bean="transactionsController"/>
             </list>
         </property>
     </bean>
@@ -36,8 +37,14 @@
     <bean id="reportsController" class="com.github.money.keeper.contoller.ReportsController">
         <property name="categoryService" ref="categoryService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
-        <property name="storeRepo" ref="storeRepo"/>
+        <property name="storeService" ref="storeService"/>
     </bean>
+
+    <bean id="transactionsController" class="com.github.money.keeper.contoller.TransactionsController">
+        <property name="storeService" ref="storeService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+    </bean>
+
 
     <!-- service -->
     <bean id="storeService" class="com.github.money.keeper.service.StoreService">
@@ -101,5 +108,8 @@
     <bean id="uiTemplateSupport" class="com.github.money.keeper.template.UITemplateSupport">
         <property name="templateSupport" ref="templateSupport"/>
     </bean>
+
+    <!-- system -->
+    <bean id="clock" class="java.time.Clock" factory-method="systemDefaultZone"/>
 
 </beans>

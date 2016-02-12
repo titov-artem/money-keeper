@@ -28,7 +28,24 @@
 </head>
 <body>
 <script language="JavaScript">
+    function generateTypes(report) {
+        var types = {};
+        report.percentageChartLabels.forEach(function (l) {
+            types[l] = 'area';
+        });
+        return types;
+    }
+
+    function generateGroups(report) {
+        var groups = [];
+        report.percentageChartLabels.forEach(function (l) {
+            groups.push(l);
+        });
+        return [groups];
+    }
+
     function generatePercentageReport(report) {
+//        $('body').append(JSON.stringify(generateGroups(report)));
         return c3.generate({
             bindto: '#percentage-chart',
             data: {
@@ -38,6 +55,9 @@
                     x: 'date',
                     value: report.percentageChartLabels
                 }
+//                ,
+//                types: generateTypes(report),
+//                groups: generateGroups(report)
             },
             size: {
                 height: 750

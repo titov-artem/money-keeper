@@ -83,7 +83,10 @@ public class InMemoryFileBackedTransactionRepo extends AbstractInMemoryFileBacke
         if (dateIndex.isEmpty()) return Collections.emptyList();
 
         LocalDate left = from == null ? dateIndex.firstKey() : from;
-        LocalDate right = (to == null ? dateIndex.lastKey() : to).plusDays(1);
+        LocalDate right = to != LocalDate.MAX
+                ? (to == null ? dateIndex.lastKey() : to).plusDays(1)
+                : to;
+        if (left.isAfter(right)) return Collections.emptyList();
         return dateIndex.subMap(left, right).values().stream().flatMap(Collection::stream).collect(toList());
     }
 }

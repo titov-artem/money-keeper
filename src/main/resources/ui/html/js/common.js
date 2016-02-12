@@ -1,4 +1,4 @@
-alert("command:inject");
+alert("command:inject"); // for synchronization between view and backend
 
 function getQueryParameters(str) {
     return decodeURI((str || document.location.search)).replace(/(^\?)/, '').split("&").map(function (n) {
