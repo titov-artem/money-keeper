@@ -6,8 +6,8 @@ import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.sun.istack.internal.Nullable;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.time.LocalDate;

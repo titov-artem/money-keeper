@@ -43,19 +43,19 @@ public class TransactionServiceImplTest {
         LocalDate to = from.plusDays(1);
 
         when(transactionRepo.load(from, to)).thenReturn(Lists.newArrayList(
-                new RawTransaction(from, new SalePoint("a", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(from, new SalePoint("a", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(from, new SalePoint("a1", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(from, new SalePoint("a", "b1"), BigDecimal.valueOf(1)),
-                new RawTransaction(from, new SalePoint("a", "b"), BigDecimal.valueOf(2)),
-                new RawTransaction(to, new SalePoint("c", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("a1", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("c", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("c", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("a1", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("c", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("a1", "b"), BigDecimal.valueOf(1)),
-                new RawTransaction(to, new SalePoint("c", "b"), BigDecimal.valueOf(1))
+                new RawTransaction(1L, from, new SalePoint("a", "b"), BigDecimal.valueOf(1), "", "1"),
+                new RawTransaction(2L, from, new SalePoint("a", "b"), BigDecimal.valueOf(1), "", "2"),
+                new RawTransaction(3L, from, new SalePoint("a1", "b"), BigDecimal.valueOf(1), "", "3"),
+                new RawTransaction(4L, from, new SalePoint("a", "b1"), BigDecimal.valueOf(1), "", "4"),
+                new RawTransaction(5L, from, new SalePoint("a", "b"), BigDecimal.valueOf(2), "", "5"),
+                new RawTransaction(6L, to, new SalePoint("c", "b"), BigDecimal.valueOf(1), "", "1"),
+                new RawTransaction(7L, to, new SalePoint("a1", "b"), BigDecimal.valueOf(1), "", "2"),
+                new RawTransaction(8L, to, new SalePoint("c", "b"), BigDecimal.valueOf(1), "", "3"),
+                new RawTransaction(9L, to, new SalePoint("c", "b"), BigDecimal.valueOf(1), "", "4"),
+                new RawTransaction(10L, to, new SalePoint("a1", "b"), BigDecimal.valueOf(1), "", "5"),
+                new RawTransaction(11L, to, new SalePoint("c", "b"), BigDecimal.valueOf(1), "", "6"),
+                new RawTransaction(12L, to, new SalePoint("a1", "b"), BigDecimal.valueOf(1), "", "7"),
+                new RawTransaction(13L, to, new SalePoint("c", "b"), BigDecimal.valueOf(1), "", "8")
         ));
         when(storeService.getStoreInjector()).thenReturn(source -> new UnifiedTransaction(
                 source,

@@ -6,8 +6,8 @@ import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.sun.istack.internal.Nullable;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;

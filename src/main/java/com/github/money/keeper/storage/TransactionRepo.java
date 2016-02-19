@@ -1,8 +1,8 @@
 package com.github.money.keeper.storage;
 
 import com.github.money.keeper.model.RawTransaction;
-import com.sun.istack.internal.Nullable;
 
+import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.util.List;
 
