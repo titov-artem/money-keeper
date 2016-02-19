@@ -5,7 +5,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 
 public class TemplateSupport {
@@ -16,7 +15,7 @@ public class TemplateSupport {
     @PostConstruct
     public void init() throws IOException {
         cfg = new Configuration(Configuration.VERSION_2_3_23);
-        cfg.setDirectoryForTemplateLoading(new File(getClass().getClassLoader().getResource(TEMPLATES_PATH).getFile()));
+        cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), TEMPLATES_PATH);//DirectoryForTemplateLoading(new File(getClass().getClassLoader().getResource(TEMPLATES_PATH).getFile()));
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
