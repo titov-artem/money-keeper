@@ -1,11 +1,11 @@
-package com.github.money.keeper.contoller;
+package com.github.money.keeper.view.contoller;
 
-import com.github.money.keeper.contoller.dto.CategoryDto;
-import com.github.money.keeper.contoller.dto.ExtendedCategoryDto;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.storage.StoreRepo;
+import com.github.money.keeper.view.contoller.dto.CategoryDto;
+import com.github.money.keeper.view.contoller.dto.ExtendedCategoryDto;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;

@@ -1,4 +1,4 @@
-package com.github.money.keeper.template;
+package com.github.money.keeper.view.ui.template;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;

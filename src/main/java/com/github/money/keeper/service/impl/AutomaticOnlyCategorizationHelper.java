@@ -1,7 +1,9 @@
-package com.github.money.keeper.service;
+package com.github.money.keeper.service.impl;
 
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.Store;
+import com.github.money.keeper.service.CategorizationHelper;
+import com.github.money.keeper.service.CategoryService;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;

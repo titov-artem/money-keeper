@@ -24,6 +24,8 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
         LocalDate date = null;
         SalePoint salePoint = null;
         BigDecimal amount = null;
+        String fileHash = null;
+        String uploadId = null;
 
         JsonToken token;
         while ((token = jsonParser.nextToken()) != null) {
@@ -39,6 +41,10 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
                 case VALUE_STRING:
                     if ("date".equals(jsonParser.getCurrentName())) {
                         date = jsonParser.readValueAs(LocalDate.class);
+                    } else if ("fileHash".equals(jsonParser.getCurrentName())) {
+                        fileHash = jsonParser.readValueAs(String.class);
+                    } else if ("uploadId".equals(jsonParser.getCurrentName())) {
+                        uploadId = jsonParser.readValueAs(String.class);
                     }
                     break;
                 case VALUE_NUMBER_FLOAT:
@@ -59,6 +65,8 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
         Objects.requireNonNull(date, "Date attribute missed in json for RawTransaction");
         Objects.requireNonNull(salePoint, "SalePoint attribute missed in json for RawTransaction");
         Objects.requireNonNull(amount, "Amount attribute missed in json for RawTransaction");
-        return new RawTransaction(id, date, salePoint, amount);
+        Objects.requireNonNull(fileHash, "FileHash attribute missed in json for RawTransaction");
+        Objects.requireNonNull(uploadId, "UploadId attribute missed in json for RawTransaction");
+        return new RawTransaction(id, date, salePoint, amount, fileHash, uploadId);
     }
 }

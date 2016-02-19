@@ -1,6 +1,6 @@
-package com.github.money.keeper.contoller;
+package com.github.money.keeper.view.contoller;
 
-import com.github.money.keeper.ui.WebUIHolderProvider;
+import com.github.money.keeper.view.ui.WebUIHolderProvider;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;

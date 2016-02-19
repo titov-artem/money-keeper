@@ -18,6 +18,11 @@ public class UnifiedTransactionReportView {
     }
 
     @JsonGetter
+    public Long getId() {
+        return source.getRawTransaction().getId();
+    }
+
+    @JsonGetter
     public LocalDate getDate() {
         return source.getDate();
     }

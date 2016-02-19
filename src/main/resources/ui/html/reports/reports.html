@@ -57,69 +57,70 @@
     });
 </script>
 
-<div id="period-report-panel" class="panel panel-default">
-    <div class="panel-heading">
-        <h4>Period report</h4>
+<div class="container">
+    <div id="period-report-panel" class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Period report</h4>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">From</span>
+                        <input type="text" class="form-control" id="period-report-from"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">To</span>
+                        <input type="text" class="form-control" id="period-report-to"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id="show-period-report" class="btn btn-primary" type="button">Show</button>
+                </div>
+            </form>
+            <div class="alerts-container">
+                <div id="period-no-date-selected" class="alert alert-danger hidden" role="alert">
+                    Please select both from and to date to show report
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="panel-body">
-        <form class="form-inline">
-            <div class="form-group">
-                <div class="input-group date">
-                    <span class="input-group-addon">From</span>
-                    <input type="text" class="form-control" id="period-report-from"/>
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+
+    <div id="per-month-report-panel" class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Per month chart</h4>
+        </div>
+        <div class="panel-body">
+            <form class="form-inline">
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">From</span>
+                        <input type="text" class="form-control" id="per-month-report-from"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group date">
-                    <span class="input-group-addon">To</span>
-                    <input type="text" class="form-control" id="period-report-to"/>
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                <div class="form-group">
+                    <div class="input-group date">
+                        <span class="input-group-addon">To</span>
+                        <input type="text" class="form-control" id="per-month-report-to"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <button id="show-period-report" class="btn btn-primary" type="button">Show</button>
-            </div>
-        </form>
-        <div class="alerts-container">
-            <div id="period-no-date-selected" class="alert alert-danger hidden" role="alert">
-                Please select both from and to date to show report
+                <div class="form-group">
+                    <button id="show-per-month-report" class="btn btn-primary" type="button">Show</button>
+                </div>
+            </form>
+            <div class="alerts-container">
+                <div id="per-month-no-date-selected" class="alert alert-danger hidden" role="alert">
+                    Please select both from and to date to show report
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-<div id="per-month-report-panel" class="panel panel-default">
-    <div class="panel-heading">
-        <h4>Per month chart</h4>
-    </div>
-    <div class="panel-body">
-        <form class="form-inline">
-            <div class="form-group">
-                <div class="input-group date">
-                    <span class="input-group-addon">From</span>
-                    <input type="text" class="form-control" id="per-month-report-from"/>
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="input-group date">
-                    <span class="input-group-addon">To</span>
-                    <input type="text" class="form-control" id="per-month-report-to"/>
-                    <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                </div>
-            </div>
-            <div class="form-group">
-                <button id="show-per-month-report" class="btn btn-primary" type="button">Show</button>
-            </div>
-        </form>
-        <div class="alerts-container">
-            <div id="per-month-no-date-selected" class="alert alert-danger hidden" role="alert">
-                Please select both from and to date to show report
-            </div>
-        </div>
-    </div>
-</div>
-
 </body>
 </html>

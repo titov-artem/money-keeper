@@ -2,6 +2,7 @@ package com.github.money.keeper.parser;
 
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.util.io.DigestingInputStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -18,13 +19,14 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class RaiffeisenTransactionParser implements TransactionParser {
+public class RaiffeisenTransactionParser extends AbstractTransactionParser {
 
-    @Override public ParsingResult parse(InputStream source) throws IOException {
+    @Override
+    public ParsingResult doParse(InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<RawTransaction> transactions = Lists.newArrayList();
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(source))) {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new DigestingInputStream(source)))) {
             String line;
             while ((line = in.readLine()) != null) {
                 if (isBlank(line)) continue;

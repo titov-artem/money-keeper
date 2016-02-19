@@ -54,42 +54,44 @@
     });
 </script>
 
-<div id="transactions-panel" class="panel panel-default">
-    <div class="panel-heading">
-        <h4>Transactions</h4>
-    </div>
-    <div class="panel-body">
-        <div>
-            <form class="form-inline">
-                <div class="input-group">
-                    Select period
-                </div>
-                <div class="form-group">
-                    <div class="input-group date">
-                        <span class="input-group-addon">From</span>
-                        <input type="text" class="form-control" id="transactions-from"/>
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="input-group date">
-                        <span class="input-group-addon">To</span>
-                        <input type="text" class="form-control" id="transactions-to"/>
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button id="show-transactions" class="btn btn-primary" type="button">Show</button>
-                </div>
-            </form>
+<div class="container">
+    <div id="transactions-panel" class="panel panel-default">
+        <div class="panel-heading">
+            <h4>Transactions</h4>
         </div>
-        <div class="alerts-container">
-            <div id="period-no-transactions-found" class="alert alert-warning hidden" role="alert">
-                Now transactions found for specified period
+        <div class="panel-body">
+            <div>
+                <form class="form-inline">
+                    <div class="input-group">
+                        Select period
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date">
+                            <span class="input-group-addon">From</span>
+                            <input type="text" class="form-control" id="transactions-from"/>
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="input-group date">
+                            <span class="input-group-addon">To</span>
+                            <input type="text" class="form-control" id="transactions-to"/>
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button id="show-transactions" class="btn btn-primary" type="button">Show</button>
+                    </div>
+                </form>
             </div>
-        </div>
-        <div id="transactions-container">
-            <div id="transactions" class="list-group">
+            <div class="alerts-container">
+                <div id="period-no-transactions-found" class="alert alert-warning hidden" role="alert">
+                    Now transactions found for specified period
+                </div>
+            </div>
+            <div id="transactions-container">
+                <div id="transactions" class="list-group">
+                </div>
             </div>
         </div>
     </div>

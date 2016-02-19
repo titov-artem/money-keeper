@@ -14,6 +14,10 @@ public class UnifiedTransaction {
         this.store = store;
     }
 
+    public Long getId() {
+        return rawTransaction.getId();
+    }
+
     public LocalDate getDate() {
         return rawTransaction.getDate();
     }
@@ -34,7 +38,8 @@ public class UnifiedTransaction {
         return rawTransaction;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UnifiedTransaction that = (UnifiedTransaction) o;
@@ -42,7 +47,8 @@ public class UnifiedTransaction {
                 Objects.equals(store, that.store);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(rawTransaction, store);
     }
 }

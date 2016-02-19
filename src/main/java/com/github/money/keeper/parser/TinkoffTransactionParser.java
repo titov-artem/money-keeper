@@ -19,10 +19,10 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
-public class TinkoffTransactionParser implements TransactionParser {
+public class TinkoffTransactionParser extends AbstractTransactionParser {
 
     @Override
-    public ParsingResult parse(InputStream source) throws IOException {
+    public ParsingResult doParse(InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<RawTransaction> transactions = Lists.newArrayList();

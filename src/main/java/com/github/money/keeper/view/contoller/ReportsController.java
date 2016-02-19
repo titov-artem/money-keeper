@@ -1,4 +1,4 @@
-package com.github.money.keeper.contoller;
+package com.github.money.keeper.view.contoller;
 
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.report.PerMonthCategoryChart;
@@ -7,7 +7,7 @@ import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionStoreInjector;
 import com.github.money.keeper.storage.TransactionRepo;
-import com.github.money.keeper.ui.WebUIHolderProvider;
+import com.github.money.keeper.view.ui.WebUIHolderProvider;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.ws.rs.GET;

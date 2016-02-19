@@ -15,50 +15,99 @@
 
     <script language="JavaScript" src="../js/common.js"></script>
 
+    <style>
+        #deduplicate {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
 <script language="JavaScript">
     $(document).ready(function () {
         $('#upload-bank-statement').click(function () {
             var uploadResult = JSON.parse(endpoint.post('/bank/statement', [$('#bank-type').val()]));
-            if (uploadResult === 'SUCCESS') {
-                showAlert('#file-uploaded', 3000);
-            } else if (uploadResult === 'FAILED') {
-                showAlert('#failed-to-upload-file-alert', 3000);
-            } else if (uploadResult === 'NO_FILE_CHOSEN') {
-                showAlert('#no-file-selected-alert', 3000);
+            if (uploadResult.result === 'SUCCESS') {
+                if (uploadResult.duplicates.length == 0) {
+                    showAlert2('#alerts-container', 3000, 'success', 'Bank statement uploaded successfully', 'file-uploaded-alert');
+                } else {
+                    showAlert2('#alerts-container', 5000, 'info', 'Bank statement uploaded successfully, but duplicates found', 'file-uploaded-alert');
+                    showDuplicates(uploadResult);
+                }
+            } else if (uploadResult.result === 'FAILED') {
+                showAlert2('#alerts-container', 3000, 'danger', 'Failed to upload bank statement file due to exception', 'failed-to-upload-file-alert');
+            } else if (uploadResult.result === 'NO_FILE_CHOSEN') {
+                showAlert2('#alerts-container', 3000, 'warning', 'No file was selected', 'no-file-selected-alert');
             }
         });
-    });
-</script>
+        $('#duplicates-container').on('click', '.remove-transaction', function () {
+            var transaction = $(this).parent('.transaction');
+            var source = transaction.prop('source');
+            endpoint.delete('/transactions', [source.id]);
+            transaction.remove();
+        });
+        $('#deduplicate').click(function () {
+            var container = $('#duplicates-container');
+            var removedDuplicates = JSON.parse(endpoint.post('/transactions/deduplicate', [
+                '"' + container.prop('from') + '"',
+                '"' + container.prop('to') + '"' // todo think about this
+            ]));
+            hideDuplicates();
+            showAlert2('#alerts-container', 3000, 'success', 'Removed ' + removedDuplicates.length + ' duplicates', 'duplicates-removed-alert');
+        });
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        Upload bank statement
-    </div>
-    <div class="panel-body">
-        <form class="form-inline">
-            <div class="form-group">
-                <select id="bank-type" class="selectpicker">
-                    <option value="RAIFFEISEN_CARD" selected>Raiffeisen card</option>
-                    <option value="TINKOFF">Tinkoff</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <button id="upload-bank-statement" class="btn btn-primary" type="button">Upload</button>
-            </div>
-        </form>
-        <div class="alerts-container">
-            <div id="file-uploaded" class="alert alert-success hidden" role="alert">Bank statement uploaded
-                successfully
-            </div>
-            <div id="no-file-selected-alert" class="alert alert-warning hidden" role="alert">No file was selected</div>
-            <div id="failed-to-upload-file-alert" class="alert alert-danger hidden" role="alert">
-                Failed to upload bank statement file due to exception
+    });
+
+    function showDuplicates(uploadResult) {
+        var container = $('#duplicates-container');
+        container.removeClass('hidden');
+        container.prop('from', uploadResult.from);
+        container.prop('to', uploadResult.to);
+        var list = $('#duplicates-list');
+        list.children().each(function (i, e) {
+            e.remove()
+        });
+        uploadResult.duplicates.forEach(function (transaction) {
+            var row = $(templates.applyTemplate('editable-transaction-row.ftl', JSON.stringify(transaction)));
+            row.prop('source', transaction);
+            list.append(row);
+        });
+    }
+
+    function hideDuplicates() {
+        var container = $('#duplicates-container');
+        container.addClass('hidden');
+        var list = $('#duplicates-list');
+        list.children().each(function (i, e) {
+            e.remove()
+        });
+    }
+</script>
+<div class="container">
+    <div class="panel panel-default">
+        <div id="log"></div>
+        <div class="panel-heading">
+            Upload bank statement
+        </div>
+        <div class="panel-body">
+            <form class="form-inline">
+                <div class="form-group">
+                    <select id="bank-type" class="selectpicker">
+                        <option value="RAIFFEISEN_CARD" selected>Raiffeisen card</option>
+                        <option value="TINKOFF">Tinkoff</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button id="upload-bank-statement" class="btn btn-primary" type="button">Upload</button>
+                </div>
+            </form>
+            <div id="alerts-container"></div>
+            <div id="duplicates-container" class="hidden">
+                <button id="deduplicate" class="btn btn-primary">Remove duplicates</button>
+                <div id="duplicates-list"></div>
             </div>
         </div>
     </div>
 </div>
-
 </body>
 </html>

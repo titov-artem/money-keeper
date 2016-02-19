@@ -1,4 +1,4 @@
-package com.github.money.keeper.ui;
+package com.github.money.keeper.view.ui;
 
 import netscape.javascript.JSException;
 import netscape.javascript.JSObject;

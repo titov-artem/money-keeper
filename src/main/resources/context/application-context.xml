@@ -7,7 +7,7 @@
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
     <!-- ui -->
-    <bean id="endpoint" class="com.github.money.keeper.ui.Endpoint">
+    <bean id="endpoint" class="com.github.money.keeper.view.ui.Endpoint">
         <property name="controllers">
             <list>
                 <ref bean="categoryController"/>
@@ -20,43 +20,50 @@
     </bean>
 
     <!-- controller -->
-    <bean id="categoryController" class="com.github.money.keeper.contoller.CategoryController">
+    <bean id="categoryController" class="com.github.money.keeper.view.contoller.CategoryController">
         <property name="categoryService" ref="categoryService"/>
         <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
-    <bean id="applicationController" class="com.github.money.keeper.contoller.ApplicationController"/>
+    <bean id="applicationController" class="com.github.money.keeper.view.contoller.ApplicationController"/>
 
-    <bean id="bankStatementController" class="com.github.money.keeper.contoller.BankStatementController">
+    <bean id="bankStatementController" class="com.github.money.keeper.view.contoller.BankStatementController">
         <property name="transactionParserProvider" ref="transactionParserProvider"/>
         <property name="storeService" ref="storeService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="categoryService" ref="categoryService"/>
+        <property name="transactionService" ref="transactionService"/>
     </bean>
 
-    <bean id="reportsController" class="com.github.money.keeper.contoller.ReportsController">
+    <bean id="reportsController" class="com.github.money.keeper.view.contoller.ReportsController">
         <property name="categoryService" ref="categoryService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="storeService" ref="storeService"/>
     </bean>
 
-    <bean id="transactionsController" class="com.github.money.keeper.contoller.TransactionsController">
+    <bean id="transactionsController" class="com.github.money.keeper.view.contoller.TransactionsController">
         <property name="storeService" ref="storeService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="transactionService" ref="transactionService"/>
     </bean>
 
 
     <!-- service -->
-    <bean id="storeService" class="com.github.money.keeper.service.StoreService">
+    <bean id="storeService" class="com.github.money.keeper.service.impl.StoreServiceImpl">
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="storeClusterizer" ref="storeClusterizer"/>
         <property name="storeRepo" ref="storeRepo"/>
     </bean>
 
-    <bean id="categoryService" class="com.github.money.keeper.service.CategoryService">
+    <bean id="categoryService" class="com.github.money.keeper.service.impl.CategoryServiceImpl">
         <property name="categoryRepo" ref="categoryRepo"/>
         <property name="storeRepo" ref="storeRepo"/>
         <property name="storeToCategoryRepo" ref="storeToCategoryRepo"/>
+    </bean>
+
+    <bean id="transactionService" class="com.github.money.keeper.service.impl.TransactionServiceImpl">
+        <property name="storeService" ref="storeService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
     </bean>
 
     <!-- storage -->
@@ -103,9 +110,9 @@
     </bean>
 
     <!-- templates -->
-    <bean id="templateSupport" class="com.github.money.keeper.template.TemplateSupport"/>
+    <bean id="templateSupport" class="com.github.money.keeper.view.ui.template.TemplateSupport"/>
 
-    <bean id="uiTemplateSupport" class="com.github.money.keeper.template.UITemplateSupport">
+    <bean id="uiTemplateSupport" class="com.github.money.keeper.view.ui.template.UITemplateSupport">
         <property name="templateSupport" ref="templateSupport"/>
     </bean>
 

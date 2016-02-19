@@ -1,4 +1,4 @@
-package com.github.money.keeper.ui;
+package com.github.money.keeper.view.ui;
 
 import com.google.common.base.Preconditions;
 

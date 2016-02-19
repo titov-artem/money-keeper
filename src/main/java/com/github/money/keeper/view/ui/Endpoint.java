@@ -1,4 +1,4 @@
-package com.github.money.keeper.ui;
+package com.github.money.keeper.view.ui;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -86,7 +86,7 @@ public class Endpoint {
     private static String[] convert(JSObject args) {
         String[] out = new String[(Integer) args.getMember("length")];
         for (int i = 0; i < out.length; i++) {
-            out[i] = (String) args.getSlot(i);
+            out[i] = args.getSlot(i).toString();
         }
         return out;
     }

@@ -19,56 +19,58 @@
 </head>
 <body>
 <!--http://1000hz.github.io/bootstrap-validator/#validator-usage-->
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Categories</h3>
-    </div>
-    <div class="panel-body">
-        <ul class="list-group" id="categories">
-        </ul>
-
-        <!-- category union controls and dialogs -->
-        <div class="alert alert-danger category-union-no-selection-error hidden" role="alert">
-            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-            You must select at least 2 categories to union
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Categories</h3>
         </div>
-        <div class="category-union-control hidden">
-            <button class="btn btn-sm btn-success category-union-open-modal" type="button"
-                    data-toggle="modal" data-target=".category-union-modal">
-                Union
-            </button>
-            <div class="modal fade category-union-modal" tabindex="-1" role="dialog"
-                 aria-labelledby="categoryUnionModalLabel">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="categoryUnionModalLabel">Enter category name</h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-danger category-union-name-error hidden" role="alert">
-                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                                Name mustn't be empty and must be unique
+        <div class="panel-body">
+            <ul class="list-group" id="categories">
+            </ul>
+
+            <!-- category union controls and dialogs -->
+            <div class="alert alert-danger category-union-no-selection-error hidden" role="alert">
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                You must select at least 2 categories to union
+            </div>
+            <div class="category-union-control hidden">
+                <button class="btn btn-sm btn-success category-union-open-modal" type="button"
+                        data-toggle="modal" data-target=".category-union-modal">
+                    Union
+                </button>
+                <div class="modal fade category-union-modal" tabindex="-1" role="dialog"
+                     aria-labelledby="categoryUnionModalLabel">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title" id="categoryUnionModalLabel">Enter category name</h4>
                             </div>
-                            <div class="input-group">
-                                <div class="input-group-addon">Name</div>
-                                <input type="text" class="form-control category-union-name" placeholder="Name">
+                            <div class="modal-body">
+                                <div class="alert alert-danger category-union-name-error hidden" role="alert">
+                                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                                    Name mustn't be empty and must be unique
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-addon">Name</div>
+                                    <input type="text" class="form-control category-union-name" placeholder="Name">
+                                </div>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-success category-union-apply">Union</button>
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success category-union-apply">Union</button>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <button class="btn btn-sm btn-danger category-union-cancel" type="button">Cancel</button>
             </div>
-
-            <button class="btn btn-sm btn-danger category-union-cancel" type="button">Cancel</button>
+            <!-- category union controls and dialogs end -->
         </div>
-        <!-- category union controls and dialogs end -->
     </div>
-</div>
-<div id="log">
+    <div id="log">
 
+    </div>
 </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.github.money.keeper.contoller.dto;
+package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

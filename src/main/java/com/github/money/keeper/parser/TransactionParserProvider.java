@@ -6,10 +6,10 @@ import java.util.Map;
 
 public class TransactionParserProvider {
 
-    Map<SupportedParsers, TransactionParser> parsers;
+    Map<SupportedParsers, AbstractTransactionParser> parsers;
 
-    public TransactionParser getParser(SupportedParsers parserType) {
-        TransactionParser transactionParser = parsers.get(parserType);
+    public AbstractTransactionParser getParser(SupportedParsers parserType) {
+        AbstractTransactionParser transactionParser = parsers.get(parserType);
         if (transactionParser == null) {
             throw new IllegalArgumentException("No parser for type " + parserType + " found");
         }
@@ -17,7 +17,7 @@ public class TransactionParserProvider {
     }
 
     @Required
-    public void setParsers(Map<SupportedParsers, TransactionParser> parsers) {
+    public void setParsers(Map<SupportedParsers, AbstractTransactionParser> parsers) {
         this.parsers = parsers;
     }
 }

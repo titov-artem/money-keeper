@@ -1,10 +1,10 @@
 package com.github.money.keeper.app;
 
-import com.github.money.keeper.contoller.ApplicationController;
-import com.github.money.keeper.template.UITemplateSupport;
-import com.github.money.keeper.ui.Endpoint;
-import com.github.money.keeper.ui.WebUIHolder;
-import com.github.money.keeper.ui.WebUIHolderProvider;
+import com.github.money.keeper.view.contoller.ApplicationController;
+import com.github.money.keeper.view.ui.Endpoint;
+import com.github.money.keeper.view.ui.WebUIHolder;
+import com.github.money.keeper.view.ui.WebUIHolderProvider;
+import com.github.money.keeper.view.ui.template.UITemplateSupport;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

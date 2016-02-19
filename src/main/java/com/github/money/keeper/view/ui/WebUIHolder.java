@@ -1,6 +1,6 @@
-package com.github.money.keeper.ui;
+package com.github.money.keeper.view.ui;
 
-import com.github.money.keeper.template.UITemplateSupport;
+import com.github.money.keeper.view.ui.template.UITemplateSupport;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import javafx.application.Platform;
