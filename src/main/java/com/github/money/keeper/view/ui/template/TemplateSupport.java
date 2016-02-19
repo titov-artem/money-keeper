@@ -15,7 +15,7 @@ public class TemplateSupport {
     @PostConstruct
     public void init() throws IOException {
         cfg = new Configuration(Configuration.VERSION_2_3_23);
-        cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), TEMPLATES_PATH);//DirectoryForTemplateLoading(new File(getClass().getClassLoader().getResource(TEMPLATES_PATH).getFile()));
+        cfg.setClassLoaderForTemplateLoading(getClass().getClassLoader(), TEMPLATES_PATH);
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
     }
