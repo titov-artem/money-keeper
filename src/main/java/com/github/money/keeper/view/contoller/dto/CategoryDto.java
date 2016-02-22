@@ -10,6 +10,7 @@ public class CategoryDto {
 
     @JsonProperty
     public String name;
+
     @JsonProperty
     public Set<String> alternatives;
 

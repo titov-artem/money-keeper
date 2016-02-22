@@ -7,14 +7,16 @@ import java.util.Objects;
 public class RawTransaction {
 
     private final Long id;
+    private final Long accountId;
     private final LocalDate date;
     private final SalePoint salePoint;
     private final BigDecimal amount;
     private final String fileHash;
     private final String uploadId;
 
-    public RawTransaction(LocalDate date, SalePoint salePoint, BigDecimal amount) {
+    public RawTransaction(Long accountId, LocalDate date, SalePoint salePoint, BigDecimal amount) {
         this.id = null;
+        this.accountId = accountId;
         this.date = date;
         this.salePoint = salePoint;
         this.amount = amount;
@@ -23,22 +25,15 @@ public class RawTransaction {
 
     }
 
-    public RawTransaction(Long id, LocalDate date, SalePoint salePoint, BigDecimal amount) {
-        this.id = id;
-        this.date = date;
-        this.salePoint = salePoint;
-        this.amount = amount;
-        this.fileHash = "";
-        this.uploadId = "";
-    }
-
     public RawTransaction(Long id,
+                          Long accountId,
                           LocalDate date,
                           SalePoint salePoint,
                           BigDecimal amount,
                           String fileHash,
                           String uploadId) {
         this.id = id;
+        this.accountId = accountId;
         this.date = date;
         this.salePoint = salePoint;
         this.amount = amount;
@@ -47,15 +42,19 @@ public class RawTransaction {
     }
 
     public RawTransaction withId(long id) {
-        return new RawTransaction(id, date, salePoint, amount, fileHash, uploadId);
+        return new RawTransaction(id, accountId, date, salePoint, amount, fileHash, uploadId);
     }
 
     public RawTransaction withFileInfo(String fileHash, String uploadId) {
-        return new RawTransaction(id, date, salePoint, amount, fileHash, uploadId);
+        return new RawTransaction(id, accountId, date, salePoint, amount, fileHash, uploadId);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public Long getAccountId() {
+        return accountId;
     }
 
     public LocalDate getDate() {
@@ -85,7 +84,8 @@ public class RawTransaction {
     }
 
     public boolean isDuplicate(RawTransaction that) {
-        boolean contentIsSimilar = Objects.equals(date, that.date)
+        boolean contentIsSimilar = Objects.equals(accountId, that.accountId)
+                && Objects.equals(date, that.date)
                 && Objects.equals(salePoint, that.salePoint)
                 && Objects.equals(amount, that.amount);
         boolean isDifferentUploads = !Objects.equals(uploadId, that.uploadId);
@@ -109,6 +109,7 @@ public class RawTransaction {
     public String toString() {
         return "RawTransaction{" +
                 "id=" + id +
+                ", accountId=" + accountId +
                 ", date=" + date +
                 ", salePoint=" + salePoint +
                 ", amount=" + amount +

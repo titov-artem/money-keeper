@@ -1,6 +1,5 @@
 <li class="list-group-item transaction">
-    <button class="btn btn-danger btn-xs remove-transaction">
-        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+    <button type="button" class="close remove-transaction" aria-label="Close"><span aria-hidden="true">&times;</span>
     </button>
     <span>${date}</span>&nbsp;
     <span>${store}</span>

@@ -1,5 +1,6 @@
 package com.github.money.keeper.storage;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -16,6 +17,8 @@ public interface BaseRepo<K, V> {
 
     List<V> loadAll();
 
+    // todo maybe use optional here, not nullable
+    @Nullable
     V load(K key);
 
     void clear();

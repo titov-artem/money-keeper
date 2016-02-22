@@ -21,6 +21,7 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
     @Override
     public RawTransaction deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         Long id = null;
+        Long accountId = null;
         LocalDate date = null;
         SalePoint salePoint = null;
         BigDecimal amount = null;
@@ -36,15 +37,17 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
                 case VALUE_NUMBER_INT:
                     if ("id".equals(jsonParser.getCurrentName())) {
                         id = jsonParser.getValueAsLong();
+                    } else if ("accountId".equals(jsonParser.getCurrentName())) {
+                        accountId = jsonParser.getValueAsLong();
                     }
                     break;
                 case VALUE_STRING:
                     if ("date".equals(jsonParser.getCurrentName())) {
                         date = jsonParser.readValueAs(LocalDate.class);
                     } else if ("fileHash".equals(jsonParser.getCurrentName())) {
-                        fileHash = jsonParser.readValueAs(String.class);
+                        fileHash = jsonParser.getValueAsString();
                     } else if ("uploadId".equals(jsonParser.getCurrentName())) {
-                        uploadId = jsonParser.readValueAs(String.class);
+                        uploadId = jsonParser.getValueAsString();
                     }
                     break;
                 case VALUE_NUMBER_FLOAT:
@@ -62,11 +65,12 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
             }
         }
         Objects.requireNonNull(id, "Id attribute missed in json for RawTransaction");
+        Objects.requireNonNull(accountId, "AccountId attribute missed in json for RawTransaction");
         Objects.requireNonNull(date, "Date attribute missed in json for RawTransaction");
         Objects.requireNonNull(salePoint, "SalePoint attribute missed in json for RawTransaction");
         Objects.requireNonNull(amount, "Amount attribute missed in json for RawTransaction");
         Objects.requireNonNull(fileHash, "FileHash attribute missed in json for RawTransaction");
         Objects.requireNonNull(uploadId, "UploadId attribute missed in json for RawTransaction");
-        return new RawTransaction(id, date, salePoint, amount, fileHash, uploadId);
+        return new RawTransaction(id, accountId, date, salePoint, amount, fileHash, uploadId);
     }
 }

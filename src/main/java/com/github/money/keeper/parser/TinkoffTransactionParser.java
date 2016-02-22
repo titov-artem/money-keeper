@@ -1,5 +1,6 @@
 package com.github.money.keeper.parser;
 
+import com.github.money.keeper.model.Account;
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.SalePoint;
 import com.google.common.base.Preconditions;
@@ -22,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class TinkoffTransactionParser extends AbstractTransactionParser {
 
     @Override
-    public ParsingResult doParse(InputStream source) throws IOException {
+    public ParsingResult doParse(Account account, InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<RawTransaction> transactions = Lists.newArrayList();
@@ -35,7 +36,7 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
                 String rawAmount = split[4];
                 String rawSpDescription = split[8];
                 String rawSpName = split[10];
-                Optional<RawTransaction> transaction = buildTransaction(rawDate, rawSpName, rawSpDescription, rawAmount);
+                Optional<RawTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
                 if (transaction.isPresent()) {
                     transactions.add(transaction.get());
                 }
@@ -44,7 +45,8 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
         return new ParsingResult(null, transactions);
     }
 
-    private Optional<RawTransaction> buildTransaction(String rawDate,
+    private Optional<RawTransaction> buildTransaction(Account account,
+                                                      String rawDate,
                                                       String rawSpName,
                                                       String rawSpDescription,
                                                       String rawAmount) {
@@ -61,7 +63,7 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return Optional.empty();
         }
-        return Optional.of(new RawTransaction(date, new SalePoint(spName, spDescription), amount));
+        return Optional.of(new RawTransaction(account.getId(), date, new SalePoint(spName, spDescription), amount));
     }
 
     private boolean checkField(String field) {

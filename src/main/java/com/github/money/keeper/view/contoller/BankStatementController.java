@@ -1,14 +1,16 @@
 package com.github.money.keeper.view.contoller;
 
+import com.github.money.keeper.model.Account;
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.parser.AbstractTransactionParser;
+import com.github.money.keeper.parser.ParserType;
 import com.github.money.keeper.parser.ParsingResult;
-import com.github.money.keeper.parser.SupportedParsers;
 import com.github.money.keeper.parser.TransactionParserProvider;
 import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionService;
+import com.github.money.keeper.storage.AccountRepo;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.github.money.keeper.view.contoller.dto.StatementUploadResult;
 import com.google.common.collect.ImmutableList;
@@ -30,13 +32,20 @@ public class BankStatementController {
     private static final Logger log = LoggerFactory.getLogger(BankStatementController.class);
 
     private TransactionParserProvider transactionParserProvider;
-    private TransactionRepo transactionRepo;
     private StoreService storeService;
     private CategoryService categoryService;
     private TransactionService transactionService;
+    private TransactionRepo transactionRepo;
+    private AccountRepo accountRepo;
 
     @POST
-    public StatementUploadResult upload(SupportedParsers parserType) {
+    @Path("/upload")
+    public StatementUploadResult upload(Long accountId) {
+        Account account = accountRepo.load(accountId);
+        if (account == null) {
+            return StatementUploadResult.failed();
+        }
+        ParserType parserType = account.getParserType();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Resource File");
         fileChooser.getExtensionFilters().add(
@@ -47,16 +56,17 @@ public class BankStatementController {
         );
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            return uploadFile(parserType, selectedFile);
+            return uploadFile(account, selectedFile);
         } else {
             return StatementUploadResult.noFileChosen();
         }
     }
 
-    private StatementUploadResult uploadFile(SupportedParsers parserType, File selectedFile) {
-        AbstractTransactionParser parser = transactionParserProvider.getParser(parserType);
+    private StatementUploadResult uploadFile(Account account, File selectedFile) {
+        // todo move this logic from controller
+        AbstractTransactionParser parser = transactionParserProvider.getParser(account.getParserType());
         try {
-            ParsingResult result = parser.parse(new FileInputStream(selectedFile));
+            ParsingResult result = parser.parse(account, new FileInputStream(selectedFile));
             ImmutableList<RawTransaction> transactions = result.getTransactions();
             transactionRepo.save(transactions);
             storeService.rebuildFromTransactionsLog();
@@ -100,5 +110,10 @@ public class BankStatementController {
     @Required
     public void setTransactionService(TransactionService transactionService) {
         this.transactionService = transactionService;
+    }
+
+    @Required
+    public void setAccountRepo(AccountRepo accountRepo) {
+        this.accountRepo = accountRepo;
     }
 }

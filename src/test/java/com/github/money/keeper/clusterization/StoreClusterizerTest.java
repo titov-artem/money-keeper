@@ -1,8 +1,10 @@
 package com.github.money.keeper.clusterization;
 
 import com.github.money.keeper.clusterization.StoreClusterizer.ClusterizationResult;
+import com.github.money.keeper.model.Account;
 import com.github.money.keeper.model.RawTransaction;
 import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.parser.ParserType;
 import com.github.money.keeper.parser.ParsingResult;
 import com.github.money.keeper.parser.RaiffeisenTransactionParser;
 import com.google.common.collect.ImmutableList;
@@ -34,7 +36,7 @@ public class StoreClusterizerTest {
 
     private List<SalePoint> loadPointsFromStatement(String statementFile) throws IOException {
         try (InputStream in = new FileInputStream(statementFile)) {
-            ParsingResult result = new RaiffeisenTransactionParser().parse(in);
+            ParsingResult result = new RaiffeisenTransactionParser().parse(new Account(1L, "1234", ParserType.RAIFFEISEN_CARD), in);
             return result.getTransactions().stream().map(RawTransaction::getSalePoint).collect(toList());
         }
     }
