@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -23,12 +20,16 @@ import static java.util.stream.Collectors.toSet;
  */
 public class PerMonthCategoryChart {
 
-    private SortedMap<LocalDate, Map<String, BigDecimal>> absoluteChart;
-    private SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart;
+    private final SortedMap<LocalDate, Map<String, BigDecimal>> absoluteChart;
+    private final SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart;
+    private final Set<Integer> accountIds;
 
-    public PerMonthCategoryChart(SortedMap<LocalDate, Map<String, BigDecimal>> absoluteChart, SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart) {
+    public PerMonthCategoryChart(SortedMap<LocalDate, Map<String, BigDecimal>> absoluteChart,
+                                 SortedMap<LocalDate, Map<String, BigDecimal>> percentageChart,
+                                 Set<Integer> accountIds) {
         this.absoluteChart = absoluteChart;
         this.percentageChart = percentageChart;
+        this.accountIds = accountIds;
         fillMissedWithZero(this.absoluteChart);
         fillMissedWithZero(this.percentageChart);
     }
@@ -62,6 +63,11 @@ public class PerMonthCategoryChart {
     @JsonGetter
     public List<String> getPercentageChartLabels() {
         return getLabels(percentageChart);
+    }
+
+    @JsonGetter
+    public Set<Integer> getAccountIds() {
+        return accountIds;
     }
 
     private static List<Map<String, Object>> transformToChart(SortedMap<LocalDate, Map<String, BigDecimal>> source) {
@@ -102,7 +108,8 @@ public class PerMonthCategoryChart {
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
         private String otherChartName = DEFAULT_OTHER_CHART_NAME;
         private final CategorizationHelper categorizationHelper;
-        private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = Maps.newTreeMap();
+        private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = new TreeMap<>();
+        private final Set<Integer> accountIds = new HashSet<>();
 
         public Builder(CategorizationHelper categorizationHelper) {
             // todo do something if category name clashes with DEFAULT_TOTAL_CHART_NAME
@@ -111,6 +118,7 @@ public class PerMonthCategoryChart {
 
         public void append(UnifiedTransaction transaction) {
             Category category = categorizationHelper.determineCategory(transaction.getStore());
+            accountIds.add(transaction.getAccountId());
             LocalDate month = getMonth(transaction.getDate());
             updateAmount(category.getName(), getMonthBucket(month), transaction.getAmount());
             updateAmount(totalChartName, getMonthBucket(month), transaction.getAmount());
@@ -151,7 +159,7 @@ public class PerMonthCategoryChart {
                 }
                 percentageChart.put(entry.getKey(), monthValues);
             }
-            return new PerMonthCategoryChart(chart, percentageChart);
+            return new PerMonthCategoryChart(chart, percentageChart, accountIds);
         }
 
         private SortedMap<LocalDate, Map<String, BigDecimal>> reduceChart(SortedMap<LocalDate, Map<String, BigDecimal>> chart) {

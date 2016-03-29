@@ -36,7 +36,7 @@ public class StoreClusterizerTest {
 
     private List<SalePoint> loadPointsFromStatement(String statementFile) throws IOException {
         try (InputStream in = new FileInputStream(statementFile)) {
-            ParsingResult result = new RaiffeisenTransactionParser().parse(new Account(1L, "1234", ParserType.RAIFFEISEN_CARD), in);
+            ParsingResult result = new RaiffeisenTransactionParser().parse(new Account(1, "1234", ParserType.RAIFFEISEN_CARD), in);
             return result.getTransactions().stream().map(RawTransaction::getSalePoint).collect(toList());
         }
     }

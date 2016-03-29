@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public class Account {
 
-    private final Long id;
+    private final Integer id;
     private final String name;
     private final ParserType parserType;
 
@@ -14,17 +14,17 @@ public class Account {
         this(null, name, parserType);
     }
 
-    public Account(Long id, String name, ParserType parserType) {
+    public Account(Integer id, String name, ParserType parserType) {
         this.id = id;
         this.name = name;
         this.parserType = parserType;
     }
 
-    public Account withId(Long id) {
+    public Account withId(Integer id) {
         return new Account(id, name, parserType);
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

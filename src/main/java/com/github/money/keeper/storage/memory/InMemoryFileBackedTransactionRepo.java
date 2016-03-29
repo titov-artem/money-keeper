@@ -11,10 +11,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.StreamSupport;
 
@@ -80,6 +77,18 @@ public class InMemoryFileBackedTransactionRepo extends AbstractInMemoryFileBacke
 
     @Override
     public List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to) {
+        return loadByDates(from, to);
+    }
+
+    @Override
+    public List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to, Set<Integer> accountIds) {
+        List<RawTransaction> transactions = loadByDates(from, to);
+        return transactions.stream()
+                .filter(t -> accountIds.contains(t.getAccountId()))
+                .collect(toList());
+    }
+
+    private List<RawTransaction> loadByDates(@Nullable LocalDate from, @Nullable LocalDate to) {
         if (dateIndex.isEmpty()) return Collections.emptyList();
 
         LocalDate left = from == null ? dateIndex.firstKey() : from;

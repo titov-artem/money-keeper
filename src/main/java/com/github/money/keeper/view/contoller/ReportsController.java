@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Artem Titov
@@ -33,12 +35,15 @@ public class ReportsController {
 
     @GET
     @Path("/period")
-    public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to) {
+    public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to, Set<Integer> accountIds) {
         PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryService.getCategorizationHelper(), from, to);
 
         TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
-        for (RawTransaction transaction : transactionRepo.load(from, to)) {
+        List<RawTransaction> transactions = accountIds.isEmpty()
+                ? transactionRepo.load(from, to)
+                : transactionRepo.load(from, to, accountIds);
+        for (RawTransaction transaction : transactions) {
             builder.append(storeInjector.injectStore(transaction));
         }
         return builder.build();
@@ -46,12 +51,18 @@ public class ReportsController {
 
     @GET
     @Path("/per-month")
-    public PerMonthCategoryChart perMonthCategoryChart(LocalDate from, LocalDate to) {
+    public PerMonthCategoryChart perMonthCategoryChart(LocalDate from, LocalDate to, Set<Integer> accountIds) {
+        from = from.withDayOfMonth(1);
+        to = to.withDayOfMonth(1).plusMonths(1).minusDays(1);
+
         PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryService.getCategorizationHelper());
 
         TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
-        for (RawTransaction transaction : transactionRepo.load(from.withDayOfMonth(1), to.withDayOfMonth(1).plusMonths(1).minusDays(1))) {
+        List<RawTransaction> transactions = accountIds.isEmpty()
+                ? transactionRepo.load(from, to)
+                : transactionRepo.load(from, to, accountIds);
+        for (RawTransaction transaction : transactions) {
             builder.append(storeInjector.injectStore(transaction));
         }
         return builder.build();

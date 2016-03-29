@@ -7,14 +7,14 @@ import java.util.Objects;
 public class RawTransaction {
 
     private final Long id;
-    private final Long accountId;
+    private final Integer accountId;
     private final LocalDate date;
     private final SalePoint salePoint;
     private final BigDecimal amount;
     private final String fileHash;
     private final String uploadId;
 
-    public RawTransaction(Long accountId, LocalDate date, SalePoint salePoint, BigDecimal amount) {
+    public RawTransaction(Integer accountId, LocalDate date, SalePoint salePoint, BigDecimal amount) {
         this.id = null;
         this.accountId = accountId;
         this.date = date;
@@ -22,11 +22,10 @@ public class RawTransaction {
         this.amount = amount;
         this.fileHash = null;
         this.uploadId = null;
-
     }
 
     public RawTransaction(Long id,
-                          Long accountId,
+                          Integer accountId,
                           LocalDate date,
                           SalePoint salePoint,
                           BigDecimal amount,
@@ -53,7 +52,7 @@ public class RawTransaction {
         return id;
     }
 
-    public Long getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 

@@ -40,7 +40,7 @@ public class BankStatementController {
 
     @POST
     @Path("/upload")
-    public StatementUploadResult upload(Long accountId) {
+    public StatementUploadResult upload(Integer accountId) {
         Account account = accountRepo.load(accountId);
         if (account == null) {
             return StatementUploadResult.failed();

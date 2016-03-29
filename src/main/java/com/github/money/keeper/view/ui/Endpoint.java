@@ -86,7 +86,8 @@ public class Endpoint {
     private static String[] convert(JSObject args) {
         String[] out = new String[(Integer) args.getMember("length")];
         for (int i = 0; i < out.length; i++) {
-            out[i] = args.getSlot(i).toString();
+            Object slot = args.getSlot(i);
+            out[i] = slot == null ? null : slot.toString();
         }
         return out;
     }

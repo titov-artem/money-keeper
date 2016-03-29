@@ -8,19 +8,19 @@ import com.github.money.keeper.storage.AccountRepo;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryFileBackedAccountRepo extends AbstractInMemoryFileBackedRepo<Long, Account> implements AccountRepo {
+public class InMemoryFileBackedAccountRepo extends AbstractInMemoryFileBackedRepo<Integer, Account> implements AccountRepo {
 
-    private final AtomicLong idGenerator = new AtomicLong();
+    private final AtomicInteger idGenerator = new AtomicInteger();
 
     @Override
     protected Account deserializeObject(ObjectMapper objectMapper, String source) throws IOException {
         Map<String, Object> data = objectMapper.readValue(source, Map.class);
-        Account account = new Account(((Number) data.get("id")).longValue(), (String) data.get("name"), ParserType.valueOf((String) data.get("parserType")));
+        Account account = new Account(((Number) data.get("id")).intValue(), (String) data.get("name"), ParserType.valueOf((String) data.get("parserType")));
         if (account.getId() > idGenerator.get()) {
             idGenerator.set(account.getId());
         }
@@ -28,7 +28,7 @@ public class InMemoryFileBackedAccountRepo extends AbstractInMemoryFileBackedRep
     }
 
     @Override
-    protected Long getKey(Account source) {
+    protected Integer getKey(Account source) {
         return source.getId();
     }
 

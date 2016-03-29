@@ -16,6 +16,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,11 +28,15 @@ public class TransactionsController {
     private TransactionService transactionService;
 
     @GET
-    public List<UnifiedTransactionReportView> getTransactions(@Nullable LocalDate from, @Nullable LocalDate to) {
+    public List<UnifiedTransactionReportView> getTransactions(@Nullable LocalDate from,
+                                                              @Nullable LocalDate to,
+                                                              Set<Integer> accountIds) {
         from = from == null ? LocalDate.MIN : from;
         to = to == null ? LocalDate.MAX : to;
 
-        List<RawTransaction> transactions = transactionRepo.load(from, to);
+        List<RawTransaction> transactions = accountIds.isEmpty()
+                ? transactionRepo.load(from, to)
+                : transactionRepo.load(from, to, accountIds);
         TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
         return transactions.stream()

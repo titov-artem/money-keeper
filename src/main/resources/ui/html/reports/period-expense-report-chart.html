@@ -20,7 +20,7 @@
 <script language="JavaScript">
     $(document).ready(function () {
         var queryParams = getQueryParameters();
-        var report = JSON.parse(endpoint.get('/reports/period', [queryParams.from, queryParams.to]));
+        var report = JSON.parse(endpoint.get('/reports/period', [queryParams.from, queryParams.to, queryParams.accountIds]));
         var charData = [];
         var categoryCache = [];
         report.categoryReports.forEach(function (cReport) {

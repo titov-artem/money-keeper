@@ -21,7 +21,7 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
     @Override
     public RawTransaction deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
         Long id = null;
-        Long accountId = null;
+        Integer accountId = null;
         LocalDate date = null;
         SalePoint salePoint = null;
         BigDecimal amount = null;
@@ -38,7 +38,7 @@ public class RawTransactionDeserializer extends JsonDeserializer<RawTransaction>
                     if ("id".equals(jsonParser.getCurrentName())) {
                         id = jsonParser.getValueAsLong();
                     } else if ("accountId".equals(jsonParser.getCurrentName())) {
-                        accountId = jsonParser.getValueAsLong();
+                        accountId = jsonParser.getValueAsInt();
                     }
                     break;
                 case VALUE_STRING:

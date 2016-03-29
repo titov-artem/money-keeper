@@ -8,7 +8,7 @@ import com.github.money.keeper.parser.ParserType;
 public class AccountDto {
 
     @JsonProperty
-    public Long id;
+    public Integer id;
 
     @JsonProperty
     public String name;

@@ -148,7 +148,7 @@
 
     $(document).ready(function () {
         var queryParams = getQueryParameters();
-        var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to]));
+        var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to, queryParams.accountIds]));
         $('#chart-mode').bootstrapSwitch({
             onText: 'line',
             offText: 'stream',

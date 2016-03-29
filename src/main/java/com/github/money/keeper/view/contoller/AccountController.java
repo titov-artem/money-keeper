@@ -33,7 +33,7 @@ public class AccountController {
     }
 
     @DELETE
-    public void delete(Long accountId) {
+    public void delete(Integer accountId) {
         accountRepo.delete(accountId);
         // todo delete all transactions for this account
     }

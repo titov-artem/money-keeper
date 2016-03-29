@@ -18,6 +18,10 @@ public class UnifiedTransaction {
         return rawTransaction.getId();
     }
 
+    public Integer getAccountId() {
+        return rawTransaction.getAccountId();
+    }
+
     public LocalDate getDate() {
         return rawTransaction.getDate();
     }
