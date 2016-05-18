@@ -42,7 +42,7 @@ public class MoneyKeeper extends Application {
         Scene scene = new Scene(uiHolder);
         stage.setScene(scene);
         stage.show();
-        applicationController.switchPage(ApplicationController.Page.HOME);
+        applicationController.switchPage(ApplicationController.Page.STORES);
     }
 
     @Required

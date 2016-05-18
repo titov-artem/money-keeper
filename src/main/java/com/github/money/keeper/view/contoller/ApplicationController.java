@@ -22,9 +22,10 @@ public class ApplicationController {
 
     public enum Page {
         HOME("ui/html/home/home.html"),
-        CATEGORY("ui/html/category/category-editor.html"),
         REPORTS("ui/html/reports/reports.html"),
-        TRANSACTIONS("ui/html/transactions/transactions.html");
+        TRANSACTIONS("ui/html/transactions/transactions.html"),
+        CATEGORIES("ui/html/category/category-editor.html"),
+        STORES("ui/html/store/stores-editor.html");
 
         private final String htmlFileName;
 

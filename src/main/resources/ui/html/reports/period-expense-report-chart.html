@@ -42,6 +42,7 @@
         });
         $('#period-from').text(report.from);
         $('#period-to').text(report.to);
+        $('#accounts').text(report.accounts.join(', '));
         var detailedReport = templates.applyTemplate('period-expense-report-detailed-info.ftl', JSON.stringify({'report': report}));
         $('#chart').parent().append(detailedReport);
     });
@@ -49,7 +50,8 @@
 <div class="panel panel-default">
     <div class="panel-heading ">
         <h4>
-            Expense report for period from <span id="period-from"></span> to <span id="period-to"></span>
+            Expense report for period from <span id="period-from"></span> to <span id="period-to"></span> (<span
+                id="accounts"></span>)
         </h4>
     </div>
     <div class="panel-body">

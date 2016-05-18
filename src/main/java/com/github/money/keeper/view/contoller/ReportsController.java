@@ -6,6 +6,7 @@ import com.github.money.keeper.model.report.PeriodExpenseReportChart;
 import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionStoreInjector;
+import com.github.money.keeper.storage.AccountRepo;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.github.money.keeper.view.ui.WebUIHolderProvider;
 import org.springframework.beans.factory.annotation.Required;
@@ -26,6 +27,7 @@ public class ReportsController {
     private CategoryService categoryService;
     private StoreService storeService;
     private TransactionRepo transactionRepo;
+    private AccountRepo accountRepo;
 
     @SuppressWarnings("VoidMethodAnnotatedWithGET")
     @GET
@@ -36,7 +38,12 @@ public class ReportsController {
     @GET
     @Path("/period")
     public PeriodExpenseReportChart periodExpenseReportChart(LocalDate from, LocalDate to, Set<Integer> accountIds) {
-        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(categoryService.getCategorizationHelper(), from, to);
+        PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(
+                categoryService.getCategorizationHelper(),
+                accountRepo,
+                from,
+                to
+        );
 
         TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
@@ -55,7 +62,10 @@ public class ReportsController {
         from = from.withDayOfMonth(1);
         to = to.withDayOfMonth(1).plusMonths(1).minusDays(1);
 
-        PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(categoryService.getCategorizationHelper());
+        PerMonthCategoryChart.Builder builder = new PerMonthCategoryChart.Builder(
+                categoryService.getCategorizationHelper(),
+                accountRepo
+        );
 
         TransactionStoreInjector storeInjector = storeService.getStoreInjector();
 
@@ -93,5 +103,10 @@ public class ReportsController {
     @Required
     public void setTransactionRepo(TransactionRepo transactionRepo) {
         this.transactionRepo = transactionRepo;
+    }
+
+    @Required
+    public void setAccountRepo(AccountRepo accountRepo) {
+        this.accountRepo = accountRepo;
     }
 }

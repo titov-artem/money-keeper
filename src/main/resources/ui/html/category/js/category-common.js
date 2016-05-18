@@ -11,7 +11,7 @@ function currentRow(child) {
 $(document).ready(function () {
     var categories = JSON.parse(endpoint.get("/category", []));
     categories.forEach(function (category) {
-        $('#categories').append(buildRow(category))
+        $('#categories').append(buildRow(category));
     });
 
     $('.show-stores').click(function (e) {

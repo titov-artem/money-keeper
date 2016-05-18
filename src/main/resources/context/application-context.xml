@@ -16,6 +16,7 @@
                 <ref bean="reportsController"/>
                 <ref bean="transactionsController"/>
                 <ref bean="accountController"/>
+                <ref bean="storeController"/>
             </list>
         </property>
     </bean>
@@ -41,6 +42,7 @@
         <property name="categoryService" ref="categoryService"/>
         <property name="transactionRepo" ref="transactionRepo"/>
         <property name="storeService" ref="storeService"/>
+        <property name="accountRepo" ref="accountRepo"/>
     </bean>
 
     <bean id="transactionsController" class="com.github.money.keeper.view.contoller.TransactionsController">
@@ -51,6 +53,11 @@
 
     <bean id="accountController" class="com.github.money.keeper.view.contoller.AccountController">
         <property name="accountRepo" ref="accountRepo"/>
+    </bean>
+
+    <bean id="storeController" class="com.github.money.keeper.view.contoller.StoreController">
+        <property name="storeRepo" ref="storeRepo"/>
+        <property name="categoryService" ref="categoryService"/>
     </bean>
 
     <!-- service -->

@@ -106,6 +106,12 @@ public class CategoryServiceImpl implements CategoryService {
         return category;
     }
 
+    @Override
+    public void changeCategory(Store store, Category category) {
+        storeToCategoryRepo.deleteByFirstKey(store.getName());
+        storeToCategoryRepo.associate(store.getName(), category.getName());
+    }
+
     @Required
     public void setCategoryRepo(CategoryRepo categoryRepo) {
         this.categoryRepo = categoryRepo;

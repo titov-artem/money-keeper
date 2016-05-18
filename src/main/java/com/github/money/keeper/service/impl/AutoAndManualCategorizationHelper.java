@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ public class AutoAndManualCategorizationHelper implements CategorizationHelper {
     }
 
     @Override
+    @Nonnull
     public Category determineCategory(Store store) {
         Category category = manualMapping.get(store.getName());
         if (category != null) {

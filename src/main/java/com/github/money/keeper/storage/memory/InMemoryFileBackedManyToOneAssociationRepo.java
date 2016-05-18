@@ -31,9 +31,9 @@ public class InMemoryFileBackedManyToOneAssociationRepo extends AbstractFileBack
     public void init() throws IOException {
         setUpObjectMapper();
         if (storageFileName != null) {
-            loadDataFromFile(storageFileName).forEach((k, v) -> {
-                manyToOneMapping.put(k, v);
-                oneToManyMapping.put(v, k);
+            loadDataFromFile(storageFileName).entries().forEach(e -> {
+                manyToOneMapping.put(e.getKey(), e.getValue());
+                oneToManyMapping.put(e.getValue(), e.getKey());
             });
         }
     }
@@ -46,8 +46,8 @@ public class InMemoryFileBackedManyToOneAssociationRepo extends AbstractFileBack
     }
 
     @Nonnull
-    private Map<String, String> loadDataFromFile(String fileName) throws IOException {
-        BiMap<String, String> out = HashBiMap.create();
+    private Multimap<String, String> loadDataFromFile(String fileName) throws IOException {
+        Multimap<String, String> out = HashMultimap.create();
         File dataFile = new File(fileName);
         if (!dataFile.exists()) {
             return out;
@@ -66,7 +66,7 @@ public class InMemoryFileBackedManyToOneAssociationRepo extends AbstractFileBack
                 }
                 String key1 = value.get(firstKeyName);
                 String key2 = value.get(secondKeyName);
-                if (out.put(key1, key2) != null) {
+                if (!out.put(key1, key2)) {
                     getLogger(getClass()).warn("Duplicate value for key " + key1);
                 }
             }

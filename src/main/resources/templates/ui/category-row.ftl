@@ -34,8 +34,5 @@
             </#list>
             </div>
         </div>
-    <#--<#list alternatives as alternative>-->
-    <#--${alternative};-->
-    <#--</#list>-->
     </div>
 </li>

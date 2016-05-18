@@ -1,9 +1,11 @@
 package com.github.money.keeper.model.report;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.github.money.keeper.model.Account;
 import com.github.money.keeper.model.Category;
 import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.service.CategorizationHelper;
+import com.github.money.keeper.storage.AccountRepo;
 import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
@@ -13,22 +15,24 @@ import java.time.LocalDate;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 public class PeriodExpenseReportChart {
 
     private final LocalDate from;
     private final LocalDate to;
-    private final Set<Integer> accountIds;
+    private final Set<String> accountNames;
     private final List<CategoryReport> reports;
     private final BigDecimal total;
 
     private PeriodExpenseReportChart(LocalDate from,
                                      LocalDate to,
-                                     Set<Integer> accountIds,
-                                     List<CategoryReport> reports, BigDecimal total) {
+                                     Set<String> accountNames,
+                                     List<CategoryReport> reports,
+                                     BigDecimal total) {
         this.from = from;
         this.to = to;
-        this.accountIds = accountIds;
+        this.accountNames = accountNames;
         this.reports = reports;
         this.total = total;
     }
@@ -44,8 +48,8 @@ public class PeriodExpenseReportChart {
     }
 
     @JsonGetter
-    public Set<Integer> getAccountIds() {
-        return accountIds;
+    public Set<String> getAccounts() {
+        return accountNames;
     }
 
     @JsonGetter
@@ -100,17 +104,20 @@ public class PeriodExpenseReportChart {
 
     public static final class Builder {
         private final CategorizationHelper categorizationHelper;
+        private final AccountRepo accountRepo;
         private final Map<Category, CRBuilder> crBuilders = new HashMap<>();
         private final Set<Integer> accountIds = new HashSet<>();
         private LocalDate from;
         private LocalDate to;
 
         public Builder(CategorizationHelper categorizationHelper,
+                       AccountRepo accountRepo,
                        @Nullable LocalDate from,
                        @Nullable LocalDate to) {
             this.from = from;
             this.to = to;
             this.categorizationHelper = categorizationHelper;
+            this.accountRepo = accountRepo;
         }
 
         public void append(UnifiedTransaction transaction) {
@@ -137,7 +144,7 @@ public class PeriodExpenseReportChart {
             return new PeriodExpenseReportChart(
                     from,
                     to,
-                    accountIds,
+                    accountRepo.load(accountIds).stream().map(Account::getName).collect(toSet()),
                     crBuilders.values().stream()
                             .map(b -> b.build(b.amount.divide(total, 3, RoundingMode.HALF_UP).doubleValue() * 100))
                             .sorted((o1, o2) -> o2.amount.compareTo(o1.amount))

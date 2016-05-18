@@ -1,6 +1,7 @@
 package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.Category;
+import com.github.money.keeper.model.Store;
 
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface CategoryService {
     Category rename(String oldName, String newName);
 
     Category union(String name, Iterable<Category> categories);
+
+    void changeCategory(Store store, Category category);
 }

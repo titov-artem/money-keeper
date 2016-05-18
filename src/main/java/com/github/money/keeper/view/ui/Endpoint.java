@@ -64,6 +64,7 @@ public class Endpoint {
     }
 
     private String invoke(RMethod method, String path, JSObject args) {
+        log.debug("Invoking: [{}] {} ({})", method, path, args);
         try {
             return invokeUnsafe(method, path, args);
         } catch (Exception e) {

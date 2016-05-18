@@ -149,6 +149,7 @@
     $(document).ready(function () {
         var queryParams = getQueryParameters();
         var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to, queryParams.accountIds]));
+        $('#accounts').text(report.accounts.join(', '));
         $('#chart-mode').bootstrapSwitch({
             onText: 'line',
             offText: 'stream',
@@ -181,6 +182,9 @@
         <button type="button" id="show-absolute-chart" class="btn btn-default chart-button">Absolute report</button>
     </div>
     <input type="checkbox" id="chart-mode" checked>
+</div>
+<div style="margin-left: 20px;">
+    <h4 id="accounts"></h4>
 </div>
 <div id="chart" class="chart-holder"></div>
 <div id="log"></div>

@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -104,13 +105,18 @@ public abstract class AbstractInMemoryFileBackedRepo<K, V> extends AbstractFileB
     }
 
     @Override
-    public List<V> loadAll() {
-        return Lists.newArrayList(getData().values());
+    public V load(K key) {
+        return getData().get(key);
     }
 
     @Override
-    public V load(K key) {
-        return getData().get(key);
+    public List<V> load(Collection<K> keys) {
+        return keys.stream().map(getData()::get).collect(toList());
+    }
+
+    @Override
+    public List<V> loadAll() {
+        return Lists.newArrayList(getData().values());
     }
 
     @Override
