@@ -54,7 +54,7 @@
             var store = row.prop('store');
             var categories = row.prop('categories');
             var category = row.find('.category-chooser').selectpicker('val');
-            var newStore = JSON.parse(endpoint.post('/store', [store.name, category]));
+            var newStore = JSON.parse(endpoint.post('/store/category', [store.name, category]));
             var newRow = buildRow(newStore, categories);
             row.replaceWith(newRow);
         });

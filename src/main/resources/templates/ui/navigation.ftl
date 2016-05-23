@@ -5,5 +5,6 @@
         <li role="presentation" class="navigation-link"><a href="TRANSACTIONS">Transactions</a></li>
         <li role="presentation" class="navigation-link"><a href="CATEGORIES">Category editor</a></li>
         <li role="presentation" class="navigation-link"><a href="STORES">Store editor</a></li>
+        <li role="presentation" class="navigation-link"><a href="CATEGORIES2">New category editor</a></li>
     </ul>
 </div>

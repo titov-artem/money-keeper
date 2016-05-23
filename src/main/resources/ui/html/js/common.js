@@ -69,3 +69,7 @@ $(document).ready(function () {
         endpoint.post("/application/switch", [$(this).attr('href')]);
     });
 });
+
+function reloadPage() {
+    endpoint.post("/application/switch", [source]);
+}

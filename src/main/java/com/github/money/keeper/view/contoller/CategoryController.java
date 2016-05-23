@@ -4,16 +4,15 @@ import com.github.money.keeper.model.Category;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.storage.StoreRepo;
-import com.github.money.keeper.view.contoller.dto.CategoryDto;
 import com.github.money.keeper.view.contoller.dto.ExtendedCategoryDto;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
+import com.google.common.collect.*;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Required;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -22,10 +21,10 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Path("/category")
 public class CategoryController {
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
 
     private CategoryService categoryService;
     private StoreRepo storeRepo;
@@ -37,6 +36,17 @@ public class CategoryController {
                 .map(c -> new ExtendedCategoryDto(c, storeByCategory.get(c)))
                 .sorted((o1, o2) -> o1.name.compareTo(o2.name))
                 .collect(toList());
+    }
+
+    @DELETE
+    public boolean delete(String name) {
+        try {
+            categoryService.delete(name);
+            return true;
+        } catch (RuntimeException e) {
+            log.error("Failed to delete category " + name, e);
+        }
+        return false;
     }
 
     @POST
@@ -59,17 +69,13 @@ public class CategoryController {
 
     @POST
     @Path("/union")
-    public ExtendedCategoryDto union(String name, CategoryDto[] categories) {
-        List<CategoryDto> categoriesList = Arrays.asList(categories);
-        Preconditions.checkArgument(checkNameInternal(name, categoriesList.stream().map(c -> c.name).collect(toSet())), "Name must be not empty and unique");
-        Preconditions.checkArgument(categories.length >= 2, "At least 2 categories can be united");
+    public ExtendedCategoryDto union(String name, String... categoryNames) {
+        List<String> names = Arrays.asList(categoryNames);
+        List<Category> categories = categoryService.load(names);
+        Preconditions.checkArgument(checkNameInternal(name, Sets.newHashSet(names)), "Name must be not empty and unique");
+        Preconditions.checkArgument(categories.size() >= 2, "At least 2 categories can be united");
         name = StringUtils.strip(name);
-        Category category = categoryService.union(
-                name,
-                categoriesList.stream()
-                        .map(c -> new Category(c.name, c.alternatives))
-                        .collect(toList())
-        );
+        Category category = categoryService.union(name, categories);
         SetMultimap<Category, String> categoryToStoreName = getCategoryToStoreName();
         return new ExtendedCategoryDto(category, categoryToStoreName.get(category));
     }

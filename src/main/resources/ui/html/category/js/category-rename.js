@@ -1,27 +1,25 @@
+function getRenameModal() {
+    return $('.category-rename-modal');
+}
+
 $(document).ready(function () {
     $('body').on('click', '.category-rename', function () {
         var row = currentRow(this);
-        row.find('h4.category-name').addClass('hidden');
-        row.find('.category-menu').addClass('hidden');
-        row.find('.category-name-form').removeClass('hidden');
-        row.find('.category-save-control').removeClass('hidden');
-    }).on('click', '.category-save', function () {
-        var row = currentRow(this);
+        var modal = getRenameModal();
+        modal.prop('row', row);
+        modal.find('input.category-rename-name').val(row.prop('source').name);
+        modal.modal('show');
+    }).on('click', '.category-rename-apply', function () {
+        var modal = getRenameModal();
+        var row = modal.prop('row');
         var oldName = row.prop('source').name;
-        var newName = row.find('input.category-name').val();
+        var newName = modal.find('input.category-rename-name').val();
         var nameCorrect = (endpoint.post("/category/check/name", [newName, JSON.stringify([oldName])]) === 'true');
         if (!nameCorrect) {
-            $('.category-name-form .form-group').addClass('has-error');
-            $('.category-save-error-label').removeClass('hidden');
+            showAlert2(modal.find('.alerts'), 3000, 'danger', 'Bad category name (must be not empty and unique)', 'category-wrong-name');
             return;
         }
-        var saved = JSON.parse(endpoint.post("/category/rename", [oldName, newName]));
-        var newRow = buildRow(saved);
-        row.replaceWith(newRow);
-    }).on('click', '.category-save-cancel', function () {
-        var row = currentRow(this);
-        var source = row.prop('source');
-        var originalRow = buildRow(source);
-        row.replaceWith(originalRow);
+        endpoint.post("/category/rename", [oldName, newName]);
+        reloadPage();
     });
 });

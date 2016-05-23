@@ -1,19 +1,15 @@
-.category-row {
+.category-controls i {
+    cursor: pointer;
 }
 
-.category-name-wrapper {
+.category-store-controls i {
+    cursor: pointer;
 }
 
-.category-name {
+.modal .alerts .alert {
+    margin-bottom: 0px;
 }
 
-.category-alternatives {
-}
-
-.category-union-checkbox {
-    float: left;
-}
-
-.category-control {
-    float: right;
+.category-union-modal .category-chooser-container {
+    margin-top: 20px;
 }

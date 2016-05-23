@@ -11,9 +11,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toMap;
@@ -58,6 +56,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category load(String name) {
         return categoryRepo.load(name);
+    }
+
+    @Override
+    public List<Category> load(Collection<String> categoryNames) {
+        return categoryRepo.load(categoryNames);
     }
 
     @Override
@@ -110,6 +113,22 @@ public class CategoryServiceImpl implements CategoryService {
     public void changeCategory(Store store, Category category) {
         storeToCategoryRepo.deleteByFirstKey(store.getName());
         storeToCategoryRepo.associate(store.getName(), category.getName());
+    }
+
+    @Override
+    public void delete(String name) {
+        Category category = categoryRepo.load(name);
+        if (category == null) throw new NoSuchElementException();
+
+        List<Store> stores = storeRepo.loadAll();
+        CategorizationHelper helper = getCategorizationHelper();
+        for (Store store : stores) {
+            if (helper.determineCategory(store).getName().equals(name)) {
+                throw new IllegalStateException("Category " + name + " not empty!");
+            }
+        }
+
+        categoryRepo.delete(name);
     }
 
     @Required

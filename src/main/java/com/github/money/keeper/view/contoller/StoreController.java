@@ -32,6 +32,7 @@ public class StoreController {
     }
 
     @POST
+    @Path("/category")
     public StoreDto changeCategory(String storeName, String categoryName) {
         Store store = storeRepo.load(storeName);
         Category category = categoryService.load(categoryName);

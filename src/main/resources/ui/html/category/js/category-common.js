@@ -1,5 +1,8 @@
 function buildRow(category) {
     var row = $(templates.applyTemplate('category-row.ftl', JSON.stringify(category)));
+    if (category.stores.length != 0) {
+        row.find('.category-delete').addClass('hidden');
+    }
     row.prop('source', category);
     return row;
 }
@@ -10,9 +13,11 @@ function currentRow(child) {
 
 $(document).ready(function () {
     var categories = JSON.parse(endpoint.get("/category", []));
+    $('#categories').prop('source', categories);
     categories.forEach(function (category) {
         $('#categories').append(buildRow(category));
     });
+    $('#categories-count').text(categories.length);
 
     $('.show-stores').click(function (e) {
         e.preventDefault();

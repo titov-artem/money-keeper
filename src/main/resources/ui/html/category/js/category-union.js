@@ -1,77 +1,50 @@
+function getUnionModal() {
+    return $('.category-union-modal');
+}
+
 function getSelectedCategories() {
-    var categories = [];
-    var selectedRows = $('.category-union-checkbox input[type="checkbox"]:checked');
-    selectedRows.each(function () {
-        categories.push(currentRow(this).prop('source'));
-    });
+    var modal = getUnionModal();
+    var curCategoryName = modal.prop('row').prop('source').name;
+    var categories = modal.find('.category-chooser').selectpicker('val');
+    if (categories == null) return [curCategoryName];
+    categories.push(curCategoryName);
     return categories;
-}
-
-function removeSelectedCategories() {
-    $('.category-union-checkbox input[type="checkbox"]:checked').each(function () {
-        currentRow(this).remove();
-    });
-}
-
-function resetUnionControls() {
-    $('.category-union-name-error').addClass('hidden');
-    $('.category-union-checkbox').addClass('hidden');
-    $('.category-union-control').addClass('hidden');
-    $('.category-control').removeClass('hidden');
-    $('.category-union-checkbox input[type="checkbox"]').each(function () {
-        $(this).prop('checked', false);
-    });
-    $('.category-union-no-selection-error').addClass('hidden');
-    $('.category-union-name').val('');
 }
 
 $(document).ready(function () {
     $('body').on('click', '.category-union', function () {
-        $('.category-union-checkbox').removeClass('hidden');
-        $('.category-union-control').removeClass('hidden');
-        $('.category-control').addClass('hidden');
+        var categories = $('#categories').prop('source');
+        var row = currentRow(this);
+        var categoryName = row.prop('source').name;
+        var modal = getUnionModal();
+        modal.prop('row', row);
+        modal.find('.category-chooser-container').remove();
+        modal.find('.modal-body').append($(templates.applyTemplate('category-chooser.ftl',
+            JSON.stringify({
+                categories: categories,
+                multiple: true,
+                width: '100%'
+            })
+        )));
+        modal.find('.category-chooser option[value="' + categoryName + '"]').attr('disabled', 'true');
+        var categoryChooser = modal.find('.category-chooser');
+        categoryChooser.selectpicker('render');
+        categoryChooser.selectpicker('val', [categoryName]);
+        modal.modal('show');
     }).on('click', '.category-union-apply', function () {
+        var modal = getUnionModal();
         var categories = getSelectedCategories();
-        var name = $('.category-union-name').val();
-        var nameCorrect = (endpoint.post("/category/check/name", [name, JSON.stringify(categories.map(function (e) {
-            return e.name;
-        }))]) === 'true');
-        if (!nameCorrect) {
-            $('.category-union-name-error').removeClass('hidden');
+        if (categories.length < 2) {
+            showAlert2(modal.find('.alerts'), 3000, 'danger', 'You must select at least two categories to union', 'category-too-less');
             return;
-        } else {
-            $('.category-union-name-error').addClass('hidden');
         }
-        var unionCategory = JSON.parse(endpoint.post("/category/union", [name, JSON.stringify(categories)]));
-        var unionCategoryRow = buildRow(unionCategory);
-        removeSelectedCategories();
-        var inserted = false;
-        $('.category-row').each(function () {
-            if (!inserted && $(this).prop('source').name.localeCompare(unionCategory.name) > 0) {
-                $(this).before(unionCategoryRow);
-                inserted = true;
-            }
-        });
-        if (!inserted) {
-            $('#categories').prepend(unionCategoryRow);
+        var name = $('.category-union-name').val();
+        var nameCorrect = (endpoint.post("/category/check/name", [name, JSON.stringify(categories)]) === 'true');
+        if (!nameCorrect) {
+            showAlert2(modal.find('.alerts'), 3000, 'danger', 'Bad category name (must be not empty and unique)', 'category-wrong-name');
+            return;
         }
-        resetUnionControls();
-        $('.category-union-modal').modal('hide');
-    }).on('click', '.category-union-cancel', function () {
-        resetUnionControls();
-    });
-    $('.category-union-modal').on('show.bs.modal', function (e) {
-        var button = e.relatedTarget;
-        if ($(button).hasClass('category-union-open-modal')) {
-            var categories = getSelectedCategories();
-            var selectionErrorAlert = $('.category-union-no-selection-error');
-            if (categories.length < 2) {
-                selectionErrorAlert.removeClass('hidden');
-                e.stopPropagation();
-                return false;
-            } else {
-                selectionErrorAlert.addClass('hidden');
-            }
-        }
+        JSON.parse(endpoint.post("/category/union", [name, JSON.stringify(categories)]));
+        reloadPage();
     });
 });
