@@ -17,12 +17,12 @@ export class TransactionsService extends AbstractService {
                             successCallback: (data: any) => void,
                             errorCallback: (data: any) => void) {
         this.http.post(`${this.transactionsUrl}/deduplicate?from=${from}&to=${to}`, {headers: this.headers})
-            .map(res => res.json())
-            .catch(this.handleError)
-            .subscribe(
-                successCallback,
-                errorCallback
-            );
+            .toPromise()
+            .then(res => successCallback(res.json()))
+            .catch(error => {
+                errorCallback(error);
+                return this.handleError(error);
+            })
     }
 
 }

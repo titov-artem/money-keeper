@@ -3,6 +3,7 @@ import {Headers, Http, RequestOptions} from "@angular/http";
 import "rxjs/add/operator/toPromise";
 import {Account} from "../model/account";
 import {AbstractService} from "./abstract.service";
+import {errorHandler} from "@angular/platform-browser/src/browser";
 
 @Injectable()
 export class AccountService extends AbstractService {
@@ -62,12 +63,12 @@ export class AccountService extends AbstractService {
             headers.append('Accept', 'application/json');
             let options = new RequestOptions({headers: headers});
             this.http.post(`${this.bankStatementsUrl}/upload/${accountId}`, formData, options)
-                .map(res => res.json())
-                .catch(this.handleError)
-                .subscribe(
-                    successCallback,
-                    errorCallback
-                );
+                .toPromise()
+                .then(res => successCallback(res.json()))
+                .catch(error => {
+                    errorCallback(error);
+                    return this.handleError(error);
+                })
         }
     }
 

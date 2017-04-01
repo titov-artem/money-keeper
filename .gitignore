@@ -1,4 +1,5 @@
 target/
+money-keeper-core/build/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
@@ -9,3 +10,12 @@ buildNumber.properties
 
 .idea
 *.iml
+
+money-keeper-angular-ui/node_modules
+money-keeper-angular-ui/src/app/**/*.js
+money-keeper-angular-ui/src/app/**/*.js.map
+npm-debug.log
+classes/
+.gradle/
+
+**/.DS_Store
