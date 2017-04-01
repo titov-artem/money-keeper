@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="categoryRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedCategoryRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="categories.json"/>
+    </bean>
+
+    <bean id="transactionRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedTransactionRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="transactions.json"/>
+    </bean>
+
+    <bean id="storeRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedStoreRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="stores.json"/>
+    </bean>
+
+    <bean id="accountRepo" class="com.github.money.keeper.storage.memory.InMemoryFileBackedAccountRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="accounts.json"/>
+    </bean>
+
+    <bean id="storeToCategoryRepo" class="com.github.money.keeper.storage.StoreToCategoryRepo">
+        <!-- TODO use property -->
+        <property name="storageFileName" value="storeToCategory.json"/>
+    </bean>
+
+</beans>

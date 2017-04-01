@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-select.min.js"></script>
+
+    <script language="JavaScript" src="../js/common.js"></script>
+</head>
+<body>
+<script>
+
+    function buildRow(store, categories) {
+        var row = $(templates.applyTemplate('store-row.ftl', JSON.stringify(store)));
+        $(row).find('.change-category-form .form-inline').prepend(
+                $(templates.applyTemplate('category-chooser.ftl', JSON.stringify({categories: categories})))
+        );
+        row.find('.category-chooser').selectpicker('render');
+        row.prop('store', store);
+        row.prop('categories', categories);
+        return row;
+    }
+
+    function currentRow(child) {
+        return $(child).parents('.store-row');
+    }
+    $(document).ready(function () {
+        var stores = JSON.parse(endpoint.get("/store", []));
+        var categories = JSON.parse(endpoint.get("/category", []));
+
+        stores.forEach(function (store) {
+            $('#stores').append(buildRow(store, categories));
+        });
+        $('#stores-count').text(stores.length);
+
+        $('body').on('click', '.change-category', function () {
+            var row = currentRow(this);
+            row.find('.category-view').addClass('hidden');
+            row.find('.change-category-form').removeClass('hidden');
+        }).on('click', '.change-category-cancel', function () {
+            var row = currentRow(this);
+            row.find('.category-view').removeClass('hidden');
+            row.find('.change-category-form').addClass('hidden');
+        }).on('click', '.change-category-apply', function () {
+            var row = currentRow(this);
+            var store = row.prop('store');
+            var categories = row.prop('categories');
+            var category = row.find('.category-chooser').selectpicker('val');
+            var newStore = JSON.parse(endpoint.post('/store/category', [store.name, category]));
+            var newRow = buildRow(newStore, categories);
+            row.replaceWith(newRow);
+        });
+    });
+</script>
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Stores (<span id="stores-count"></span>)</h3>
+        </div>
+        <div class="panel-body">
+            <ul class="list-group" id="stores">
+            </ul>
+        </div>
+    </div>
+    <div id="log">
+
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,5 @@
+rootProject.name = 'money-keeper'
+
+include ':money-keeper-core'
+include ':money-keeper-angular-ui'
+

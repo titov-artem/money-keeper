@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-switch.min.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../lib/c3/css/c3.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-switch.min.js"></script>
+    <script language="JavaScript" src="../lib/c3/js/d3.min.js"></script>
+    <script language="JavaScript" src="../lib/c3/js/c3.min.js"></script>
+
+    <script language="JavaScript" src="../js/common.js"></script>
+
+    <style>
+        #chart-switch {
+            padding: 0 0 20px 20px;
+        }
+
+        .chart-holder {
+            margin-right: 20px;
+        }
+    </style>
+</head>
+<body>
+<script language="JavaScript">
+    function generateTypes(report) {
+        var types = {};
+        report.percentageChartLabels.forEach(function (l) {
+            types[l] = 'area';
+        });
+        return types;
+    }
+
+    function generateGroups(report) {
+        var groups = [];
+        report.percentageChartLabels.forEach(function (l) {
+            groups.push(l);
+        });
+        return [groups];
+    }
+
+    function generatePercentageReport(chartContainer, report, mode) {
+        return c3.generate({
+            bindto: chartContainer,
+            data: {
+                xFormat: '%d.%m.%Y',
+                json: report.percentageChart,
+                keys: {
+                    x: 'date',
+                    value: report.percentageChartLabels
+                },
+                types: mode === 'stream' ? generateTypes(report) : undefined,
+                groups: mode === 'stream' ? generateGroups(report) : undefined
+            },
+            size: {
+                height: 750
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%m.%Y'
+                    }
+                }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return value + "%";
+                    }
+                }
+            }
+        });
+    }
+
+    function generateAbsoluteReport(chartContainer, report, mode) {
+        return c3.generate({
+            bindto: chartContainer,
+            data: {
+                xFormat: '%d.%m.%Y',
+                json: report.absoluteChart,
+                keys: {
+                    x: 'date',
+                    value: report.absoluteChartLabels
+                },
+                types: mode === 'stream' ? generateTypes(report) : undefined,
+                groups: mode === 'stream' ? generateGroups(report) : undefined
+            },
+            size: {
+                height: 750
+            },
+            axis: {
+                x: {
+                    type: 'timeseries',
+                    tick: {
+                        format: '%m.%Y'
+                    }
+                }
+            },
+            tooltip: {
+                grouped: false,
+                format: {
+                    value: function (value, ratio, id) {
+                        return d3.format(",")(value);
+                    }
+                }
+            }
+        });
+    }
+
+    function switchButtons(activeButton) {
+        $('.chart-button')
+                .removeClass('btn-primary')
+                .removeClass('btn-default');
+        $('.chart-button:not(#' + activeButton + ')').addClass('btn-default');
+        $('#' + activeButton).addClass('btn-primary');
+    }
+
+    function drawChart(chartFunction, report, mode) {
+        var chartHolder = $('#chart');
+        var chart = chartHolder.prop('chart');
+        if (chart != undefined && chart != null) {
+            chart.destroy();
+            chartHolder.removeProp('chart');
+        }
+        if (chartFunction == null) {
+            chartFunction = chartHolder.prop('chart-function');
+        }
+        chartHolder.html('');
+        var newChart = chartFunction('#chart', report, mode);
+        chartHolder.prop('chart', newChart);
+        chartHolder.prop('chart-function', function () {
+            return chartFunction
+        });
+    }
+
+    function getChartMode() {
+        return $('#chart-mode').bootstrapSwitch('state') ? 'line' : 'stream';
+    }
+
+    $(document).ready(function () {
+        var queryParams = getQueryParameters();
+        var report = JSON.parse(endpoint.get('/reports/per-month', [queryParams.from, queryParams.to, queryParams.accountIds]));
+        $('#accounts').text(report.accounts.join(', '));
+        $('#chart-mode').bootstrapSwitch({
+            onText: 'line',
+            offText: 'stream',
+            labelText: 'mode',
+
+            onColor: 'primary',
+            offColor: 'success',
+
+            size: 'small',
+
+            onSwitchChange: function () {
+                drawChart(null, report, getChartMode())
+            }
+        });
+        $('#show-percentage-chart').click(function () {
+            drawChart(generatePercentageReport, report, getChartMode());
+            switchButtons('show-percentage-chart');
+        });
+        $('#show-absolute-chart').click(function () {
+            drawChart(generateAbsoluteReport, report, getChartMode());
+            switchButtons('show-absolute-chart');
+        });
+        drawChart(generatePercentageReport, report, getChartMode());
+        switchButtons('show-percentage-chart');
+    });
+</script>
+<div id="chart-switch">
+    <div class="btn-group" role="group">
+        <button type="button" id="show-percentage-chart" class="btn btn-default chart-button">Percentage report</button>
+        <button type="button" id="show-absolute-chart" class="btn btn-default chart-button">Absolute report</button>
+    </div>
+    <input type="checkbox" id="chart-mode" checked>
+</div>
+<div style="margin-left: 20px;">
+    <h4 id="accounts"></h4>
+</div>
+<div id="chart" class="chart-holder"></div>
+<div id="log"></div>
+</body>
+</html>

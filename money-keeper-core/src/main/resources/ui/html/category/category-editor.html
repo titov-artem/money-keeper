@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../lib/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/common.css">
+    <link rel="stylesheet" href="css/category-editor.css" type="text/css">
+
+    <script language="JavaScript" src="../lib/js/jquery-2.1.4.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap.min.js"></script>
+    <script language="JavaScript" src="../lib/bootstrap/js/bootstrap-select.min.js"></script>
+
+    <script language="JavaScript" src="../js/common.js"></script>
+    <script language="JavaScript" src="js/category-common.js"></script>
+    <script language="JavaScript" src="js/category-rename.js"></script>
+    <script language="JavaScript" src="js/category-union.js"></script>
+    <script language="JavaScript" src="js/category-delete.js"></script>
+    <script language="JavaScript" src="js/store-change-category.js"></script>
+
+</head>
+<body>
+<!--http://1000hz.github.io/bootstrap-validator/#validator-usage-->
+<div class="container">
+    <div id="log"></div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Categories (<span id="categories-count"></span>)</h3>
+        </div>
+        <div class="panel-body">
+            <!--<div class="category-delete-empty btn btn-danger">Delete all empty categories</div>-->
+            <ul class="list-group" id="categories">
+            </ul>
+        </div>
+    </div>
+    <!-- modal dialogs -->
+    <!-- rename -->
+    <div class="modal fade category-rename-modal" tabindex="-1" role="dialog"
+         aria-labelledby="categoryRenameModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="categoryRenameModalLabel">Enter category name</h4>
+                </div>
+                <div class="alerts"></div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <div class="input-group-addon">Name</div>
+                        <input type="text" class="form-control category-rename-name" placeholder="Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success category-rename-apply">Rename</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- union -->
+    <div class="modal fade category-union-modal" tabindex="-1" role="dialog"
+         aria-labelledby="categoryUnionModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="categoryUnionModalLabel">Enter category name</h4>
+                </div>
+                <div class="alerts"></div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <div class="input-group-addon">Name</div>
+                        <input type="text" class="form-control category-union-name" placeholder="Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success category-union-apply">Union</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- delete -->
+    <div class="modal fade category-delete-modal" tabindex="-1" role="dialog"
+         aria-labelledby="categoryDeleteModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="categoryDeleteModalLabel">Delete category?</h4>
+                </div>
+                <div class="alerts"></div>
+                <div class="modal-body">
+                    Do you really want to delete category <span class="category-delete-name"></span>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger category-delete-apply">Delete</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- store change category -->
+    <div class="modal fade store-change-category-modal" tabindex="-1" role="dialog"
+         aria-labelledby="storeChangeCategoryModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="storeChangeCategoryModalLabel">Select new category</h4>
+                </div>
+                <div class="alerts"></div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success store-change-category-apply">Change</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

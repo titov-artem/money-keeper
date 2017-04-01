@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="apiEndpoint" parent="baseServerEndpoint">
+        <property name="address" value="/api"/>
+        <property name="serviceBeans">
+            <list>
+                <ref bean="categoryController"/>
+                <ref bean="applicationController"/>
+                <ref bean="bankStatementController"/>
+                <ref bean="reportsController"/>
+                <ref bean="transactionsController"/>
+                <ref bean="accountController"/>
+                <ref bean="storeController"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- ui -->
+    <bean id="endpoint" class="com.github.money.keeper.view.ui.Endpoint">
+        <property name="controllers">
+            <list>
+                <ref bean="categoryController"/>
+                <ref bean="applicationController"/>
+                <ref bean="bankStatementController"/>
+                <ref bean="reportsController"/>
+                <ref bean="transactionsController"/>
+                <ref bean="accountController"/>
+                <ref bean="storeController"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- controllers -->
+    <bean id="categoryController" class="com.github.money.keeper.view.contoller.CategoryController">
+        <property name="categoryService" ref="categoryService"/>
+        <property name="storeRepo" ref="storeRepo"/>
+    </bean>
+
+    <bean id="applicationController" class="com.github.money.keeper.view.contoller.ApplicationController"/>
+
+    <bean id="bankStatementController" class="com.github.money.keeper.view.contoller.BankStatementController">
+        <property name="transactionParserProvider" ref="transactionParserProvider"/>
+        <property name="storeService" ref="storeService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="categoryService" ref="categoryService"/>
+        <property name="transactionService" ref="transactionService"/>
+        <property name="accountRepo" ref="accountRepo"/>
+    </bean>
+
+    <bean id="reportsController" class="com.github.money.keeper.view.contoller.ReportsController">
+        <property name="categoryService" ref="categoryService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="storeService" ref="storeService"/>
+        <property name="accountRepo" ref="accountRepo"/>
+    </bean>
+
+    <bean id="transactionsController" class="com.github.money.keeper.view.contoller.TransactionsController">
+        <property name="storeService" ref="storeService"/>
+        <property name="transactionRepo" ref="transactionRepo"/>
+        <property name="transactionService" ref="transactionService"/>
+    </bean>
+
+    <bean id="accountController" class="com.github.money.keeper.view.contoller.AccountController">
+        <property name="accountRepo" ref="accountRepo"/>
+    </bean>
+
+    <bean id="storeController" class="com.github.money.keeper.view.contoller.StoreController">
+        <property name="storeRepo" ref="storeRepo"/>
+        <property name="categoryService" ref="categoryService"/>
+    </bean>
+</beans>

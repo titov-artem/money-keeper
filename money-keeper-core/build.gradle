@@ -1,0 +1,20 @@
+dependencies {
+    compile 'com.google.guava:guava:18.0'
+    compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'org.freemarker:freemarker:2.3.23'
+    compile 'org.springframework:spring-beans:4.1.6.RELEASE'
+    compile 'org.springframework:spring-context:4.1.6.RELEASE'
+
+    // http
+    compile 'org.eclipse.jetty:jetty-server:9.4.2.v20170220'
+    compile 'org.eclipse.jetty:jetty-util:9.4.2.v20170220'
+    compile 'org.eclipse.jetty:jetty-servlet:9.4.2.v20170220'
+
+    compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.10'
+    compile 'org.apache.cxf:cxf-rt-rs-service-description:3.1.10'
+
+    compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0'
+}
