@@ -1,8 +1,6 @@
 package com.github.money.keeper.parser;
 
-import com.github.money.keeper.model.Account;
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.model.core.Account;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +24,7 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
     public ParsingResult doParse(Account account, InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
-        List<RawTransaction> transactions = Lists.newArrayList();
+        List<ParsedTransaction> transactions = Lists.newArrayList();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(source, Charset.forName("CP1251")))) {
             String line;
             while ((line = in.readLine()) != null) {
@@ -36,7 +34,7 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
                 String rawAmount = split[4];
                 String rawSpDescription = split[8];
                 String rawSpName = split[10];
-                Optional<RawTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
+                Optional<ParsedTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
                 if (transaction.isPresent()) {
                     transactions.add(transaction.get());
                 }
@@ -45,11 +43,11 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
         return new ParsingResult(null, transactions);
     }
 
-    private Optional<RawTransaction> buildTransaction(Account account,
-                                                      String rawDate,
-                                                      String rawSpName,
-                                                      String rawSpDescription,
-                                                      String rawAmount) {
+    private Optional<ParsedTransaction> buildTransaction(Account account,
+                                                         String rawDate,
+                                                         String rawSpName,
+                                                         String rawSpDescription,
+                                                         String rawAmount) {
         if (!checkField(rawDate) || !checkField(rawSpName) || !checkField(rawSpDescription) || !checkField(rawAmount)) {
             return Optional.empty();
         }
@@ -63,7 +61,7 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
         if (amount.compareTo(BigDecimal.ZERO) < 0) {
             return Optional.empty();
         }
-        return Optional.of(new RawTransaction(account.getId(), date, new SalePoint(spName, spDescription), amount));
+        return Optional.of(ParsedTransaction.create(account.getId(), date, spName, spDescription, amount));
     }
 
     private boolean checkField(String field) {

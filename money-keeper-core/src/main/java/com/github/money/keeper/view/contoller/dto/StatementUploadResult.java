@@ -1,8 +1,8 @@
 package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.model.report.UnifiedTransactionReportView;
+import com.github.money.keeper.model.service.UnifiedTransaction;
 
 import java.time.LocalDate;
 import java.util.Collections;

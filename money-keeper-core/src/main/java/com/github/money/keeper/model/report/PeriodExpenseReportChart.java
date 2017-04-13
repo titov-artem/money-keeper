@@ -1,9 +1,9 @@
 package com.github.money.keeper.model.report;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.Account;
-import com.github.money.keeper.model.Category;
-import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.core.Account;
+import com.github.money.keeper.model.core.Category;
+import com.github.money.keeper.model.service.UnifiedTransaction;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.storage.AccountRepo;
 import com.google.common.collect.Lists;
@@ -107,7 +107,7 @@ public class PeriodExpenseReportChart {
         private final CategorizationHelper categorizationHelper;
         private final AccountRepo accountRepo;
         private final Map<Category, CRBuilder> crBuilders = new HashMap<>();
-        private final Set<Integer> accountIds = new HashSet<>();
+        private final Set<Long> accountIds = new HashSet<>();
         private LocalDate from;
         private LocalDate to;
 
@@ -145,7 +145,7 @@ public class PeriodExpenseReportChart {
             return new PeriodExpenseReportChart(
                     from,
                     to,
-                    accountRepo.load(accountIds).stream().map(Account::getName).collect(toSet()),
+                    accountRepo.get(accountIds).stream().map(Account::getName).collect(toSet()),
                     crBuilders.values().stream()
                             .map(b -> b.build(b.amount.divide(total, 3, RoundingMode.HALF_UP).doubleValue() * 100))
                             .sorted((o1, o2) -> o2.amount.compareTo(o1.amount))
@@ -183,7 +183,7 @@ public class PeriodExpenseReportChart {
                     amount,
                     percentage,
                     transactions.stream()
-                            .sorted((o1, o2) -> o1.getDate().compareTo(o2.getDate()))
+                            .sorted(Comparator.comparing(UnifiedTransaction::getDate))
                             .map(UnifiedTransactionReportView::new)
                             .collect(toList())
             );

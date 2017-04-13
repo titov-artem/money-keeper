@@ -1,230 +1,107 @@
 package com.github.money.keeper.clusterization;
 
-import com.github.money.keeper.model.SalePoint;
-import com.github.money.keeper.model.Store;
+import com.github.money.keeper.clusterization.merger.StoresMerger;
+import com.github.money.keeper.clusterization.merger.action.ActionsCollector;
+import com.github.money.keeper.clusterization.merger.action.StoreMergeAction;
+import com.github.money.keeper.model.core.SalePoint;
+import com.github.money.keeper.service.CategoryService;
+import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.util.advanced.strings.StringUtils;
 import com.github.money.keeper.util.math.LevenshteinDistance;
-import com.google.common.collect.*;
-import org.apache.commons.lang3.tuple.Pair;
+import com.google.common.collect.Lists;
+import org.jooq.lambda.tuple.Tuple;
+import org.jooq.lambda.tuple.Tuple2;
+import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toSet;
 
 /**
- * Group input sale points to existing stores, or create new ones
+ * Group input sale points to existing stores, or create new ones.
+ * <p>
+ * Main idea is "take all sail points that exists in the system,
+ * regroup into stores with some "magic" called "SalePointClusterizer"
+ * and then match new clusters to earlier existed stores.
+ * <p>
+ * How to do it:
+ * <p>
+ * 1. For each sale point determine it's old store
+ * 2. For each sale point determine new store, that will be built from cluster
+ * 3. If new store name exactly equals to old store name we assume that it is the same store
+ * 4. Otherwise we need to do this:
+ * At first task all sale points, that belong to this store and determine new stores to
+ * which they are belong. Find store, that has much of them. It will be successor of old store.
+ * Other stores will be new store, that have to be created
+ * <p>
+ * If two stores have same successor, so we need to unite them
  */
+@Service
 public class StoreClusterizer {
 
-    private SalePointClusterizer salePointClusterizer;
+    private final SalePointClusterizer salePointClusterizer;
+    private final StoresMerger storesMerger;
+    private final StoreService storeService;
 
-    public StoreClusterizer(SalePointClusterizer salePointClusterizer) {
+    public StoreClusterizer(SalePointClusterizer salePointClusterizer,
+                            StoresMerger storesMerger,
+                            StoreService storeService) {
         this.salePointClusterizer = salePointClusterizer;
+        this.storesMerger = storesMerger;
+        this.storeService = storeService;
     }
 
-    public ClusterizationResult clusterize(final List<Store> source, final Collection<SalePoint> input) {
+    public void clusterize(final List<ClusterizableStore> source,
+                           final Collection<SalePoint> input) {
         List<SalePoint> all = getAllSalePoints(source, input);
-        List<Store> clusterizedStores = clusterize(all);
-        List<Store> out = mergeStores(source, clusterizedStores);
+        List<StorePrototype> clusterizedStores = clusterize(all);
+        List<StoreMergeAction> actions = storesMerger.merge(source, clusterizedStores);
 
-        return buildClusterizationResult(out);
-//        return buildClusterizationResult(clusterizedStores);
+        ActionsCollector collector = new ActionsCollector();
+        actions.forEach(collector::collect);
+        storeService.applyStoreMergeActions(collector);
     }
 
-    private List<SalePoint> getAllSalePoints(List<Store> source, Collection<SalePoint> input) {
+    private List<SalePoint> getAllSalePoints(List<ClusterizableStore> source, Collection<SalePoint> input) {
         List<SalePoint> all = Lists.newArrayList(input);
-        source.stream().forEach(s -> all.addAll(s.getSalePoints()));
+        source.forEach(s -> all.addAll(s.getSalePoints()));
         return all;
     }
 
-    private List<Store> clusterize(List<SalePoint> all) {
+    private List<StorePrototype> clusterize(List<SalePoint> all) {
         List<Set<SalePoint>> clusters = salePointClusterizer.clusterize(all,
                 (p1, p2) -> LevenshteinDistance.distance(p1.getName(), p2.getName()));
-        List<Store> clusterizedStores = Lists.newArrayList();
+        List<StorePrototype> clusterizedStores = Lists.newArrayList();
         for (final Set<SalePoint> cluster : clusters) {
-            clusterizedStores.add(buildStoreFromCluster(cluster));
+            clusterizedStores.add(buildPrototypeFromCluster(cluster));
         }
         return clusterizedStores;
     }
 
-    private List<Store> mergeStores(List<Store> before, List<Store> after) {
-        SetMultimap<Store, Store> beforeToAfter = getAtoBCorrespondence(before, after);
-        SetMultimap<Store, Store> afterToBefore = getAtoBCorrespondence(after, before);
+    private StorePrototype buildPrototypeFromCluster(Set<SalePoint> cluster) {
+        Set<String> names = cluster.stream()
+                .map(SalePoint::getName)
+                .collect(toSet());
 
-        Set<Store> out = Sets.newHashSet();
-        List<StoreRelationsUpdate> updates = Lists.newArrayList();
-        for (Map.Entry<Store, Collection<Store>> entry : beforeToAfter.asMap().entrySet()) {
-            Store storeBefore = entry.getKey();
-            Collection<Store> storesAfter = entry.getValue();
-            // TODO: support manually created stores
-            // Remember: if store 1 was manually created so we have two cases:
-            // 1. It was extended during clusterization. So it is OK
-            // 2. It was partitioned or united during clusterization. It is forbidden. So we need to extract it points
-            //    from other stores and add this store manually to output
+        String rawCategory = cluster.stream()
+                // group by category
+                .collect(groupingBy(SalePoint::getRawCategory))
+                .entrySet()
+                .stream()
+                // count sale points in each category
+                .map(entry -> Tuple.tuple(entry.getValue().size(), entry.getKey()))
+                // select first in lexicographic order with max sale points count
+                .max(Comparator.naturalOrder())
+                .map(Tuple2::v2)
+                .orElse(CategoryService.UNKNOWN_CATEGORY_NAME);
 
-
-            if (storesAfter.size() == 1) {
-                Store storeAfter = storesAfter.iterator().next();
-                Set<Store> aftersStoreBefore = afterToBefore.get(storeAfter);
-
-                // We have store 1. It has points, that are belong only to store 2
-                // So store 2 must contains store 1 among stores from which it was built
-                assert aftersStoreBefore.contains(storeBefore);
-
-                if (aftersStoreBefore.size() == 1) {
-                    // 1-to-1 matching. Permitted case
-                    addToOutput(storeBefore, storeAfter, true, out, updates);
-                } else {
-                    // Store 1 was united with another store
-                    if (storeBefore.isManuallyCreated()) {
-                        // TODO: support manually created stores
-                        // currently we just accpet it, but after we need to perform actions, described in case 2
-                        throw new UnsupportedOperationException("Add support of manually created stores");
-                    } else {
-                        // All stores that was united will have update to this store 2
-                        addToOutput(storeBefore, storeAfter, true, out, updates);
-                    }
-                }
-            } else {
-                // Store 1 was splitted on some stores
-                if (storeBefore.isManuallyCreated()) {
-                    // TODO: support manually created stores
-                    // currently we just accpet it, but after we need to perform actions, described in case 2
-                    throw new UnsupportedOperationException("Add support of manually created stores");
-                } else {
-                    // Store 1 was splitted into several stores after clusterization. We need to determine its successor.
-                    // Algorithm will assume the store which contains most of store 1 points the successor of store 1
-                    Store successor = getSuccessorStore(storeBefore, storesAfter);
-                    assert successor != null;
-
-                    // We add successor to output with update
-                    addToOutput(storeBefore, successor, true, out, updates);
-
-                    // No we need to add other stores to output without update.
-                    // If they were built from any other store 1* then they will be again added to set, and no duplicates appears
-                    // Also it is possible that some updates will be added and it's OK too. But if we will not add them now,
-                    // it is possible to miss them at all
-                    for (Store store : storesAfter) {
-                        // we can add all storesAfter, because out is set and it's OK to add successor again :)
-                        addToOutput(storeBefore, store, false, out, updates);
-                    }
-
-                }
-            }
-        }
-        performStoreRelationUpdates(updates);
-
-        Set<Store> newStores = Sets.difference(Sets.newHashSet(after), out);
-        out.addAll(newStores);
-
-        return Lists.newArrayList(out);
-    }
-
-    private void performStoreRelationUpdates(List<StoreRelationsUpdate> updates) {
-        // TODO updates manual categories and manual sale point matching
-    }
-
-    private Store getSuccessorStore(Store storeBefore, Collection<Store> storesAfter) {
-        int maxIntersectionSize = -1;
-        Store successor = null;
-        for (Store storeAfter : storesAfter) {
-            int currentIntersectionSize = Sets.intersection(storeBefore.getSalePoints(), storeAfter.getSalePoints()).size();
-            if (currentIntersectionSize > maxIntersectionSize) {
-                maxIntersectionSize = currentIntersectionSize;
-                successor = storeAfter;
-            }
-        }
-        return successor;
-    }
-
-    private void addToOutput(Store storeBefore, Store storeAfter, boolean withUpdate, Set<Store> out, List<StoreRelationsUpdate> updates) {
-        out.add(storeAfter);
-        if (withUpdate && !storeAfter.getName().equals(storeBefore.getName())) {
-            updates.add(new StoreRelationsUpdate(storeBefore.getName(), storeAfter.getName()));
-        }
-    }
-
-    private SetMultimap<Store, Store> getAtoBCorrespondence(List<Store> a, List<Store> b) {
-        Map<SalePoint, Store> pointToBStore = getSalePointStoreMap(b);
-        SetMultimap<Store, Store> aToB = HashMultimap.create();
-        for (Store storeA : a) {
-            for (SalePoint point : storeA.getSalePoints()) {
-                Store storeB = pointToBStore.get(point);
-                if (storeB != null) {
-                    aToB.put(storeA, storeB);
-                }
-            }
-        }
-        return aToB;
-    }
-
-    private Store buildStoreFromCluster(Set<SalePoint> cluster) {
-        SortedMultiset<String> categoryDescriptions = TreeMultiset.create();
-        Set<String> names = Sets.newHashSet();
-        for (SalePoint point : cluster) {
-            categoryDescriptions.add(point.getCategoryDescription());
-            names.add(point.getName());
-        }
-        int maxCount = -1;
-        SortedSet<String> categoryDescriptionsWithEqualCount = Sets.newTreeSet();
-        for (Multiset.Entry<String> entry : categoryDescriptions.entrySet()) {
-            if (entry.getCount() > maxCount) {
-                maxCount = entry.getCount();
-                categoryDescriptionsWithEqualCount.clear();
-                categoryDescriptionsWithEqualCount.add(entry.getElement());
-            } else if (entry.getCount() == maxCount) {
-                categoryDescriptionsWithEqualCount.add(entry.getElement());
-            }
-        }
-        String categoryDescription = categoryDescriptionsWithEqualCount.first();
-
-        return new Store(StringUtils.greatestCommonSubstring(names), categoryDescription, cluster);
-    }
-
-    private ClusterizationResult buildClusterizationResult(List<Store> out) {
-        Map<SalePoint, Store> spToStore = getSalePointStoreMap(out);
-        return new ClusterizationResult(out, spToStore);
-    }
-
-    private Map<SalePoint, Store> getSalePointStoreMap(List<Store> out) {
-        return out.stream()
-                .flatMap(s -> s.getSalePoints().stream().map(p -> Pair.of(p, s)))
-                .collect(toMap(Pair::getLeft, Pair::getRight));
-    }
-
-    public static final class ClusterizationResult {
-        private final ImmutableList<Store> stores;
-        private final ImmutableMap<SalePoint, Store> salePointsStores;
-
-        public ClusterizationResult(List<Store> stores, Map<SalePoint, Store> salePointsStores) {
-            this.stores = ImmutableList.copyOf(stores);
-            this.salePointsStores = ImmutableMap.copyOf(salePointsStores);
-        }
-
-        public ImmutableList<Store> getStores() {
-            return stores;
-        }
-
-        public Store getStore(SalePoint salePoint) {
-            return salePointsStores.get(salePoint);
-        }
-    }
-
-    private static final class StoreRelationsUpdate {
-        private final String storeOldName;
-        private final String storeNewName;
-
-        private StoreRelationsUpdate(String storeOldName, String storeNewName) {
-            this.storeOldName = storeOldName;
-            this.storeNewName = storeNewName;
-        }
-
-        public String getStoreOldName() {
-            return storeOldName;
-        }
-
-        public String getStoreNewName() {
-            return storeNewName;
-        }
+        return new StorePrototype(
+                StringUtils.greatestCommonSubstring(names),
+                rawCategory,
+                cluster);
     }
 }

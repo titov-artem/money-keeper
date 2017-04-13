@@ -1,6 +1,6 @@
 package com.github.money.keeper.parser;
 
-import com.github.money.keeper.model.Account;
+import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.util.io.DigestingInputStream;
 
 import java.io.IOException;

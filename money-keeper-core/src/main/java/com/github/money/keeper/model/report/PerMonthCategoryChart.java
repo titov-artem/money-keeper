@@ -1,9 +1,9 @@
 package com.github.money.keeper.model.report;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.Account;
-import com.github.money.keeper.model.Category;
-import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.core.Account;
+import com.github.money.keeper.model.core.Category;
+import com.github.money.keeper.model.service.UnifiedTransaction;
 import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.storage.AccountRepo;
 import com.google.common.collect.Maps;
@@ -110,7 +110,7 @@ public class PerMonthCategoryChart {
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
         private String otherChartName = DEFAULT_OTHER_CHART_NAME;
         private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = new TreeMap<>();
-        private final Set<Integer> accountIds = new HashSet<>();
+        private final Set<Long> accountIds = new HashSet<>();
         private final CategorizationHelper categorizationHelper;
         private final AccountRepo accountRepo;
 
@@ -166,7 +166,7 @@ public class PerMonthCategoryChart {
             return new PerMonthCategoryChart(
                     chart,
                     percentageChart,
-                    accountRepo.load(accountIds).stream().map(Account::getName).collect(toSet())
+                    accountRepo.get(accountIds).stream().map(Account::getName).collect(toSet())
             );
         }
 

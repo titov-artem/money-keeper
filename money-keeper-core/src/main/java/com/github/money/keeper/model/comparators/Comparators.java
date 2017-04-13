@@ -1,35 +1,23 @@
 package com.github.money.keeper.model.comparators;
 
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.model.core.RawTransaction;
 
 import java.util.Comparator;
 
 public final class Comparators {
 
-    public static final class Transactions {
+    public static final class RawTransactions {
 
         public static Comparator<RawTransaction> natural() {
-            Comparator<SalePoint> salePointComparator = SalePoints.natural();
             return (t1, t2) -> {
                 int compareResult = compare(t1.getDate(), t2.getDate(), Nulls.FORBIDDEN);
                 if (compareResult != 0) return compareResult;
-                compareResult = compare(t1.getSalePoint(), t2.getSalePoint(), Nulls.FORBIDDEN, salePointComparator);
+                compareResult = compare(t1.getSalePointId(), t2.getSalePointId(), Nulls.FORBIDDEN);
                 if (compareResult != 0) return compareResult;
                 return compare(t1.getAmount(), t2.getAmount(), Nulls.FORBIDDEN);
             };
         }
 
-    }
-
-    public static final class SalePoints {
-        public static Comparator<SalePoint> natural() {
-            return (s1, s2) -> {
-                int compareResult = compare(s1.getName(), s2.getName(), Nulls.FORBIDDEN);
-                if (compareResult != 0) return compareResult;
-                return compare(s1.getCategoryDescription(), s2.getCategoryDescription(), Nulls.LAST);
-            };
-        }
     }
 
     public static <T extends Comparable<T>> int compare(T t1, T t2, Nulls mode) {

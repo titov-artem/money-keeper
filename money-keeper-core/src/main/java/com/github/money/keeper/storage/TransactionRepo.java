@@ -1,6 +1,6 @@
 package com.github.money.keeper.storage;
 
-import com.github.money.keeper.model.RawTransaction;
+import com.github.money.keeper.model.core.RawTransaction;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;

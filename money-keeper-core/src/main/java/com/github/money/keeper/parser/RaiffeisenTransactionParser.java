@@ -1,8 +1,6 @@
 package com.github.money.keeper.parser;
 
-import com.github.money.keeper.model.Account;
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.util.io.DigestingInputStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -29,7 +27,7 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
     public ParsingResult doParse(Account account, InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
-        List<RawTransaction> transactions = Lists.newArrayList();
+        List<ParsedTransaction> transactions = Lists.newArrayList();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new DigestingInputStream(source)))) {
             String line;
             while ((line = in.readLine()) != null) {
@@ -40,7 +38,7 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
                 String rawSpDescription = split[2];
                 String rawAmount = split[9];
                 try {
-                    Optional<RawTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
+                    Optional<ParsedTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
                     if (transaction.isPresent()) {
                         transactions.add(transaction.get());
                     }
@@ -52,11 +50,11 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
         return new ParsingResult(null, transactions);
     }
 
-    private Optional<RawTransaction> buildTransaction(Account account,
-                                                      String rawDate,
-                                                      String rawSpName,
-                                                      String rawSpDescription,
-                                                      String rawAmount) {
+    private Optional<ParsedTransaction> buildTransaction(Account account,
+                                                         String rawDate,
+                                                         String rawSpName,
+                                                         String rawSpDescription,
+                                                         String rawAmount) {
         if (!checkField(rawDate) || !checkField(rawSpName) || !checkField(rawSpDescription) || !checkField(rawAmount)) {
             return Optional.empty();
         }
@@ -70,7 +68,13 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
         if (spDescription.equals("Fin.Inst. - Merchandise")) {
             return Optional.empty();
         }
-        return Optional.of(new RawTransaction(account.getId(), date, new SalePoint(spName, spDescription), amount));
+        return Optional.of(ParsedTransaction.create(
+                account.getId(),
+                date,
+                spName,
+                spDescription,
+                amount)
+        );
     }
 
     private String fixNumbers(String s) {

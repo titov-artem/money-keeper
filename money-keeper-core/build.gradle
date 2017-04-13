@@ -1,20 +1,136 @@
+import org.flywaydb.core.Flyway
+
+apply plugin: 'idea'
+
 dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'org.apache.commons:commons-lang3:3.3.2'
+    compile 'org.jooq:jool:0.9.12'
     compile 'org.freemarker:freemarker:2.3.23'
-    compile 'org.springframework:spring-beans:4.1.6.RELEASE'
-    compile 'org.springframework:spring-context:4.1.6.RELEASE'
+    compile 'org.springframework:spring-beans:4.3.7.RELEASE'
+    compile 'org.springframework:spring-context:4.3.7.RELEASE'
+    compile 'javax.inject:javax.inject:1'
 
-    // http
+    // http server
     compile 'org.eclipse.jetty:jetty-server:9.4.2.v20170220'
     compile 'org.eclipse.jetty:jetty-util:9.4.2.v20170220'
     compile 'org.eclipse.jetty:jetty-servlet:9.4.2.v20170220'
 
+    // rest api bus
     compile 'org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.10'
     compile 'org.apache.cxf:cxf-rt-rs-service-description:3.1.10'
 
+    // rest api + serialization
     compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.6.0'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.6.0'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.6.0'
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.7'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.7'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.7'
+
+    // database
+    compile 'org.jooq:jooq:3.9.1'
+    compile 'org.springframework:spring-jdbc:4.3.7.RELEASE'
+    compile 'com.zaxxer:HikariCP:2.6.1'
+    compile 'org.flywaydb:flyway-core:4.1.2'
+    compile 'org.postgresql:postgresql:42.0.0'
+
+    // utility
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'ch.qos.logback:logback-classic:1.1.2'
+    compile 'org.slf4j:jcl-over-slf4j:1.7.24'
+    compile 'com.google.code.findbugs:jsr305:2.0.3'
+
+    // testing
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.codehaus.groovy:groovy-all:2.4.3'
+    testCompile 'org.spockframework:spock-unitils:1.0-groovy-2.4'
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.slf4j:jcl-over-slf4j:1.7.12'
+    testCompile 'org.springframework:spring-test:4.3.7.RELEASE'
+    testCompile 'org.spockframework:spock-spring:1.0-groovy-2.4'
+    testCompile 'ch.qos.logback:logback-classic:1.1.2'
 }
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.jooq:jooq-codegen:3.9.1'
+        classpath 'org.postgresql:postgresql:42.0.0'
+        classpath 'org.flywaydb:flyway-core:4.1.2'
+    }
+}
+
+sourceSets {
+    main {
+        java.srcDirs += "$project.projectDir/src/main/generated/"
+    }
+}
+
+idea {
+    module {
+        generatedSourceDirs += file("$project.projectDir/src/main/generated/")
+    }
+}
+
+task generate {
+
+    doLast {
+        // Use your favourite XML builder to construct the code generation configuration file
+        // ----------------------------------------------------------------------------------
+        def writer = new StringWriter()
+        def xml = new groovy.xml.MarkupBuilder(writer)
+                .configuration('xmlns': 'http://www.jooq.org/xsd/jooq-codegen-3.9.0.xsd') {
+            jdbc() {
+                driver('org.postgresql.Driver')
+                url('jdbc:postgresql://localhost:5433/money_keeper?currentSchema=public')
+                user('money_keeper')
+                password('money_keeper')
+            }
+            generator() {
+                database() {
+                    schemata() {
+                        schema() {
+                            inputSchema('public')
+                        }
+                    }
+                }
+                generate() {
+                }
+                target() {
+                    packageName('com.github.money.keeper.storage.jdbc.generated')
+                    directory("$project.projectDir/src/main/generated")
+                }
+            }
+        }
+
+        println "Migrating schema for project $project.projectDir"
+        Flyway flyway = new Flyway()
+        flyway.setLocations(
+                "filesystem:$project.projectDir/src/main/resources/db/init",
+                "filesystem:$project.projectDir/src/main/resources/db/migration",
+        )
+        flyway.setDataSource(
+                'jdbc:postgresql://localhost:5433/money_keeper?currentSchema=public',
+                'money_keeper',
+                'money_keeper'
+        )
+        flyway.clean()
+        flyway.migrate()
+
+        println "Generating source"
+        // Run the code generator
+        // ----------------------
+        org.jooq.util.GenerationTool.generate(
+                javax.xml.bind.JAXB.unmarshal(
+                        new StringReader(writer.toString()),
+                        org.jooq.util.jaxb.Configuration.class
+                )
+        )
+        println "Sources generated"
+    }
+}
+
+compileJava.dependsOn(generate)

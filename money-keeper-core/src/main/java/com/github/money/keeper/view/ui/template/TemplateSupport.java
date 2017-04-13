@@ -24,7 +24,7 @@ public class TemplateSupport {
         try {
             return cfg.getTemplate(fileName);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load template " + fileName, e);
+            throw new RuntimeException("Failed to get template " + fileName, e);
         }
     }
 

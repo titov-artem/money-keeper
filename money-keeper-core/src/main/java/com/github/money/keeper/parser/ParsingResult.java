@@ -1,7 +1,6 @@
 package com.github.money.keeper.parser;
 
-import com.github.money.keeper.model.Account;
-import com.github.money.keeper.model.RawTransaction;
+import com.github.money.keeper.model.core.Account;
 import com.google.common.collect.ImmutableList;
 
 import java.util.List;
@@ -9,9 +8,9 @@ import java.util.List;
 public class ParsingResult {
 
     private final Account account;
-    private final ImmutableList<RawTransaction> transactions;
+    private final ImmutableList<ParsedTransaction> transactions;
 
-    public ParsingResult(Account account, List<RawTransaction> transactions) {
+    public ParsingResult(Account account, List<ParsedTransaction> transactions) {
         this.account = account;
         this.transactions = ImmutableList.copyOf(transactions);
     }
@@ -20,7 +19,7 @@ public class ParsingResult {
         return account;
     }
 
-    public ImmutableList<RawTransaction> getTransactions() {
+    public ImmutableList<ParsedTransaction> getTransactions() {
         return transactions;
     }
 

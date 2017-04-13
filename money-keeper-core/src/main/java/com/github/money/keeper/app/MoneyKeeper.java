@@ -1,12 +1,7 @@
 package com.github.money.keeper.app;
 
-import com.github.money.keeper.view.contoller.ApplicationController;
-import com.github.money.keeper.view.ui.Endpoint;
-import com.github.money.keeper.view.ui.WebUIHolder;
-import com.github.money.keeper.view.ui.WebUIHolderProvider;
 import com.github.money.keeper.view.ui.template.UITemplateSupport;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -20,9 +15,7 @@ public class MoneyKeeper extends Application {
         Runtime.getRuntime().addShutdownHook(new Thread(CONTEXT::close));
     }
 
-    private Endpoint endpoint;
     private UITemplateSupport uiTemplateSupport;
-    private ApplicationController applicationController;
 
     public static void main(String[] args) {
         launch(args);
@@ -32,22 +25,6 @@ public class MoneyKeeper extends Application {
     public void start(Stage stage) throws Exception {
         CONTEXT.getAutowireCapableBeanFactory().autowireBeanProperties(this, AutowireCapableBeanFactory.AUTOWIRE_BY_TYPE, true);
         stage.setTitle("Money keeper");
-        WebUIHolder uiHolder = new WebUIHolder(
-                1280,
-                900,
-                endpoint,
-                uiTemplateSupport
-        );
-        WebUIHolderProvider.INSTANCE.setWebUIHolder(uiHolder);
-        Scene scene = new Scene(uiHolder);
-        stage.setScene(scene);
-        stage.show();
-        applicationController.switchPage(ApplicationController.Page.HOME);
-    }
-
-    @Required
-    public void setEndpoint(Endpoint endpoint) {
-        this.endpoint = endpoint;
     }
 
     @Required
@@ -55,8 +32,4 @@ public class MoneyKeeper extends Application {
         this.uiTemplateSupport = uiTemplateSupport;
     }
 
-    @Required
-    public void setApplicationController(ApplicationController applicationController) {
-        this.applicationController = applicationController;
-    }
 }

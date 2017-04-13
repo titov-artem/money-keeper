@@ -1,6 +1,6 @@
 package com.github.money.keeper.view.contoller;
 
-import com.github.money.keeper.model.Account;
+import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.storage.AccountRepo;
 import com.github.money.keeper.view.contoller.dto.AccountDto;
 import org.springframework.beans.factory.annotation.Required;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.ws.rs.*;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -19,13 +18,13 @@ public class AccountController implements REST {
 
     @GET
     public List<AccountDto> getAccounts() {
-        return accountRepo.loadAll().stream().map(AccountDto::new).collect(toList());
+        return accountRepo.getAll().stream().map(AccountDto::new).collect(toList());
     }
 
     @Path("/{id}")
     @GET
-    public AccountDto getAccount(@PathParam("id") Integer id) {
-        return Optional.ofNullable(accountRepo.load(id))
+    public AccountDto getAccount(@PathParam("id") Long id) {
+        return accountRepo.get(id)
                 .map(AccountDto::new)
                 .orElseThrow(NotFoundException::new);
     }
@@ -40,7 +39,7 @@ public class AccountController implements REST {
 
     @DELETE
     @Path("/{id}")
-    public void delete(@PathParam("id") Integer accountId) {
+    public void delete(@PathParam("id") Long accountId) {
         accountRepo.delete(accountId);
         // todo delete all transactions for this account
     }

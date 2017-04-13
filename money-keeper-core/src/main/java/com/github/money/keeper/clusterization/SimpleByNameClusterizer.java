@@ -1,6 +1,6 @@
 package com.github.money.keeper.clusterization;
 
-import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.model.core.SalePoint;
 import com.github.money.keeper.util.structure.UnionFind;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;

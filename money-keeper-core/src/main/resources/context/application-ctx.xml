@@ -6,13 +6,7 @@
     <bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
     <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
-    <!-- system -->
-    <bean id="clock" class="java.time.Clock" factory-method="systemDefaultZone"/>
-
     <import resource="http-server-ctx.xml"/>
     <import resource="cxf-container-ctx.xml"/>
-    <import resource="controllers-ctx.xml"/>
-    <import resource="services-ctx.xml"/>
-    <import resource="storage-ctx.xml"/>
 
 </beans>

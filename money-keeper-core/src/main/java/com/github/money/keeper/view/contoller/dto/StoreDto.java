@@ -2,7 +2,7 @@ package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.money.keeper.model.Store;
+import com.github.money.keeper.model.core.Store;
 import com.github.money.keeper.service.CategorizationHelper;
 
 public class StoreDto {

@@ -1,7 +1,7 @@
 package com.github.money.keeper.model.report;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.service.UnifiedTransaction;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,7 +19,7 @@ public class UnifiedTransactionReportView {
 
     @JsonGetter
     public Long getId() {
-        return source.getRawTransaction().getId();
+        return source.getTransaction().getRawTransaction().getId();
     }
 
     @JsonGetter

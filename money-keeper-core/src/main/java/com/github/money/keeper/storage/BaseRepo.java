@@ -1,8 +1,10 @@
 package com.github.money.keeper.storage;
 
-import javax.annotation.Nullable;
+import com.github.money.keeper.model.core.AbstractEntity;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Describe base repository actions
@@ -10,19 +12,21 @@ import java.util.List;
  * @param <K> key class of stored objects
  * @param <V> stored objects class
  */
-public interface BaseRepo<K, V> {
+public interface BaseRepo<K, V extends AbstractEntity<K>> {
+
+    V save(V value);
 
     List<V> save(Iterable<V> values);
 
     void delete(K key);
 
-    // todo maybe use optional here, not nullable
-    @Nullable
-    V load(K key);
+    void delete(Iterable<K> keys);
 
-    List<V> load(Collection<K> keys);
+    Optional<V> get(K key);
 
-    List<V> loadAll();
+    List<V> get(Collection<K> keys);
+
+    List<V> getAll();
 
     void clear();
 }

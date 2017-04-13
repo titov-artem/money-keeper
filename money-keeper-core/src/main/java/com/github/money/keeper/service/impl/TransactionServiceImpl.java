@@ -1,16 +1,16 @@
 package com.github.money.keeper.service.impl;
 
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.UnifiedTransaction;
 import com.github.money.keeper.model.comparators.Comparators;
+import com.github.money.keeper.model.core.RawTransaction;
+import com.github.money.keeper.model.service.UnifiedTransaction;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionService;
 import com.github.money.keeper.service.TransactionStoreInjector;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.google.common.collect.Lists;
-import org.springframework.beans.factory.annotation.Required;
 
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.BitSet;
 import java.util.Collection;
@@ -22,8 +22,14 @@ import static java.util.stream.Collectors.toList;
 
 public class TransactionServiceImpl implements TransactionService {
 
-    private TransactionRepo transactionRepo;
-    private StoreService storeService;
+    private final TransactionRepo transactionRepo;
+    private final StoreService storeService;
+
+    @Inject
+    public TransactionServiceImpl(TransactionRepo transactionRepo, StoreService storeService) {
+        this.transactionRepo = transactionRepo;
+        this.storeService = storeService;
+    }
 
     @Nonnull
     @Override
@@ -34,7 +40,7 @@ public class TransactionServiceImpl implements TransactionService {
         List<RawTransaction> duplicates = Lists.newArrayList();
         for (final Collection<RawTransaction> item : transactionsByDate.values()) {
             List<RawTransaction> curTransactions = item.stream()
-                    .sorted(Comparators.Transactions.natural())
+                    .sorted(Comparators.RawTransactions.natural())
                     .collect(toList());
             BitSet added = new BitSet(curTransactions.size());
             for (int i = 0; i < curTransactions.size(); i++) {
@@ -55,40 +61,9 @@ public class TransactionServiceImpl implements TransactionService {
             }
         }
 
-        TransactionStoreInjector storeInjector = storeService.getStoreInjector();
+        TransactionStoreInjector storeInjector = storeService.getStoreInjector(duplicates);
         return duplicates.stream()
                 .map(storeInjector::injectStore)
                 .collect(toList());
-    }
-
-    @Nonnull
-    @Override
-    public List<UnifiedTransaction> deduplicate(LocalDate from, LocalDate to) {
-        List<UnifiedTransaction> duplicates = getDuplicates(from, to);
-        UnifiedTransaction cur = null;
-        List<UnifiedTransaction> removed = Lists.newArrayList();
-        for (final UnifiedTransaction transaction : duplicates) {
-            if (cur == null || !isDuplicates(cur, transaction)) {
-                cur = transaction;
-            } else if (isDuplicates(cur, transaction)) {
-                transactionRepo.delete(transaction.getId());
-                removed.add(transaction);
-            }
-        }
-        return removed;
-    }
-
-    private boolean isDuplicates(UnifiedTransaction cur, UnifiedTransaction transaction) {
-        return cur.getRawTransaction().isDuplicate(transaction.getRawTransaction());
-    }
-
-    @Required
-    public void setTransactionRepo(TransactionRepo transactionRepo) {
-        this.transactionRepo = transactionRepo;
-    }
-
-    @Required
-    public void setStoreService(StoreService storeService) {
-        this.storeService = storeService;
     }
 }

@@ -2,7 +2,7 @@ package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.money.keeper.model.Category;
+import com.github.money.keeper.model.core.Category;
 
 import java.util.Set;
 

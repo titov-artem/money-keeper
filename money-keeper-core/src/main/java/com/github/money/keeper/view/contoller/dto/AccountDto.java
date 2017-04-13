@@ -2,13 +2,13 @@ package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.money.keeper.model.Account;
+import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.parser.ParserType;
 
 public class AccountDto {
 
     @JsonProperty
-    public Integer id;
+    public Long id;
 
     @JsonProperty
     public String name;

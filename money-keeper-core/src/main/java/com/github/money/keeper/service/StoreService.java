@@ -1,7 +1,13 @@
 package com.github.money.keeper.service;
 
-public interface StoreService {
-    void rebuildFromTransactionsLog();
+import com.github.money.keeper.clusterization.merger.action.ActionsCollector;
+import com.github.money.keeper.model.core.RawTransaction;
 
-    TransactionStoreInjector getStoreInjector();
+import java.util.List;
+
+public interface StoreService {
+
+    TransactionStoreInjector getStoreInjector(List<RawTransaction> transactions);
+
+    void applyStoreMergeActions(ActionsCollector collector);
 }

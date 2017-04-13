@@ -1,15 +1,15 @@
 package com.github.money.keeper.view.contoller;
 
-import com.github.money.keeper.model.RawTransaction;
-import com.github.money.keeper.model.UnifiedTransaction;
+import com.github.money.keeper.model.core.RawTransaction;
 import com.github.money.keeper.model.report.UnifiedTransactionReportView;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionService;
 import com.github.money.keeper.service.TransactionStoreInjector;
 import com.github.money.keeper.storage.TransactionRepo;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.time.LocalDate;
 import java.util.List;
@@ -17,12 +17,22 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
+@Controller
 @Path("/transactions")
 public class TransactionsController implements REST {
 
-    private TransactionRepo transactionRepo;
-    private StoreService storeService;
-    private TransactionService transactionService;
+    private final TransactionRepo transactionRepo;
+    private final StoreService storeService;
+    private final TransactionService transactionService;
+
+    @Inject
+    public TransactionsController(TransactionRepo transactionRepo,
+                                  StoreService storeService,
+                                  TransactionService transactionService) {
+        this.transactionRepo = transactionRepo;
+        this.storeService = storeService;
+        this.transactionService = transactionService;
+    }
 
     @GET
     public List<UnifiedTransactionReportView> getTransactions(@QueryParam("from") @Nullable LocalDate from,
@@ -34,7 +44,7 @@ public class TransactionsController implements REST {
         List<RawTransaction> transactions = accountIds.isEmpty()
                 ? transactionRepo.load(from, to)
                 : transactionRepo.load(from, to, accountIds);
-        TransactionStoreInjector storeInjector = storeService.getStoreInjector();
+        TransactionStoreInjector storeInjector = storeService.getStoreInjector(transactions);
 
         return transactions.stream()
                 .map(storeInjector::injectStore)
@@ -42,12 +52,10 @@ public class TransactionsController implements REST {
                 .collect(toList());
     }
 
-    @POST
-    @Path("/deduplicate")
-    public List<UnifiedTransactionReportView> deduplicate(@QueryParam("from") LocalDate from,
-                                                          @QueryParam("to") LocalDate to) {
-        List<UnifiedTransaction> removed = transactionService.deduplicate(from, to);
-        return removed.stream().map(UnifiedTransactionReportView::new).collect(toList());
+    @DELETE
+    @Path("/remove-batch")
+    public void deduplicate(Set<Long> transactionIds) {
+        transactionRepo.delete(transactionIds);
     }
 
     @DELETE
@@ -56,18 +64,4 @@ public class TransactionsController implements REST {
         transactionRepo.delete(transactionId);
     }
 
-    @Required
-    public void setTransactionRepo(TransactionRepo transactionRepo) {
-        this.transactionRepo = transactionRepo;
-    }
-
-    @Required
-    public void setStoreService(StoreService storeService) {
-        this.storeService = storeService;
-    }
-
-    @Required
-    public void setTransactionService(TransactionService transactionService) {
-        this.transactionService = transactionService;
-    }
 }

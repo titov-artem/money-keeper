@@ -1,6 +1,6 @@
 package com.github.money.keeper.clusterization;
 
-import com.github.money.keeper.model.SalePoint;
+import com.github.money.keeper.model.core.SalePoint;
 
 import java.util.List;
 import java.util.Set;

@@ -1,13 +1,10 @@
 package com.github.money.keeper.service.impl;
 
-import com.github.money.keeper.model.Category;
-import com.github.money.keeper.model.Store;
+import com.github.money.keeper.model.core.Category;
+import com.github.money.keeper.model.core.Store;
 import com.github.money.keeper.service.CategorizationHelper;
-import com.github.money.keeper.service.CategoryService;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -34,14 +31,14 @@ public class AutoAndManualCategorizationHelper implements CategorizationHelper {
         if (category != null) {
             return category;
         }
-        String categoryDescription = store.getCategoryDescription();
-        if (StringUtils.isBlank(categoryDescription)) {
-            categoryDescription = CategoryService.UNKNOWN_CATEGORY_NAME;
-        }
-        category = alternativeToCategory.get(categoryDescription);
-        if (category == null) {
-            category = new Category(categoryDescription, ImmutableSet.of(categoryDescription));
-        }
+//        String categoryDescription = store.getCategoryId();
+//        if (StringUtils.isBlank(categoryDescription)) {
+//            categoryDescription = CategoryService.UNKNOWN_CATEGORY_NAME;
+//        }
+//        category = alternativeToCategory.get(categoryDescription);
+//        if (category == null) {
+//            category = new Category(categoryDescription, ImmutableSet.of(categoryDescription));
+//        }
         return category;
 
     }

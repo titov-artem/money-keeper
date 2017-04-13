@@ -1,6 +1,6 @@
 package com.github.money.keeper.storage;
 
-import com.github.money.keeper.model.Account;
+import com.github.money.keeper.model.core.Account;
 
-public interface AccountRepo extends BaseRepo<Integer, Account> {
+public interface AccountRepo extends BaseRepo<Long, Account> {
 }
