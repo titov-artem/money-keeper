@@ -1,4 +1,3 @@
-target/
 money-keeper-core/build/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -19,3 +18,4 @@ classes/
 .gradle/
 
 **/.DS_Store
+money-keeper-core/src/main/generated
