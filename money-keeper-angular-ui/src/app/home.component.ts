@@ -20,6 +20,10 @@ export class HomeComponent implements OnInit {
     ngOnInit(): void {
         this.accountService.getAccounts()
             .then(accounts => this.accounts = accounts);
+        $('.selectpicker').selectpicker({
+            style: 'btn-info',
+            size: 4
+        });
     }
 
     create(accountName: string, parserType: string): void {

@@ -38,9 +38,6 @@ public class TransactionsController implements REST {
     public List<UnifiedTransactionReportView> getTransactions(@QueryParam("from") @Nullable LocalDate from,
                                                               @QueryParam("to") @Nullable LocalDate to,
                                                               @QueryParam("account_ids") Set<Integer> accountIds) {
-        from = from == null ? LocalDate.MIN : from;
-        to = to == null ? LocalDate.MAX : to;
-
         List<RawTransaction> transactions = accountIds.isEmpty()
                 ? transactionRepo.load(from, to)
                 : transactionRepo.load(from, to, accountIds);

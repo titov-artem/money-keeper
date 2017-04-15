@@ -3,7 +3,6 @@ import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
 import {AppRoutingModule} from "./app-routing.module";
-// Imports for loading & configuring the in-memory web api
 import {AppComponent} from "./app.component";
 import {AccountService} from "./service/account.service";
 import {HomeComponent} from "./home.component";
@@ -17,6 +16,7 @@ import {StoresService} from "./service/store.service";
 import {AlertComponent} from "./alert.component";
 import {TransactionsDeduplicateComponent} from "./transactions-deduplicate.component";
 import {TransactionsService} from "./service/transactions.service";
+import {TransactionsComponent} from "./transactions.component";
 
 @NgModule({
     imports: [
@@ -35,6 +35,7 @@ import {TransactionsService} from "./service/transactions.service";
         PeriodReportComponent,
         CategoryEditorComponent,
         StoresEditorComponent,
+        TransactionsComponent,
 
         AlertComponent
     ],

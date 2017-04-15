@@ -2,6 +2,7 @@ package com.github.money.keeper.storage.jdbc;
 
 import com.github.money.keeper.model.core.RawTransaction;
 import com.github.money.keeper.storage.TransactionRepo;
+import org.jooq.Condition;
 import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +11,7 @@ import javax.inject.Inject;
 import java.sql.Date;
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -57,20 +59,18 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
         this.clock = clock;
     }
 
-    private static Date toUtilDate(LocalDate date, Clock clock) {
-        return new Date(Date.from(date
-                .atStartOfDay()
-                .atZone(clock.getZone())
-                .toInstant()
-        ).getTime());
-    }
-
     @Override
     public List<RawTransaction> load(@Nullable LocalDate from,
                                      @Nullable LocalDate to) {
+        List<Condition> conditions = new ArrayList<>();
+        if (from != null) {
+            conditions.add(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)));
+        }
+        if (to != null) {
+            conditions.add(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)));
+        }
         return jdbc.DSL().select().from(table)
-                .where(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)))
-                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)))
+                .where(conditions)
                 .fetch()
                 .stream()
                 .map(MAPPER)
@@ -80,14 +80,31 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
     @Override
     public List<RawTransaction> load(@Nullable LocalDate from,
                                      @Nullable LocalDate to,
-                                     Set<Integer> accountIds) {
+                                     @Nullable Set<Integer> accountIds) {
+        List<Condition> conditions = new ArrayList<>();
+        if (from != null) {
+            conditions.add(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)));
+        }
+        if (to != null) {
+            conditions.add(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)));
+        }
+        if (accountIds != null && !accountIds.isEmpty()) {
+            conditions.add(TRANSACTION.ACCOUNT_ID.in(accountIds));
+        }
         return jdbc.DSL().select().from(table)
-                .where(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)))
-                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)))
-                .and(TRANSACTION.ACCOUNT_ID.in(accountIds))
+                .where(conditions)
                 .fetch()
                 .stream()
                 .map(MAPPER)
                 .collect(toList());
     }
+
+    private static Date toUtilDate(LocalDate date, Clock clock) {
+        return new Date(Date.from(date
+                .atStartOfDay()
+                .atZone(clock.getZone())
+                .toInstant()
+        ).getTime());
+    }
+
 }

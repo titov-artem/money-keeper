@@ -13,9 +13,28 @@ export class TransactionsService extends AbstractService {
         super();
     }
 
+    getTransactions(from: string, to: string, accountIds: number[]): Promise<Transaction[]> {
+        let url = `${this.transactionsUrl}?`;
+        if (from != null) {
+            url += `from=${from}&`;
+        }
+        if (to != null) {
+            url += `to=${to}&`;
+        }
+        if (accountIds != null && accountIds.length > 0) {
+            for (let accountId of accountIds) {
+                url += `account_ids=${accountId}&`;
+            }
+        }
+        return this.http.get(url, {headers: this.headers})
+            .toPromise()
+            .then(res => res.json())
+            .catch(this.handleError);
+    }
+
     deduplicateTransactions(transactions: Transaction[],
                             successCallback: (data: any) => void,
-                            errorCallback: (data: any) => void) {
+                            errorCallback: (data: any) => void): void {
         let transactionIds: number[] = [];
         transactions.forEach(tr => transactionIds.push(tr.id));
         this.http.post(`${this.transactionsUrl}/remove-batch`, transactionIds, {headers: this.headers})

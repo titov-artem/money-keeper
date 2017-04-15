@@ -5,6 +5,7 @@ import {ReportsComponent} from "./reports.component";
 import {PeriodReportComponent} from "./period-report.component";
 import {CategoryEditorComponent} from "./category-editor.component";
 import {StoresEditorComponent} from "./stores-editor.component";
+import {TransactionsComponent} from "./transactions.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -12,7 +13,8 @@ const routes: Routes = [
     {path: 'reports', component: ReportsComponent},
     {path: 'reports/period/:from/:to/:accountId', component: PeriodReportComponent},
     {path: 'categories', component: CategoryEditorComponent},
-    {path: 'stores', component: StoresEditorComponent}
+    {path: 'stores', component: StoresEditorComponent},
+    {path: 'transactions', component: TransactionsComponent}
 ];
 
 @NgModule({
