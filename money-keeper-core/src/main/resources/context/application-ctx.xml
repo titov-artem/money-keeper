@@ -8,5 +8,6 @@
 
     <import resource="http-server-ctx.xml"/>
     <import resource="cxf-container-ctx.xml"/>
+    <import resource="controllers-ctx.xml"/>
 
 </beans>

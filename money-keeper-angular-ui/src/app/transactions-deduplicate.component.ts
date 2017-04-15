@@ -1,7 +1,8 @@
 import {Component} from "@angular/core";
-import {Transaction} from "./model/Transaction";
 import {TransactionsService} from "./service/transactions.service";
 import {AlertComponent} from "./alert.component";
+import {DuplicateTransactions} from "./model/duplicate.transactions";
+import {Transaction} from "./model/transaction";
 
 @Component({
     moduleId: module.id,
@@ -9,7 +10,8 @@ import {AlertComponent} from "./alert.component";
     templateUrl: './html/transactions-deduplicate.component.html',
 })
 export class TransactionsDeduplicateComponent {
-    transactions: Transaction[] = null;
+    allTransactions: Transaction[] = null;
+    duplicates: Transaction[] = null;
 
     private from: string = null;
     private to: string = null;
@@ -19,22 +21,29 @@ export class TransactionsDeduplicateComponent {
     }
 
 
-    setTransactions(transactions: Transaction[],
+    setTransactions(transactions: DuplicateTransactions[],
                     from: string,
                     to: string,
                     alert: AlertComponent): void {
-        this.transactions = transactions;
+        this.allTransactions = [];
+        this.duplicates = [];
+        transactions.forEach(tr => {
+            this.allTransactions.push(tr.origin);
+            this.allTransactions = this.allTransactions.concat(tr.duplicates);
+            this.duplicates = this.duplicates.concat(tr.duplicates)
+
+        });
         this.from = from;
         this.to = to;
         this.alert = alert;
     }
 
     deduplicateTransactions(): void {
-        if (this.transactions != null) {
+        if (this.allTransactions != null) {
+            let transactions = this.duplicates;
             this.transactionsService.deduplicateTransactions(
-                this.from,
-                this.to,
-                data => this.alert.showAlert(AlertComponent.SUCCESS, 'Removed ' + data.length + ' duplicates', 3000),
+                transactions,
+                data => this.alert.showAlert(AlertComponent.SUCCESS, 'Removed ' + transactions.length + ' duplicates', 3000),
                 error => {
                     console.log(error);
                     this.alert.showAlert(AlertComponent.DANGER, 'Failed to remove duplicates', 3000);
@@ -45,7 +54,8 @@ export class TransactionsDeduplicateComponent {
     }
 
     clear(): void {
-        this.transactions = null;
+        this.allTransactions = null;
+        this.duplicates = null;
         this.from = null;
         this.to = null;
     }

@@ -6,7 +6,7 @@ import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.model.core.Category;
 import com.github.money.keeper.model.core.RawTransaction;
 import com.github.money.keeper.model.core.SalePoint;
-import com.github.money.keeper.model.service.UnifiedTransaction;
+import com.github.money.keeper.model.service.DuplicateTransactions;
 import com.github.money.keeper.parser.AbstractTransactionParser;
 import com.github.money.keeper.parser.ParsedTransaction;
 import com.github.money.keeper.parser.ParsingResult;
@@ -59,7 +59,7 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
     }
 
     @Override
-    public List<UnifiedTransaction> uploadFile(Account account, InputStream data) throws IOException {
+    public List<DuplicateTransactions> uploadFile(Account account, InputStream data) throws IOException {
         AbstractTransactionParser parser = transactionParserProvider.getParser(account.getParserType());
         ParsingResult result = parser.parse(account, data);
         ImmutableList<ParsedTransaction> parsedTransactions = result.getTransactions();
@@ -81,15 +81,19 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
         transactionRepo.save(rawTransactions);
 
         Map<Long, List<SalePoint>> salePointsByStoreId = salePointRepo.getAll().stream()
+                .filter(sP -> sP.getStoreId() != null)
                 .collect(groupingBy(SalePoint::getStoreId));
         Map<Long, Category> categoriesById = categoryRepo.getAll().stream().collect(toMap(Category::getId, identity()));
         List<ClusterizableStore> stores = storeRepo.getAll().stream()
                 .map(
-                        store -> new ClusterizableStore(
-                                store,
-                                categoriesById.get(store.getCategoryId()),
-                                new HashSet<>(salePointsByStoreId.get(store.getId()))
-                        )
+                        store -> {
+                            List<SalePoint> points = salePointsByStoreId.get(store.getId());
+                            return new ClusterizableStore(
+                                    store,
+                                    categoriesById.get(store.getCategoryId()),
+                                    points == null ? new HashSet<>() : new HashSet<>(points)
+                            );
+                        }
                 )
                 .collect(toList());
 

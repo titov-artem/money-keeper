@@ -28,4 +28,6 @@ public abstract class AbstractTransactionParser {
 
     protected abstract ParsingResult doParse(Account account, InputStream source) throws IOException;
 
+    protected abstract ParserType getParserType();
+
 }

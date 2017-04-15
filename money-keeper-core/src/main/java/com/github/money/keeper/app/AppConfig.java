@@ -7,7 +7,7 @@ import java.time.Clock;
 
 @Configuration
 @ImportResource({"classpath*:/context/application-ctx.xml"})
-@ComponentScan(basePackages = "com.github.money.keeper.storage.jdbc")
+@ComponentScan(basePackages = "com.github.money.keeper")
 @PropertySource({
         "classpath:context/application.properties"
 })

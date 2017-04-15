@@ -70,7 +70,7 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
                                      @Nullable LocalDate to) {
         return jdbc.DSL().select().from(table)
                 .where(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)))
-                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(from, clock)))
+                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)))
                 .fetch()
                 .stream()
                 .map(MAPPER)
@@ -83,7 +83,7 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
                                      Set<Integer> accountIds) {
         return jdbc.DSL().select().from(table)
                 .where(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)))
-                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(from, clock)))
+                .and(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)))
                 .and(TRANSACTION.ACCOUNT_ID.in(accountIds))
                 .fetch()
                 .stream()

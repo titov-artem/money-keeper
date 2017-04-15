@@ -12,4 +12,6 @@ public interface StoreRepo extends BaseRepo<Long, Store> {
     Map<Long, List<Store>> getAllByCategories();
 
     void setCategoryId(Iterable<Long> storeIds, Long categoryId);
+
+    void batchRename(List<Long> storeIds, List<String> storeNames);
 }

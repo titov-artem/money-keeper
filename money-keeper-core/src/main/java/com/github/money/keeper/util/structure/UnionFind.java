@@ -4,6 +4,17 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Implement union-find algorithm with compression. Elements must have different hash codes
+ * for corrected structure workflow
+ *
+ * @param <T>
+ */
 public class UnionFind<T> {
 
     private final BiMap<T, Integer> index = HashBiMap.create();
@@ -45,6 +56,18 @@ public class UnionFind<T> {
         int pos = index.get(item);
         int p = rootFor(pos);
         return index.inverse().get(p);
+    }
+
+    public Map<T, List<T>> getClustersAsMap() {
+        Map<T, List<T>> out = new HashMap<>();
+        for (T item : index.keySet()) {
+            T root = rootFor(item);
+            if (!out.containsKey(root)) {
+                out.put(root, new ArrayList<>());
+            }
+            out.get(root).add(item);
+        }
+        return out;
     }
 
     private int rootFor(int pos) {

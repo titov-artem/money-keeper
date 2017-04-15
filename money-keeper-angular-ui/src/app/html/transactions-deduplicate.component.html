@@ -1,8 +1,8 @@
-<div *ngIf="transactions != null" id="duplicates-container">
+<div *ngIf="allTransactions != null" id="duplicates-container">
     <button id="deduplicate" class="btn btn-primary" (click)="deduplicateTransactions()">Remove duplicates</button>
     <button id="deduplicate-close" class="btn btn-danger" (click)="clear()">Close</button>
     <div id="duplicates-list">
-        <li *ngFor="let transaction of transactions" class="list-group-item transaction">
+        <li *ngFor="let transaction of allTransactions" class="list-group-item transaction">
             <!--<button type="button" class="close remove-transaction" aria-label="Close"><span aria-hidden="true">&times;</span>-->
             <!--</button>-->
             <span>{{transaction.date}}</span>&nbsp;

@@ -1,7 +1,7 @@
 package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.core.RawTransaction;
-import com.github.money.keeper.model.service.UnifiedTransaction;
+import com.github.money.keeper.model.service.DuplicateTransactions;
 
 import javax.annotation.Nonnull;
 import java.time.LocalDate;
@@ -19,6 +19,6 @@ public interface TransactionService {
      * @return maybe empty sorted list of duplicates. Duplicates will go consecutively
      */
     @Nonnull
-    List<UnifiedTransaction> getDuplicates(LocalDate from, LocalDate to);
+    List<DuplicateTransactions> getDuplicates(LocalDate from, LocalDate to);
 
 }

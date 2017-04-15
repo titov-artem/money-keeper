@@ -1,7 +1,7 @@
 package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.core.Account;
-import com.github.money.keeper.model.service.UnifiedTransaction;
+import com.github.money.keeper.model.service.DuplicateTransactions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +16,6 @@ public interface BankStatementUploadService {
      * @param data    input stream with bank statement data
      * @return list of found duplicates
      */
-    List<UnifiedTransaction> uploadFile(Account account, InputStream data) throws IOException;
+    List<DuplicateTransactions> uploadFile(Account account, InputStream data) throws IOException;
 
 }

@@ -2,7 +2,9 @@ package com.github.money.keeper.storage.jdbc;
 
 import com.github.money.keeper.model.core.Store;
 import com.github.money.keeper.storage.StoreRepo;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
+import org.jooq.Query;
 import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
@@ -72,5 +74,16 @@ public class StoreJdbcRepo extends AbstractJdbcRepo<Long, Store> implements Stor
                         .execute();
             }
         });
+    }
+
+    @Override public void batchRename(List<Long> storeIds, List<String> storeNames) {
+        Preconditions.checkArgument(storeIds.size() == storeNames.size());
+        Query query = jdbc.DSL().update(STORE).set(STORE.NAME, (String) null).where(STORE.ID.eq((Long) null));
+        Object[][] params = new Object[storeIds.size()][2];
+        for (int i = 0; i < storeIds.size(); i++) {
+            params[i][0] = storeIds.get(i);
+            params[i][1] = storeNames.get(i);
+        }
+        jdbc.DSL().batch(query, params).execute();
     }
 }

@@ -4,6 +4,7 @@ import com.github.money.keeper.model.core.Account;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Component
 public class TinkoffTransactionParser extends AbstractTransactionParser {
 
     @Override
@@ -41,6 +43,10 @@ public class TinkoffTransactionParser extends AbstractTransactionParser {
             }
         }
         return new ParsingResult(null, transactions);
+    }
+
+    @Override protected ParserType getParserType() {
+        return ParserType.TINKOFF;
     }
 
     private Optional<ParsedTransaction> buildTransaction(Account account,

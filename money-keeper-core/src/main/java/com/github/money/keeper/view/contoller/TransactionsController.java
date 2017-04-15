@@ -52,7 +52,7 @@ public class TransactionsController implements REST {
                 .collect(toList());
     }
 
-    @DELETE
+    @POST
     @Path("/remove-batch")
     public void deduplicate(Set<Long> transactionIds) {
         transactionRepo.delete(transactionIds);

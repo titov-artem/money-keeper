@@ -1,8 +1,7 @@
 package com.github.money.keeper.view.contoller.dto;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.github.money.keeper.model.report.UnifiedTransactionReportView;
-import com.github.money.keeper.model.service.UnifiedTransaction;
+import com.github.money.keeper.model.service.DuplicateTransactions;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -13,21 +12,21 @@ import static java.util.stream.Collectors.toList;
 public class StatementUploadResult {
 
     private Result result;
-    private List<UnifiedTransactionReportView> duplicates;
+    private List<DuplicateTransactionView> duplicates;
     private LocalDate from;
     private LocalDate to;
 
-    private StatementUploadResult(Result result, List<UnifiedTransaction> duplicates) {
+    private StatementUploadResult(Result result, List<DuplicateTransactions> duplicates) {
         this.result = result;
         this.from = LocalDate.MAX;
         this.to = LocalDate.MIN;
         this.duplicates = duplicates.stream()
-                .peek(t -> {
-                    if (t.getDate().compareTo(from) < 0) from = t.getDate();
-                    if (t.getDate().compareTo(to) > 0) to = t.getDate();
-                })
-                .map(UnifiedTransactionReportView::new)
+                .map(DuplicateTransactionView::new)
                 .collect(toList());
+        duplicates.forEach(t -> {
+            if (t.getOrigin().getDate().compareTo(from) < 0) from = t.getOrigin().getDate();
+            if (t.getOrigin().getDate().compareTo(to) > 0) to = t.getOrigin().getDate();
+        });
     }
 
     @JsonGetter
@@ -36,7 +35,7 @@ public class StatementUploadResult {
     }
 
     @JsonGetter
-    public List<UnifiedTransactionReportView> getDuplicates() {
+    public List<DuplicateTransactionView> getDuplicates() {
         return duplicates;
     }
 
@@ -50,7 +49,7 @@ public class StatementUploadResult {
         return to;
     }
 
-    public static StatementUploadResult success(List<UnifiedTransaction> duplicates) {
+    public static StatementUploadResult success(List<DuplicateTransactions> duplicates) {
         return new StatementUploadResult(Result.SUCCESS, duplicates == null ? Collections.emptyList() : duplicates);
     }
 

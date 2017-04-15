@@ -1,7 +1,7 @@
 package com.github.money.keeper.view.contoller;
 
 import com.github.money.keeper.model.core.Account;
-import com.github.money.keeper.model.service.UnifiedTransaction;
+import com.github.money.keeper.model.service.DuplicateTransactions;
 import com.github.money.keeper.service.BankStatementUploadService;
 import com.github.money.keeper.storage.AccountRepo;
 import com.github.money.keeper.view.contoller.dto.StatementUploadResult;
@@ -48,7 +48,7 @@ public class BankStatementController implements REST {
 
     private StatementUploadResult uploadFile(Account account, InputStream data) {
         try {
-            List<UnifiedTransaction> rawTransactions = bankStatementUploadService.uploadFile(account, data);
+            List<DuplicateTransactions> rawTransactions = bankStatementUploadService.uploadFile(account, data);
             return StatementUploadResult.success(rawTransactions);
         } catch (Exception e) {
             log.error("Failed to parse input stream due to exception", e);

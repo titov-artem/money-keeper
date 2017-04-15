@@ -1,9 +1,9 @@
-import {Component, OnInit, ElementRef} from "@angular/core";
+import {Component, ElementRef, OnInit} from "@angular/core";
 import {Account} from "./model/account";
 import {AccountService} from "./service/account.service";
 import {AlertComponent} from "./alert.component";
 import {TransactionsDeduplicateComponent} from "./transactions-deduplicate.component";
-import {Transaction} from "./model/Transaction";
+import {DuplicateTransactions} from "./model/duplicate.transactions";
 
 @Component({
     moduleId: module.id,
@@ -22,6 +22,16 @@ export class HomeComponent implements OnInit {
             .then(accounts => this.accounts = accounts);
     }
 
+    create(accountName: string, parserType: string): void {
+        this.accountService.create(accountName, parserType)
+            .then(account => this.accounts.push(account));
+    }
+
+    delete(accountId: number, index: number): void {
+        this.accountService.delete(accountId)
+            .then(_ => this.accounts.splice(index, 1))
+    }
+
     showStatementUploadDialog(fileInput: ElementRef): void {
         $(fileInput).click();
     }
@@ -37,7 +47,7 @@ export class HomeComponent implements OnInit {
                     } else {
                         alert.showAlert(AlertComponent.INFO, 'Bank statement uploaded successfully, but duplicates found', 5000);
                         trDeduplicate.setTransactions(
-                            data.duplicates as Transaction[],
+                            data.duplicates as DuplicateTransactions[],
                             data.from,
                             data.to,
                             alert

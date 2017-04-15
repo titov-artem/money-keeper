@@ -5,22 +5,24 @@
             <form class="form-inline">
                 <div class="form-group">
                     <label for="account-name">Name</label>
-                    <input type="text" id="account-name" class="form-control" placeholder="1234">
+                    <input #account_name type="text" id="account-name" class="form-control" placeholder="1234">
                 </div>
                 <div class="form-group">
-                    <select id="account-type" class="selectpicker">
+                    <select #parser_type id="account-type" class="selectpicker">
                         <option value="RAIFFEISEN_CARD" selected>Raiffeisen card</option>
                         <option value="TINKOFF">Tinkoff</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <button id="create-account" class="btn btn-success" type="button">Create</button>
+                    <button id="create-account" class="btn btn-success" type="button"
+                            (click)="create(account_name.value, parser_type.value)">Create
+                    </button>
                 </div>
             </form>
             <div id="account-create-alerts-container" class="alerts-container"></div>
         </div>
     </div>
-    <div class="panel panel-default">
+    <div *ngIf="accounts.length > 0" class="panel panel-default">
         <div class="panel-heading">Select account to upload</div>
         <div class="panel-body">
             <div id="upload-alerts-container">
@@ -28,13 +30,13 @@
             </div>
             <transactions-deduplicate #transactionsDeduplicate></transactions-deduplicate>
             <div id="accounts">
-                <div *ngFor="let account of accounts" class="col-md-4 account">
+                <div *ngFor="let account of accounts; let i = index" class="col-md-4 account">
                     <div>
                         <div class="account-icon pull-left" [style.background-color]="account.color"></div>
                         <div class="account-control pull-right">
                             <i class="account-upload fa fa-lg fa-upload" (click)="showStatementUploadDialog(uploadInput)"></i>
                             <i class="account-edit fa fa-lg fa-pencil"></i>
-                            <i class="account-remove fa fa-lg fa-trash-o"></i>
+                            <i class="account-remove fa fa-lg fa-trash-o" (click)="delete(account.id, i)"></i>
                         </div>
                         <div class="account-name">
                             {{account.name}}

@@ -54,6 +54,7 @@ public class SalePoint extends AbstractEntity<Long> {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", rawCategory='" + rawCategory + '\'' +
+                ", storeId=" + storeId +
                 '}';
     }
 }

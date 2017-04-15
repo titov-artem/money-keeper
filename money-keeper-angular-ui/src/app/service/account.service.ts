@@ -3,7 +3,6 @@ import {Headers, Http, RequestOptions} from "@angular/http";
 import "rxjs/add/operator/toPromise";
 import {Account} from "../model/account";
 import {AbstractService} from "./abstract.service";
-import {errorHandler} from "@angular/platform-browser/src/browser";
 
 @Injectable()
 export class AccountService extends AbstractService {
@@ -45,7 +44,7 @@ export class AccountService extends AbstractService {
         return this.http
             .post(this.accountsUrl, JSON.stringify({name: name, parserType: parserType}), {headers: this.headers})
             .toPromise()
-            .then(res => res.json().data)
+            .then(res => res.json())
             .catch(this.handleError);
     }
 

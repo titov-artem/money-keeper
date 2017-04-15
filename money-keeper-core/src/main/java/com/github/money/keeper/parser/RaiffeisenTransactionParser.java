@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+@Component
 public class RaiffeisenTransactionParser extends AbstractTransactionParser {
     private static final Logger log = LoggerFactory.getLogger(RaiffeisenTransactionParser.class);
 
@@ -48,6 +50,10 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
             }
         }
         return new ParsingResult(null, transactions);
+    }
+
+    @Override protected ParserType getParserType() {
+        return ParserType.RAIFFEISEN_CARD;
     }
 
     private Optional<ParsedTransaction> buildTransaction(Account account,

@@ -80,6 +80,8 @@ public class DefaultStoresMerger implements StoresMerger {
         for (StorePrototype prototype : prototypesToCreate) {
             // try to determine category via sale points
             Optional<Category> categoryOpt = prototype.getSalePoints().stream()
+                    // filter out points without stores
+                    .filter(sP -> sP.getStoreId() != null)
                     // group points by category (category -> list of points)
                     .collect(groupingBy(pointToCategory::get))
                     .entrySet()

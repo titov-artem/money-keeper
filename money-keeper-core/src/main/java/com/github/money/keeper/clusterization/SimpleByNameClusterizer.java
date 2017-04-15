@@ -6,10 +6,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.function.BiFunction;
 
+@Component
 public class SimpleByNameClusterizer implements SalePointClusterizer {
 
     private static final double DISTANCE_THRESHOLD = 0.3;

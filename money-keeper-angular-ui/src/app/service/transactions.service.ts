@@ -1,6 +1,7 @@
 import {Injectable} from "@angular/core";
 import {AbstractService} from "./abstract.service";
 import {Headers, Http} from "@angular/http";
+import {Transaction} from "../model/transaction";
 
 @Injectable()
 export class TransactionsService extends AbstractService {
@@ -12,11 +13,12 @@ export class TransactionsService extends AbstractService {
         super();
     }
 
-    deduplicateTransactions(from: string,
-                            to: string,
+    deduplicateTransactions(transactions: Transaction[],
                             successCallback: (data: any) => void,
                             errorCallback: (data: any) => void) {
-        this.http.post(`${this.transactionsUrl}/deduplicate?from=${from}&to=${to}`, {headers: this.headers})
+        let transactionIds: number[] = [];
+        transactions.forEach(tr => transactionIds.push(tr.id));
+        this.http.post(`${this.transactionsUrl}/remove-batch`, transactionIds, {headers: this.headers})
             .toPromise()
             .then(res => successCallback(res.json()))
             .catch(error => {

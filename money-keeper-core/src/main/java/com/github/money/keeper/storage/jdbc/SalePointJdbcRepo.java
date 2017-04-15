@@ -2,10 +2,12 @@ package com.github.money.keeper.storage.jdbc;
 
 import com.github.money.keeper.model.core.SalePoint;
 import com.github.money.keeper.storage.SalePointRepo;
+import com.google.common.collect.Iterables;
 import org.jooq.Record;
 import org.springframework.stereotype.Repository;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.function.Function;
 
 import static com.github.money.keeper.storage.jdbc.generated.Tables.SALE_POINT;
@@ -37,5 +39,14 @@ public class SalePointJdbcRepo extends AbstractJdbcRepo<Long, SalePoint> impleme
                 jdbc,
                 txHelper
         );
+    }
+
+    @Override public void setStoreId(Iterable<Long> salePointIds, Long storeId) {
+        txHelper.withTx(() -> {
+            for (List<Long> chunk : Iterables.partition(salePointIds, jdbc.getMaxInSize())) {
+                jdbc.DSL().update(SALE_POINT).set(SALE_POINT.STORE_ID, storeId)
+                        .where(SALE_POINT.ID.in(chunk)).execute();
+            }
+        });
     }
 }

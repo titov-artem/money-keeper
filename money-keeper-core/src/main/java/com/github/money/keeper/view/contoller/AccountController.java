@@ -3,18 +3,25 @@ package com.github.money.keeper.view.contoller;
 import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.storage.AccountRepo;
 import com.github.money.keeper.view.contoller.dto.AccountDto;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.stereotype.Controller;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
+@Controller
 @Path("/account")
 public class AccountController implements REST {
 
-    private AccountRepo accountRepo;
+    private final AccountRepo accountRepo;
+
+    @Inject
+    public AccountController(AccountRepo accountRepo) {
+        this.accountRepo = accountRepo;
+    }
 
     @GET
     public List<AccountDto> getAccounts() {
@@ -44,8 +51,4 @@ public class AccountController implements REST {
         // todo delete all transactions for this account
     }
 
-    @Required
-    public void setAccountRepo(AccountRepo accountRepo) {
-        this.accountRepo = accountRepo;
-    }
 }
