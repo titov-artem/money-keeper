@@ -3,6 +3,7 @@ import {Transaction} from "./model/transaction";
 import {TransactionsService} from "./service/transactions.service";
 import {AccountService} from "./service/account.service";
 import {Account} from "./model/account";
+import {AlertComponent} from "./alert.component";
 import moment = require("moment");
 
 @Component({
@@ -37,7 +38,7 @@ export class TransactionsComponent implements OnInit, AfterViewChecked {
         }
     }
 
-    showTransactions(from: string, to: string, accountIdsSelect: ElementRef): void {
+    showTransactions(from: string, to: string, accountIdsSelect: ElementRef, alert: AlertComponent): void {
         let accountIds = $(accountIdsSelect).val()
         if (from != "") {
             from = moment(from, 'DD.MM.YYYY').format('YYYY-MM-DD');
@@ -52,6 +53,9 @@ export class TransactionsComponent implements OnInit, AfterViewChecked {
         this.transactionsService.getTransactions(from, to, accountIds)
             .then(transactions => {
                 this.transactions = transactions;
+                if (transactions.length == 0) {
+                    alert.showAlert(AlertComponent.WARNING, 'No transactions found for specified period', 3000);
+                }
             });
     }
 

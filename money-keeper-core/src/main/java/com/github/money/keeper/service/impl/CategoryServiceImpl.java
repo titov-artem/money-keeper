@@ -56,7 +56,7 @@ public class CategoryServiceImpl implements CategoryService {
             if (category.getName().equals(name)) {
                 return category;
             }
-            category.rename(name);
+            category = category.rename(name);
             return categoryRepo.save(category);
         });
     }

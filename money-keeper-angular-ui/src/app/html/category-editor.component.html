@@ -1,18 +1,21 @@
 <div class="container">
     <div id="log"></div>
     <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">Categories (<span *ngIf="categories"
-                                                      id="categories-count">{{categories.length}}</span>)</h3>
+        <div class="panel-heading clearfix">
+            <h3 class="panel-title pull-left">
+                Categories (<span *ngIf="categories" id="categories-count">{{categories.length}}</span>)
+            </h3>
+            <button class="btn btn-sm btn-primary pull-right" (click)="openCreateDialog()">+</button>
         </div>
         <div class="panel-body">
             <!--<div class="category-delete-empty btn btn-danger">Delete all empty categories</div>-->
             <ul *ngFor="let category of categories" class="list-group" id="categories">
                 <li class="category-row list-group-item">
                     <div class="category-controls pull-right">
-                        <i class="category-rename fa fa-pencil"></i>&nbsp;
+                        <i class="category-rename fa fa-pencil" (click)="openEditDialog(category)"></i>&nbsp;
                         <i class="category-union fa fa-link"></i>&nbsp;
-                        <i *ngIf="category.stores.length == 0" class="category-delete fa fa-trash text-danger" (click)="openDeleteDialog(category)"></i>&nbsp;
+                        <i *ngIf="category.stores.length == 0" class="category-delete fa fa-trash text-danger"
+                           (click)="openDeleteDialog(category)"></i>&nbsp;
                     </div>
                     <h4 class="list-group-item-heading">{{category.name}}</h4>
                     <div class="list-group-item-text collapse-group">
@@ -34,8 +37,34 @@
         </div>
     </div>
     <!-- modal dialogs -->
+    <!-- create -->
+    <div class="modal fade category-create-modal" tabindex="-1" role="dialog"
+         aria-labelledby="categoryRenameModalLabel">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="categoryCreateModalLabel">Create category</h4>
+                </div>
+                <div class="alerts"></div>
+                <div class="modal-body">
+                    <div class="input-group">
+                        <div class="input-group-addon">Name</div>
+                        <input #createCategoryName type="text" class="form-control category-create-name"
+                               placeholder="Name">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success category-create-apply"
+                            (click)="createCategory(createCategoryName.value); createCategoryName.value = ''">
+                        Create
+                    </button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- rename -->
-    <div class="modal fade category-rename-modal" tabindex="-1" role="dialog"
+    <div class="modal fade category-edit-modal" tabindex="-1" role="dialog"
          aria-labelledby="categoryRenameModalLabel">
         <div class="modal-dialog modal-sm">
             <div class="modal-content">
@@ -46,11 +75,14 @@
                 <div class="modal-body">
                     <div class="input-group">
                         <div class="input-group-addon">Name</div>
-                        <input type="text" class="form-control category-rename-name" placeholder="Name">
+                        <input #editCategoryName type="text" class="form-control category-edit-name" placeholder="Name">
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success category-rename-apply">Rename</button>
+                    <button type="button" class="btn btn-success category-edit-apply"
+                            (click)="edit(editCategoryName.value)">
+                        Rename
+                    </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>
@@ -91,7 +123,8 @@
                     Do you really want to delete category <span class="category-delete-name"></span>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger category-delete-apply">Delete</button>
+                    <button type="button" class="btn btn-danger category-delete-apply" (click)="delete()">Delete
+                    </button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                 </div>
             </div>

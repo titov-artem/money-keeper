@@ -5,6 +5,7 @@ import com.github.money.keeper.model.core.Store;
 import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
+import com.github.money.keeper.view.contoller.dto.CategoryDto;
 import com.github.money.keeper.view.contoller.dto.ExtendedCategoryDto;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
@@ -54,6 +55,14 @@ public class CategoryController implements REST {
                 .collect(toList());
     }
 
+    @POST
+    public ExtendedCategoryDto createCategory(CategoryDto dto) {
+        if (categoryRepo.findByName(dto.name).isPresent()) {
+            throw new IllegalArgumentException("Category with such name already exists");
+        }
+        return new ExtendedCategoryDto(categoryRepo.save(new Category(dto.name, dto.alternatives)), emptyList());
+    }
+
     @DELETE
     @Path("/{id}")
     public void delete(@PathParam("id") Long id) {
@@ -72,9 +81,9 @@ public class CategoryController implements REST {
     }
 
     @POST
-    @Path("/{id}/rename")
-    public ExtendedCategoryDto rename(@QueryParam("id") Long categoryId,
-                                      @QueryParam("name") String name) {
+    @Path("/{id}/rename/{name}")
+    public ExtendedCategoryDto rename(@PathParam("id") Long categoryId,
+                                      @PathParam("name") String name) {
         name = StringUtils.strip(name);
 
         Category category = categoryService.rename(categoryId, name);
