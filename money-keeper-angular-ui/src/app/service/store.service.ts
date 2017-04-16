@@ -22,13 +22,12 @@ export class StoresService extends AbstractService {
             .catch(this.handleError);
     }
 
-    update(store: Store): Promise<Store> {
-        const url = `${this.storesUrl}/${store.name}`;
-        return this.http.post(url, JSON.stringify(store), {headers: this.headers})
+    changeCategory(storeId: number, categoryId: number): Promise<Store> {
+        const url = `${this.storesUrl}/${storeId}/category/${categoryId}`;
+        return this.http.post(url, {headers: this.headers})
             .toPromise()
             .then(res => {
-
-                return res.json().data
+                return res.json()
             })
             .catch(this.handleError);
     }

@@ -9,6 +9,9 @@ import java.util.Set;
 public class CategoryDto {
 
     @JsonProperty
+    public Long id;
+
+    @JsonProperty
     public String name;
 
     @JsonProperty
@@ -19,8 +22,9 @@ public class CategoryDto {
     }
 
     public CategoryDto(Category category) {
+        this.id = category.getId();
         this.name = category.getName();
-        alternatives = category.getAlternatives();
+        this.alternatives = category.getAlternatives();
     }
 
 }

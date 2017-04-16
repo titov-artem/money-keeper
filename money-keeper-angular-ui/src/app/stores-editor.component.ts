@@ -1,4 +1,4 @@
-import {OnInit, Component} from "@angular/core";
+import {AfterViewChecked, Component, OnInit} from "@angular/core";
 import {Store} from "./model/store";
 import {StoresService} from "./service/store.service";
 import {ExtendedCategory} from "./model/extended.category";
@@ -10,7 +10,7 @@ import {CategoriesService} from "./service/category.service";
     templateUrl: './html/stores-editor.component.html',
     styleUrls: ['./css/store-editor.component.css']
 })
-export class StoresEditorComponent implements OnInit {
+export class StoresEditorComponent implements OnInit, AfterViewChecked {
     stores: Store[];
     storeShowEditForm: boolean[];
     categories: ExtendedCategory[];
@@ -23,6 +23,7 @@ export class StoresEditorComponent implements OnInit {
         this.storesService.getStores()
             .then(stores => {
                 this.stores = stores;
+                console.log(stores);
                 this.storeShowEditForm = [];
                 for (let i = 0; i < this.stores.length; i++) {
                     this.storeShowEditForm.push(false);
@@ -32,8 +33,17 @@ export class StoresEditorComponent implements OnInit {
             .then(categories => this.categories = categories);
     }
 
-    updateStore(store: Store): Promise<Store> {
-        return this.storesService.update(store);
+    ngAfterViewChecked(): void {
+        if (this.categories != null) {
+            $('.selectpicker').selectpicker({
+                style: 'btn-info',
+                size: 4
+            });
+        }
+    }
+
+    changeCategory(store: Store): Promise<Store> {
+        return this.storesService.changeCategory(store.id, store.category.id);
     }
 
 }

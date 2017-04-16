@@ -8,22 +8,23 @@
                 <li *ngFor="let store of stores; let i = index;" class="list-group-item store-row">
                     <div class="pull-right">
                         <div *ngIf="!storeShowEditForm[i]" class="category-view">
-                            <span class="category-name">{{store.categoryName}}</span> <i
+                            <span class="category-name">{{store.category.name}}</span> <i
                                 class="change-category fa fa-pencil" (click)="storeShowEditForm[i] = true"></i>
                         </div>
                         <div *ngIf="storeShowEditForm[i]" class="change-category-form">
                             <form class="form-inline">
                                 <div class="category-chooser-container form-group">
                                     <select class="category-chooser selectpicker"
-                                            data-live-search="true" [(ngModel)]="store.categoryName" name="category">
-                                        <option *ngFor="let category of categories" value="{{category.name}}">
+                                            data-live-search="true" [(ngModel)]="store.category" name="category">
+                                        <option *ngFor="let category of categories" [ngValue]="category">
                                             {{category.name}}
                                         </option>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <button class="change-category-apply btn btn-success"
-                                            (click)="updateStore(store); storeShowEditForm[i] = false" type="button">Save
+                                            (click)="changeCategory(store); storeShowEditForm[i] = false" type="button">
+                                        Save
                                     </button>
                                     <button class="change-category-cancel btn btn-danger" type="button"
                                             (click)="storeShowEditForm[i] = false">Cancel

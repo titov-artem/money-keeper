@@ -17,7 +17,9 @@ import javax.ws.rs.*;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 @Controller
@@ -42,10 +44,12 @@ public class CategoryController implements REST {
     public List<ExtendedCategoryDto> getCategories() {
         Map<Long, List<Store>> storesByCategoryId = storeRepo.getAllByCategories();
         return categoryService.loadAll().stream()
-                .map(c -> new ExtendedCategoryDto(
-                        c,
-                        storesByCategoryId.get(c.getId()).stream().map(Store::getName).collect(toList())
-                ))
+                .map(c -> {
+                    List<String> storeNames = Optional.ofNullable(storesByCategoryId.get(c.getId()))
+                            .map(stores -> stores.stream().map(Store::getName).collect(toList()))
+                            .orElse(emptyList());
+                    return new ExtendedCategoryDto(c, storeNames);
+                })
                 .sorted(Comparator.comparing(o -> o.name))
                 .collect(toList());
     }

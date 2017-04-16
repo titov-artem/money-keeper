@@ -1,4 +1,7 @@
+import {Category} from "./category";
+
 export class Store {
+    id: number;
     name: string;
-    categoryName: string;
+    category: Category;
 }
