@@ -13,7 +13,7 @@
                 <li class="category-row list-group-item">
                     <div class="category-controls pull-right">
                         <i class="category-rename fa fa-pencil" (click)="openEditDialog(category)"></i>&nbsp;
-                        <i class="category-union fa fa-link"></i>&nbsp;
+                        <i class="category-union fa fa-link" (click)="openUnionDialog(unionModal)"></i>&nbsp;
                         <i *ngIf="category.stores.length == 0" class="category-delete fa fa-trash text-danger"
                            (click)="openDeleteDialog(category)"></i>&nbsp;
                     </div>
@@ -89,27 +89,7 @@
         </div>
     </div>
     <!-- union -->
-    <div class="modal fade category-union-modal" tabindex="-1" role="dialog"
-         aria-labelledby="categoryUnionModalLabel">
-        <div class="modal-dialog modal-sm">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="categoryUnionModalLabel">Enter category name</h4>
-                </div>
-                <div class="alerts"></div>
-                <div class="modal-body">
-                    <div class="input-group">
-                        <div class="input-group-addon">Name</div>
-                        <input type="text" class="form-control category-union-name" placeholder="Name">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success category-union-apply">Union</button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <category-union-modal #unionModal></category-union-modal>
     <!-- delete -->
     <div class="modal fade category-delete-modal" tabindex="-1" role="dialog"
          aria-labelledby="categoryDeleteModalLabel">

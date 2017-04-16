@@ -1,4 +1,4 @@
-import {Component, OnInit, OnDestroy} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Account} from "./model/account";
 import {AccountService} from "./service/account.service";
 import {ActivatedRoute} from "@angular/router";
@@ -45,7 +45,7 @@ export class PeriodReportComponent implements OnInit, OnDestroy {
     showReport(): void {
         var charData: any = [];
         var categoryCache: any = [];
-        this.report.categoryReports.forEach(function (cReport) {
+        this.report.categoryReports.forEach(cReport => {
             charData.push([cReport.category, cReport.amount]);
             categoryCache[cReport.category] = cReport.id;
         });

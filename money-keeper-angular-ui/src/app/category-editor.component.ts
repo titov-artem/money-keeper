@@ -1,6 +1,7 @@
 import {Component, OnInit} from "@angular/core";
 import {ExtendedCategory} from "./model/extended.category";
 import {CategoriesService} from "./service/category.service";
+import {CategoryUnionComponent} from "./category.union.modal.component";
 
 @Component({
     moduleId: module.id,
@@ -12,10 +13,14 @@ export class CategoryEditorComponent implements OnInit {
     categories: ExtendedCategory[];
 
     private createModal: any;
+
     private editingCategory: ExtendedCategory;
     private editModal: any;
+
     private deletingCategory: ExtendedCategory;
     private deleteModal: any;
+
+    private unionModal: any;
 
     constructor(private categoriesService: CategoriesService) {
     }
@@ -39,6 +44,7 @@ export class CategoryEditorComponent implements OnInit {
         this.createModal = $('.category-create-modal');
         this.editModal = $('.category-edit-modal');
         this.deleteModal = $('.category-delete-modal');
+        this.unionModal = $('.category-union-modal');
     }
 
     createCategory(name: string): void {
@@ -80,6 +86,17 @@ export class CategoryEditorComponent implements OnInit {
         this.deletingCategory = category;
         this.deleteModal.find('.category-delete-name').text(category.name);
         this.deleteModal.modal('show');
+    }
+
+    openUnionDialog(unionModal: CategoryUnionComponent): void {
+        unionModal.openDialog(this.categories, this);
+    }
+
+    unionReplace(oldCategoryIds: number[], newCategory: ExtendedCategory): void {
+        this.categories = this.categories.filter(c => {
+            return oldCategoryIds.indexOf(c.id) == -1;
+        });
+        this.insertLocalCategory(newCategory);
     }
 
     /*

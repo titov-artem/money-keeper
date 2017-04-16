@@ -38,12 +38,19 @@ export class CategoriesService extends AbstractService {
             .catch(this.handleError);
     }
 
-
     delete(id: number): Promise<void> {
         const url = `${this.categoriesUrl}/${id}`;
         return this.http.delete(url, {headers: this.headers})
             .toPromise()
             .then(() => null)
+            .catch(this.handleError);
+    }
+
+    union(name: string, categoryIds: number[]): Promise<ExtendedCategory> {
+        const url = `${this.categoriesUrl}/union`;
+        return this.http.post(url, JSON.stringify({name: name, categoryIds: categoryIds}), {headers: this.headers})
+            .toPromise()
+            .then(res => res.json())
             .catch(this.handleError);
     }
 }

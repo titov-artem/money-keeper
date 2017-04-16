@@ -17,6 +17,7 @@ import {AlertComponent} from "./alert.component";
 import {TransactionsDeduplicateComponent} from "./transactions-deduplicate.component";
 import {TransactionsService} from "./service/transactions.service";
 import {TransactionsComponent} from "./transactions.component";
+import {CategoryUnionComponent} from "./category.union.modal.component";
 
 @NgModule({
     imports: [
@@ -30,14 +31,15 @@ import {TransactionsComponent} from "./transactions.component";
         AppComponent,
 
         HomeComponent,
-        TransactionsDeduplicateComponent,
         ReportsComponent,
         PeriodReportComponent,
         CategoryEditorComponent,
         StoresEditorComponent,
         TransactionsComponent,
 
-        AlertComponent
+        AlertComponent,
+        TransactionsDeduplicateComponent,
+        CategoryUnionComponent
     ],
     providers: [
         AccountService,

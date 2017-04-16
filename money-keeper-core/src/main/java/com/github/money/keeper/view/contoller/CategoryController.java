@@ -6,6 +6,7 @@ import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.StoreRepo;
 import com.github.money.keeper.view.contoller.dto.CategoryDto;
+import com.github.money.keeper.view.contoller.dto.CategoryUnionForm;
 import com.github.money.keeper.view.contoller.dto.ExtendedCategoryDto;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang3.StringUtils;
@@ -92,11 +93,10 @@ public class CategoryController implements REST {
 
     @POST
     @Path("/union")
-    public ExtendedCategoryDto union(@QueryParam("name") String name,
-                                     @QueryParam("category_ids") List<Long> categoryIds) {
-        Preconditions.checkArgument(categoryIds.size() >= 2, "At least 2 categories can be united");
-        name = StringUtils.strip(name);
-        Category category = categoryService.union(name, categoryIds);
+    public ExtendedCategoryDto union(CategoryUnionForm form) {
+        Preconditions.checkArgument(form.categoryIds.size() >= 2, "At least 2 categories can be united");
+        String name = StringUtils.strip(form.name);
+        Category category = categoryService.union(name, form.categoryIds);
         return new ExtendedCategoryDto(category, getCategoryStores(category));
     }
 
