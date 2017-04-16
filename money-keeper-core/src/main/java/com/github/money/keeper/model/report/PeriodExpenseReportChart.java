@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.model.core.Category;
 import com.github.money.keeper.model.service.UnifiedTransaction;
-import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.storage.AccountRepo;
+import com.github.money.keeper.storage.CategoryRepo;
 import com.google.common.collect.Lists;
 
 import javax.annotation.Nullable;
@@ -13,9 +13,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.*;
 
 public class PeriodExpenseReportChart {
 
@@ -104,28 +105,27 @@ public class PeriodExpenseReportChart {
     }
 
     public static final class Builder {
-        private final CategorizationHelper categorizationHelper;
         private final AccountRepo accountRepo;
-        private final Map<Category, CRBuilder> crBuilders = new HashMap<>();
+        private final CategoryRepo categoryRepo;
+        private final Map<Long, CRBuilder> crBuilders = new HashMap<>();
         private final Set<Long> accountIds = new HashSet<>();
         private LocalDate from;
         private LocalDate to;
 
-        public Builder(CategorizationHelper categorizationHelper,
-                       AccountRepo accountRepo,
+        public Builder(AccountRepo accountRepo,
+                       CategoryRepo categoryRepo,
                        @Nullable LocalDate from,
                        @Nullable LocalDate to) {
+            this.accountRepo = accountRepo;
+            this.categoryRepo = categoryRepo;
             this.from = from;
             this.to = to;
-            this.categorizationHelper = categorizationHelper;
-            this.accountRepo = accountRepo;
         }
 
         public void append(UnifiedTransaction transaction) {
             updateReportPeriod(transaction);
             accountIds.add(transaction.getAccountId());
-            Category category = categorizationHelper.determineCategory(transaction.getStore());
-            CRBuilder crBuilder = summonBuilder(category);
+            CRBuilder crBuilder = summonBuilder(transaction.getStore().getCategoryId());
             crBuilder.append(transaction);
         }
 
@@ -142,30 +142,36 @@ public class PeriodExpenseReportChart {
             BigDecimal total = crBuilders.values().stream()
                     .map(b -> b.amount)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+            Map<Long, Category> categoryById = categoryRepo.get(crBuilders.keySet()).stream()
+                    .collect(toMap(Category::getId, identity()));
             return new PeriodExpenseReportChart(
                     from,
                     to,
                     accountRepo.get(accountIds).stream().map(Account::getName).collect(toSet()),
                     crBuilders.values().stream()
-                            .map(b -> b.build(b.amount.divide(total, 3, RoundingMode.HALF_UP).doubleValue() * 100))
+                            .map(b -> b.build(categoryById::get, b.amount.divide(total, 3, RoundingMode.HALF_UP).doubleValue() * 100))
                             .sorted((o1, o2) -> o2.amount.compareTo(o1.amount))
                             .collect(toList()),
                     total);
         }
 
-        private CRBuilder summonBuilder(Category category) {
-            CRBuilder out = crBuilders.putIfAbsent(category, new CRBuilder(category));
-            return out == null ? crBuilders.get(category) : out;
+        private CRBuilder summonBuilder(Long categoryId) {
+            CRBuilder out = crBuilders.putIfAbsent(categoryId, new CRBuilder(categoryId));
+            return out == null ? crBuilders.get(categoryId) : out;
         }
     }
 
     private static final class CRBuilder {
-        private final Category category;
+        private final Long categoryId;
         private BigDecimal amount = BigDecimal.ZERO;
         private final List<UnifiedTransaction> transactions = Lists.newArrayList();
 
-        private CRBuilder(Category category) {
-            this.category = category;
+        private CRBuilder(Long categoryId) {
+            this.categoryId = categoryId;
+        }
+
+        public Long getCategoryId() {
+            return categoryId;
         }
 
         public BigDecimal getAmount() {
@@ -177,9 +183,9 @@ public class PeriodExpenseReportChart {
             transactions.add(transaction);
         }
 
-        public CategoryReport build(double percentage) {
+        public CategoryReport build(Function<Long, Category> categoryProvider, double percentage) {
             return new CategoryReport(
-                    category,
+                    categoryProvider.apply(categoryId),
                     amount,
                     percentage,
                     transactions.stream()

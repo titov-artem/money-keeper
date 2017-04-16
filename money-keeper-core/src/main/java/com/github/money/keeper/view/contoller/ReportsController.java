@@ -7,6 +7,7 @@ import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.StoreService;
 import com.github.money.keeper.service.TransactionStoreInjector;
 import com.github.money.keeper.storage.AccountRepo;
+import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.TransactionRepo;
 import com.github.money.keeper.view.contoller.dto.PeriodReportForm;
 import org.springframework.stereotype.Controller;
@@ -31,30 +32,33 @@ public class ReportsController implements REST {
     private final StoreService storeService;
     private final TransactionRepo transactionRepo;
     private final AccountRepo accountRepo;
+    private final CategoryRepo categoryRepo;
 
     @Inject
     public ReportsController(CategoryService categoryService,
                              StoreService storeService,
                              TransactionRepo transactionRepo,
-                             AccountRepo accountRepo) {
+                             AccountRepo accountRepo,
+                             CategoryRepo categoryRepo) {
         this.categoryService = categoryService;
         this.storeService = storeService;
         this.transactionRepo = transactionRepo;
         this.accountRepo = accountRepo;
+        this.categoryRepo = categoryRepo;
     }
 
     @POST
     @Path("/period")
     public PeriodExpenseReportChart periodExpenseReportChart(PeriodReportForm form) {
         PeriodExpenseReportChart.Builder builder = new PeriodExpenseReportChart.Builder(
-                categoryService.getCategorizationHelper(),
                 accountRepo,
+                categoryRepo,
                 form.from,
                 form.to
         );
 
 
-        List<RawTransaction> transactions = form.accountIds.isEmpty()
+        List<RawTransaction> transactions = form.accountIds == null || form.accountIds.isEmpty()
                 ? transactionRepo.load(form.from, form.to)
                 : transactionRepo.load(form.from, form.to, form.accountIds);
 

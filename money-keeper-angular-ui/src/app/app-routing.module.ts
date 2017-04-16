@@ -11,7 +11,7 @@ const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
     {path: 'home', component: HomeComponent},
     {path: 'reports', component: ReportsComponent},
-    {path: 'reports/period/:from/:to/:accountId', component: PeriodReportComponent},
+    {path: 'reports/period/:from/:to', component: PeriodReportComponent},
     {path: 'categories', component: CategoryEditorComponent},
     {path: 'stores', component: StoresEditorComponent},
     {path: 'transactions', component: TransactionsComponent}

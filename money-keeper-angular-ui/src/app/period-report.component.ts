@@ -18,7 +18,7 @@ export class PeriodReportComponent implements OnInit, OnDestroy {
     report: PeriodReport;
     private from: string;
     private to: string;
-    private accountId: string;
+    private accountIds: string[];
 
     private sub: any;
 
@@ -31,11 +31,14 @@ export class PeriodReportComponent implements OnInit, OnDestroy {
         this.sub = this.route.params.subscribe(params => {
             this.from = params['from'];
             this.to = params['to'];
-            this.accountId = params['accountId'];
+        });
+        this.sub = this.route.queryParams.subscribe(params => {
+            this.accountIds = params['accountIds'].split(',');
         });
         this.accountService.getAccounts()
             .then(accounts => this.accounts = accounts);
-        this.reportService.getReport(this.from, this.to, [this.accountId])
+        console.log(this.accountIds);
+        this.reportService.getReport(this.from, this.to, this.accountIds)
             .then(report => {
                 this.report = report;
                 this.showReport();
