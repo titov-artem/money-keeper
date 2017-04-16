@@ -11,6 +11,6 @@ public interface TransactionRepo extends BaseRepo<Long, RawTransaction> {
 
     List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to);
 
-    List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to, Set<Integer> accountIds);
+    List<RawTransaction> load(@Nullable LocalDate from, @Nullable LocalDate to, @Nullable Set<Integer> accountIds);
 
 }

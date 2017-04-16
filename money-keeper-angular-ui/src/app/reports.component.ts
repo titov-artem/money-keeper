@@ -54,4 +54,17 @@ export class ReportsComponent implements OnInit, AfterViewChecked {
         this.router.navigate(['/reports/period', from, to], {queryParams: {accountIds: accountIds}})
             .catch(error => console.error('An error occurred', error));
     }
+
+    showPerMonthReport(from: string, to: string, accountIdsSelect: ElementRef): void {
+        let accountIds = $(accountIdsSelect).val();
+        console.log('showing report for accounts: ' + accountIds);
+        if (!from || !to) return;
+        from = moment(from, 'MM.YYYY').format('YYYY-MM-DD');
+        to = moment(to, 'MM.YYYY').format('YYYY-MM-DD');
+        if (!accountIds) {
+            accountIds = [];
+        }
+        this.router.navigate(['/reports/per-month', from, to], {queryParams: {accountIds: accountIds}})
+            .catch(error => console.error('An error occurred', error));
+    }
 }

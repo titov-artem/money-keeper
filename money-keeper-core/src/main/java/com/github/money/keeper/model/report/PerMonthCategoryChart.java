@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.github.money.keeper.model.core.Account;
 import com.github.money.keeper.model.core.Category;
 import com.github.money.keeper.model.service.UnifiedTransaction;
-import com.github.money.keeper.service.CategorizationHelper;
 import com.github.money.keeper.storage.AccountRepo;
+import com.github.money.keeper.storage.CategoryRepo;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 /**
  * @author Artem Titov
@@ -92,10 +91,12 @@ public class PerMonthCategoryChart {
                 .collect(toList());
     }
 
+    @JsonGetter
     public SortedMap<LocalDate, Map<String, BigDecimal>> getAbsolutes() {
         return absoluteChart;
     }
 
+    @JsonGetter
     public SortedMap<LocalDate, Map<String, BigDecimal>> getPercentages() {
         return percentageChart;
     }
@@ -104,37 +105,34 @@ public class PerMonthCategoryChart {
         private static final Logger log = LoggerFactory.getLogger(Builder.class);
 
         public static final String DEFAULT_TOTAL_CHART_NAME = "TOTAL";
+        public static final Long TOTAL_CATEGORY_ID = -1L;
         public static final String DEFAULT_OTHER_CHART_NAME = "OTHER";
+        public static final Long OTHER_CATEGORY_ID = -2L;
         public static final BigDecimal CATEGORY_CHART_REDUCE_THRESHOLD = BigDecimal.valueOf(5000);
 
         private String totalChartName = DEFAULT_TOTAL_CHART_NAME;
         private String otherChartName = DEFAULT_OTHER_CHART_NAME;
-        private final SortedMap<LocalDate, Map<String, BigDecimal>> chart = new TreeMap<>();
+        private final SortedMap<LocalDate, Map<Long, BigDecimal>> chart = new TreeMap<>();
         private final Set<Long> accountIds = new HashSet<>();
-        private final CategorizationHelper categorizationHelper;
-        private final AccountRepo accountRepo;
 
-        public Builder(CategorizationHelper categorizationHelper, AccountRepo accountRepo) {
+        private final AccountRepo accountRepo;
+        private final CategoryRepo categoryRepo;
+
+        public Builder(AccountRepo accountRepo, CategoryRepo categoryRepo) {
             // todo do something if category name clashes with DEFAULT_TOTAL_CHART_NAME
-            this.categorizationHelper = categorizationHelper;
             this.accountRepo = accountRepo;
+            this.categoryRepo = categoryRepo;
         }
 
         public void append(UnifiedTransaction transaction) {
-            Category category = categorizationHelper.determineCategory(transaction.getStore());
             accountIds.add(transaction.getAccountId());
             LocalDate month = getMonth(transaction.getDate());
-            updateAmount(category.getName(), getMonthBucket(month), transaction.getAmount());
-            updateAmount(totalChartName, getMonthBucket(month), transaction.getAmount());
+            updateAmount(transaction.getStore().getCategoryId(), getMonthBucket(month), transaction.getAmount());
+            updateAmount(TOTAL_CATEGORY_ID, getMonthBucket(month), transaction.getAmount());
         }
 
-        private Map<String, BigDecimal> getMonthBucket(LocalDate monthStart) {
-            Map<String, BigDecimal> bucket = chart.get(monthStart);
-            if (bucket == null) {
-                bucket = Maps.newHashMap();
-                chart.put(monthStart, bucket);
-            }
-            return bucket;
+        private Map<Long, BigDecimal> getMonthBucket(LocalDate monthStart) {
+            return chart.computeIfAbsent(monthStart, k -> Maps.newHashMap());
         }
 
         private <T> void updateAmount(T key, Map<T, BigDecimal> source, BigDecimal delta) {
@@ -170,9 +168,9 @@ public class PerMonthCategoryChart {
             );
         }
 
-        private SortedMap<LocalDate, Map<String, BigDecimal>> reduceChart(SortedMap<LocalDate, Map<String, BigDecimal>> chart) {
+        private SortedMap<LocalDate, Map<String, BigDecimal>> reduceChart(SortedMap<LocalDate, Map<Long, BigDecimal>> chart) {
             // get whole chart's categories list
-            Set<String> categoriesToReduce = chart.values().stream()
+            Set<Long> categoriesToReduce = chart.values().stream()
                     .flatMap(m -> m.keySet().stream())
                     .collect(toSet());
             // now we will remove categories which has at least CATEGORY_CHART_REDUCE_THRESHOLD in some month
@@ -185,16 +183,34 @@ public class PerMonthCategoryChart {
                     });
             log.info("Will be reduced {} categories: {}", categoriesToReduce.size(), categoriesToReduce);
             chart.values().stream()
-                    .forEach(categoryToAmount -> {
+                    .forEach(categoryIdToAmount -> {
                         BigDecimal reducedAmount = BigDecimal.ZERO;
-                        for (final String category : categoriesToReduce) {
-                            BigDecimal amount = categoryToAmount.remove(category);
+                        for (final Long categoryId : categoriesToReduce) {
+                            BigDecimal amount = categoryIdToAmount.remove(categoryId);
                             if (amount == null) continue;
                             reducedAmount = reducedAmount.add(amount);
                         }
-                        categoryToAmount.put(otherChartName, reducedAmount);
+                        categoryIdToAmount.put(OTHER_CATEGORY_ID, reducedAmount);
                     });
-            return chart;
+
+            return replaceCategoryIdsOnNames(chart);
+        }
+
+        private SortedMap<LocalDate, Map<String, BigDecimal>> replaceCategoryIdsOnNames(SortedMap<LocalDate, Map<Long, BigDecimal>> chart) {
+            Set<Long> categoryIds = chart.values().stream()
+                    .flatMap(m -> m.keySet().stream())
+                    .collect(toSet());
+            Map<Long, String> categoryNameById = categoryRepo.get(categoryIds).stream()
+                    .collect(toMap(Category::getId, Category::getName));
+            categoryNameById.put(TOTAL_CATEGORY_ID, totalChartName);
+            categoryNameById.put(OTHER_CATEGORY_ID, otherChartName);
+            SortedMap<LocalDate, Map<String, BigDecimal>> out = new TreeMap<>();
+            chart.forEach((month, categoryIdToAmount) -> {
+                Map<String, BigDecimal> categoryNameToAmount = new HashMap<>();
+                categoryIdToAmount.forEach((id, amount) -> categoryNameToAmount.put(categoryNameById.get(id), amount));
+                out.put(month, categoryNameToAmount);
+            });
+            return out;
         }
 
     }

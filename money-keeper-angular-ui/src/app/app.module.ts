@@ -18,6 +18,8 @@ import {TransactionsDeduplicateComponent} from "./transactions-deduplicate.compo
 import {TransactionsService} from "./service/transactions.service";
 import {TransactionsComponent} from "./transactions.component";
 import {CategoryUnionComponent} from "./category.union.modal.component";
+import {PerMonthReportComponent} from "./per-month-report.component";
+import {PerMonthReportService} from "./service/per.month.report.service";
 
 @NgModule({
     imports: [
@@ -33,6 +35,7 @@ import {CategoryUnionComponent} from "./category.union.modal.component";
         HomeComponent,
         ReportsComponent,
         PeriodReportComponent,
+        PerMonthReportComponent,
         CategoryEditorComponent,
         StoresEditorComponent,
         TransactionsComponent,
@@ -44,6 +47,7 @@ import {CategoryUnionComponent} from "./category.union.modal.component";
     providers: [
         AccountService,
         PeriodReportService,
+        PerMonthReportService,
         CategoriesService,
         StoresService,
         TransactionsService

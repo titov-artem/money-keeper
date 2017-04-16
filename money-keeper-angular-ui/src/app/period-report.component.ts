@@ -34,10 +34,10 @@ export class PeriodReportComponent implements OnInit, OnDestroy {
         });
         this.sub = this.route.queryParams.subscribe(params => {
             this.accountIds = params['accountIds'].split(',');
+            this.accountIds = this.accountIds.filter(id => id != null && id != '');
         });
         this.accountService.getAccounts()
             .then(accounts => this.accounts = accounts);
-        console.log(this.accountIds);
         this.reportService.getReport(this.from, this.to, this.accountIds)
             .then(report => {
                 this.report = report;
