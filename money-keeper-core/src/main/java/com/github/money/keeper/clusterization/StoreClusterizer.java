@@ -97,7 +97,7 @@ public class StoreClusterizer {
                 // select first in lexicographic order with max sale points count
                 .max(Comparator.naturalOrder())
                 .map(Tuple2::v2)
-                .orElse(CategoryService.UNKNOWN_CATEGORY_NAME);
+                .orElse(CategoryService.DEFAULT_CATEGORY_NAME);
 
         return new StorePrototype(
                 StringUtils.greatestCommonSubstring(names),

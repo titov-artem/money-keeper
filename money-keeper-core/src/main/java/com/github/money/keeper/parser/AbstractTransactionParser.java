@@ -1,6 +1,7 @@
 package com.github.money.keeper.parser;
 
 import com.github.money.keeper.model.core.Account;
+import com.github.money.keeper.model.core.Category;
 import com.github.money.keeper.util.io.DigestingInputStream;
 
 import java.io.IOException;
@@ -14,9 +15,9 @@ import static java.util.stream.Collectors.toList;
  */
 public abstract class AbstractTransactionParser {
 
-    public ParsingResult parse(Account account, InputStream source) throws IOException {
+    public ParsingResult parse(Account account, Category defaultCategory, InputStream source) throws IOException {
         DigestingInputStream digestStream = new DigestingInputStream(source);
-        ParsingResult result = doParse(account, digestStream);
+        ParsingResult result = doParse(account, defaultCategory, digestStream);
         String uploadId = UUID.randomUUID().toString();
         return new ParsingResult(
                 result.getAccount(),
@@ -26,7 +27,7 @@ public abstract class AbstractTransactionParser {
         );
     }
 
-    protected abstract ParsingResult doParse(Account account, InputStream source) throws IOException;
+    protected abstract ParsingResult doParse(Account account, Category defaultCategory, InputStream source) throws IOException;
 
     protected abstract ParserType getParserType();
 

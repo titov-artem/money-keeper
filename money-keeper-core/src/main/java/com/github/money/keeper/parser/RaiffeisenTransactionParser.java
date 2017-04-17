@@ -1,6 +1,7 @@
 package com.github.money.keeper.parser;
 
 import com.github.money.keeper.model.core.Account;
+import com.github.money.keeper.model.core.Category;
 import com.github.money.keeper.util.io.DigestingInputStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -26,7 +27,7 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
     private static final Logger log = LoggerFactory.getLogger(RaiffeisenTransactionParser.class);
 
     @Override
-    public ParsingResult doParse(Account account, InputStream source) throws IOException {
+    public ParsingResult doParse(Account account, Category defaultCategory, InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<ParsedTransaction> transactions = Lists.newArrayList();
@@ -37,7 +38,7 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
                 String[] split = line.split(";");
                 String rawDate = split[0];
                 String rawSpName = split[3];
-                String rawSpDescription = split[2];
+                String rawSpDescription = defaultCategory.getName();
                 String rawAmount = split[9];
                 try {
                     Optional<ParsedTransaction> transaction = buildTransaction(account, rawDate, rawSpName, rawSpDescription, rawAmount);
@@ -49,7 +50,7 @@ public class RaiffeisenTransactionParser extends AbstractTransactionParser {
                 }
             }
         }
-        return new ParsingResult(null, transactions);
+        return new ParsingResult(account, transactions);
     }
 
     @Override protected ParserType getParserType() {

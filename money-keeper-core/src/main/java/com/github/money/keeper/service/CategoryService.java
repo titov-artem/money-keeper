@@ -1,14 +1,15 @@
 package com.github.money.keeper.service;
 
 import com.github.money.keeper.model.core.Category;
-import com.github.money.keeper.model.core.Store;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 public interface CategoryService {
-    String UNKNOWN_CATEGORY_NAME = "Unknown";
+    String DEFAULT_CATEGORY_NAME = "Unknown";
+
+    Category getDefaultCategory();
 
     Map<String, Category> findByNames(Iterable<String> names);
 
@@ -19,22 +20,5 @@ public interface CategoryService {
     Category union(String name, Collection<Long> categoryIds);
 
     void delete(Long id);
-
-    /*
-    Old methods. Remove useless
-     */
-
-    void updateCategories();
-
-    CategorizationHelper getCategorizationHelper();
-
-    Category load(String name);
-
-    List<Category> load(Collection<String> categoryNames);
-
-    List<Category> loadAll();
-
-    void changeCategory(Store store, Category category);
-
 
 }

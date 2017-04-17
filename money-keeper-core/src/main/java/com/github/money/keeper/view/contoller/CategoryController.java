@@ -45,7 +45,7 @@ public class CategoryController implements REST {
     @GET
     public List<ExtendedCategoryDto> getCategories() {
         Map<Long, List<Store>> storesByCategoryId = storeRepo.getAllByCategories();
-        return categoryService.loadAll().stream()
+        return categoryRepo.getAll().stream()
                 .map(c -> {
                     List<String> storeNames = Optional.ofNullable(storesByCategoryId.get(c.getId()))
                             .map(stores -> stores.stream().map(Store::getName).collect(toList()))
@@ -58,6 +58,7 @@ public class CategoryController implements REST {
 
     @POST
     public ExtendedCategoryDto createCategory(CategoryDto dto) {
+        Preconditions.checkArgument(StringUtils.isNotBlank(dto.name));
         if (categoryRepo.findByName(dto.name).isPresent()) {
             throw new IllegalArgumentException("Category with such name already exists");
         }
@@ -76,17 +77,11 @@ public class CategoryController implements REST {
     }
 
     @POST
-    @Path("/check/name")
-    public boolean checkName(@QueryParam("category_name") String categoryName) {
-        return !categoryRepo.findByName(categoryName).isPresent();
-    }
-
-    @POST
     @Path("/{id}/rename/{name}")
     public ExtendedCategoryDto rename(@PathParam("id") Long categoryId,
                                       @PathParam("name") String name) {
         name = StringUtils.strip(name);
-
+        Preconditions.checkArgument(StringUtils.isNotBlank(name));
         Category category = categoryService.rename(categoryId, name);
         return new ExtendedCategoryDto(category, getCategoryStores(category));
     }
@@ -96,6 +91,7 @@ public class CategoryController implements REST {
     public ExtendedCategoryDto union(CategoryUnionForm form) {
         Preconditions.checkArgument(form.categoryIds.size() >= 2, "At least 2 categories can be united");
         String name = StringUtils.strip(form.name);
+        Preconditions.checkArgument(StringUtils.isNotBlank(name));
         Category category = categoryService.union(name, form.categoryIds);
         return new ExtendedCategoryDto(category, getCategoryStores(category));
     }

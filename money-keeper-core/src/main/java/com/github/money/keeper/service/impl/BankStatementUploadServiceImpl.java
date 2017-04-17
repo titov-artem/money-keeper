@@ -12,6 +12,7 @@ import com.github.money.keeper.parser.ParsedTransaction;
 import com.github.money.keeper.parser.ParsingResult;
 import com.github.money.keeper.parser.TransactionParserProvider;
 import com.github.money.keeper.service.BankStatementUploadService;
+import com.github.money.keeper.service.CategoryService;
 import com.github.money.keeper.service.TransactionService;
 import com.github.money.keeper.storage.CategoryRepo;
 import com.github.money.keeper.storage.SalePointRepo;
@@ -35,6 +36,8 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
 
     private final TransactionParserProvider transactionParserProvider;
     private final TransactionService transactionService;
+    private final CategoryService categoryService;
+
     private final TransactionRepo transactionRepo;
     private final SalePointRepo salePointRepo;
     private final StoreRepo storeRepo;
@@ -44,6 +47,7 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
     @Inject
     public BankStatementUploadServiceImpl(TransactionParserProvider transactionParserProvider,
                                           TransactionService transactionService,
+                                          CategoryService categoryService,
                                           TransactionRepo transactionRepo,
                                           SalePointRepo salePointRepo,
                                           StoreRepo storeRepo,
@@ -51,6 +55,7 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
                                           StoreClusterizer storeClusterizer) {
         this.transactionParserProvider = transactionParserProvider;
         this.transactionService = transactionService;
+        this.categoryService = categoryService;
         this.transactionRepo = transactionRepo;
         this.salePointRepo = salePointRepo;
         this.storeRepo = storeRepo;
@@ -61,7 +66,7 @@ public class BankStatementUploadServiceImpl implements BankStatementUploadServic
     @Override
     public List<DuplicateTransactions> uploadFile(Account account, InputStream data) throws IOException {
         AbstractTransactionParser parser = transactionParserProvider.getParser(account.getParserType());
-        ParsingResult result = parser.parse(account, data);
+        ParsingResult result = parser.parse(account, categoryService.getDefaultCategory(), data);
         ImmutableList<ParsedTransaction> parsedTransactions = result.getTransactions();
 
         createSalePoints(parsedTransactions);

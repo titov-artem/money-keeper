@@ -1,6 +1,7 @@
 package com.github.money.keeper.parser;
 
 import com.github.money.keeper.model.core.Account;
+import com.github.money.keeper.model.core.Category;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -23,7 +24,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class TinkoffTransactionParser extends AbstractTransactionParser {
 
     @Override
-    public ParsingResult doParse(Account account, InputStream source) throws IOException {
+    public ParsingResult doParse(Account account, Category defaultCategory, InputStream source) throws IOException {
         Preconditions.checkNotNull(source, "Can't parse transactions from null stream");
 
         List<ParsedTransaction> transactions = Lists.newArrayList();

@@ -13,6 +13,8 @@ export class CategoryUnionComponent implements OnInit, AfterViewChecked {
 
     private modal: any;
     private categoryEditor: CategoryEditorComponent;
+    private selectCreated: boolean;
+    private selectNeedRender: boolean;
 
     constructor(private categoriesService: CategoriesService) {
     }
@@ -22,11 +24,17 @@ export class CategoryUnionComponent implements OnInit, AfterViewChecked {
     }
 
     ngAfterViewChecked(): void {
-        if (this.categories != null) {
+        if (this.categories != null && !this.selectCreated) {
+            this.selectCreated = true;
             $('.selectpicker').selectpicker({
                 style: 'btn-info',
                 size: 4
             });
+        }
+        if (this.selectNeedRender) {
+            this.selectNeedRender = false;
+            $('.selectpicker').selectpicker('refresh');
+            $('.category-union-name').val('');
         }
     }
 
@@ -35,6 +43,7 @@ export class CategoryUnionComponent implements OnInit, AfterViewChecked {
         this.categories = categories;
         this.categoryEditor = categoryEditor;
         this.modal.modal('show');
+        this.selectNeedRender = true;
     }
 
     union(name: string, categoryIdsSelect: ElementRef): void {
