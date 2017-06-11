@@ -1,6 +1,6 @@
 import {Component, OnInit} from "@angular/core";
 import {ExtendedCategory} from "./model/extended.category";
-import {CategoriesService} from "./service/category.service";
+import {CategoryService} from "./service/category.service";
 import {CategoryUnionComponent} from "./category.union.modal.component";
 
 @Component({
@@ -22,11 +22,11 @@ export class CategoryEditorComponent implements OnInit {
 
     private unionModal: any;
 
-    constructor(private categoriesService: CategoriesService) {
+    constructor(private categoryService: CategoryService) {
     }
 
     ngOnInit(): void {
-        this.categoriesService.getCategories()
+        this.categoryService.getCategories()
             .then(categories => this.categories = categories);
         $('body').on('click', '.show-stores', function (e) {
             e.preventDefault();
@@ -48,7 +48,7 @@ export class CategoryEditorComponent implements OnInit {
     }
 
     createCategory(name: string): void {
-        this.categoriesService.create(name)
+        this.categoryService.create(name)
             .then(category => {
                 this.insertLocalCategory(category);
                 this.createModal.modal('hide');
@@ -60,7 +60,7 @@ export class CategoryEditorComponent implements OnInit {
     }
 
     edit(name: string): void {
-        this.categoriesService.edit(this.editingCategory.id, name)
+        this.categoryService.edit(this.editingCategory.id, name)
             .then(c => {
                 this.deleteLocalCategory(this.editingCategory);
                 this.insertLocalCategory(c);
@@ -75,7 +75,7 @@ export class CategoryEditorComponent implements OnInit {
     }
 
     delete(): void {
-        this.categoriesService.delete(this.deletingCategory.id)
+        this.categoryService.delete(this.deletingCategory.id)
             .then(() => {
                 this.deleteLocalCategory(this.deletingCategory);
                 this.deleteModal.modal('hide');

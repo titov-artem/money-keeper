@@ -7,6 +7,7 @@ import {CategoryEditorComponent} from "./category-editor.component";
 import {StoresEditorComponent} from "./stores-editor.component";
 import {TransactionsComponent} from "./transactions.component";
 import {PerMonthReportComponent} from "./per-month-report.component";
+import {BudgetsComponent} from "./budgets.component";
 
 const routes: Routes = [
     {path: '', redirectTo: '/home', pathMatch: 'full'},
@@ -16,7 +17,8 @@ const routes: Routes = [
     {path: 'reports/per-month/:from/:to', component: PerMonthReportComponent},
     {path: 'categories', component: CategoryEditorComponent},
     {path: 'stores', component: StoresEditorComponent},
-    {path: 'transactions', component: TransactionsComponent}
+    {path: 'transactions', component: TransactionsComponent},
+    {path: 'budgets', component: BudgetsComponent}
 ];
 
 @NgModule({

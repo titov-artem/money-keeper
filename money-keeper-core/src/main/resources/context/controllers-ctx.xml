@@ -11,6 +11,7 @@
                 <ref bean="bankStatementController"/>
                 <ref bean="reportsController"/>
                 <ref bean="transactionsController"/>
+                <ref bean="budgetController"/>
                 <ref bean="accountController"/>
                 <ref bean="storeController"/>
             </list>

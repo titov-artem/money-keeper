@@ -1,0 +1,68 @@
+<div class="container">
+    <div id="budgets-panel" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="pull-right btn btn-sm btn-primary" (click)="showCreateForm = true">
+                <i class="glyphicon glyphicon-plus"></i>
+            </div>
+            <h4>Budgets</h4>
+        </div>
+        <div class="panel-body">
+            <alert #alert></alert>
+            <form *ngIf="showCreateForm">
+                <div class="form-group">
+                    <label for="budget-name">Name</label>
+                    <input #name type="text" class="form-control" id="budget-name" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label for="budget-from">From</label>
+                    <div class="input-group date">
+                        <input #from type="text" class="form-control" id="budget-from"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="budget-to">To</label>
+                    <div class="input-group date">
+                        <input #to type="text" class="form-control" id="budget-to"/>
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-th"></i></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="budget-amount">Amount</label>
+                    <input #amount type="text" class="form-control" id="budget-amount" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <select #accountIds id="budget-account-ids" class="selectpicker" multiple title="None">
+                        <option *ngFor="let account of accounts" [value]="account.id">{{account.name}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select #categoryIds id="budget-category-ids" class="selectpicker" multiple title="None">
+                        <option *ngFor="let category of categories" [value]="category.id">{{category.name}}</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                        (click)="createBudget(name.value, from.value, to.value, amount.value, accountIds, categoryIds, alert)">
+                    Submit
+                </button>
+                <button class="btn btn-default" (click)="showCreateForm = false">
+                    Cancel
+                </button>
+            </form>
+            <div id="budget-container">
+                <div id="budgets" class="list-group">
+                    <li *ngFor="let budget of budgets" class="list-group-item">
+                        <div>
+                            <span class="pull-right budget-amount">{{budget.amount}}</span>
+                            <span class="budget-name">{{budget.name}}</span>
+                        </div>
+                        <span>{{budget.from}} &mdash; {{budget.to}}</span>
+                        <progress-bar [progress]="budget.progress"
+                                      [subtitle]="budget.spentAmount + ' / ' + budget.amount"
+                                      [gradation]="gradation"></progress-bar>
+                    </li>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

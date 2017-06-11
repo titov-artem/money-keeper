@@ -2,7 +2,7 @@ import {AfterViewChecked, Component, OnInit} from "@angular/core";
 import {Store} from "./model/store";
 import {StoresService} from "./service/store.service";
 import {ExtendedCategory} from "./model/extended.category";
-import {CategoriesService} from "./service/category.service";
+import {CategoryService} from "./service/category.service";
 
 @Component({
     moduleId: module.id,
@@ -16,7 +16,7 @@ export class StoresEditorComponent implements OnInit, AfterViewChecked {
     categories: ExtendedCategory[];
 
     constructor(private storesService: StoresService,
-                private categoriesService: CategoriesService) {
+                private categoriesService: CategoryService) {
     }
 
     ngOnInit(): void {

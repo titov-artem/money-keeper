@@ -5,7 +5,9 @@
             <h3 class="panel-title pull-left">
                 Categories (<span *ngIf="categories" id="categories-count">{{categories.length}}</span>)
             </h3>
-            <button class="btn btn-sm btn-primary pull-right" (click)="openCreateDialog()">+</button>
+            <div class="btn btn-sm btn-primary pull-right" (click)="openCreateDialog()">
+                <i class="glyphicon glyphicon-plus"></i>
+            </div>
         </div>
         <div class="panel-body">
             <!--<div class="category-delete-empty btn btn-danger">Delete all empty categories</div>-->

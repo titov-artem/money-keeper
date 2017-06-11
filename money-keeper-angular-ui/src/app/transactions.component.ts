@@ -10,7 +10,7 @@ import moment = require("moment");
     moduleId: module.id,
     selector: 'transactions',
     templateUrl: './html/transactions.component.html',
-    styleUrls: ['./css/store-editor.component.css']
+    styleUrls: ['./css/transactions.component.css']
 })
 export class TransactionsComponent implements OnInit, AfterViewChecked {
     transactions: Transaction[];
@@ -39,7 +39,7 @@ export class TransactionsComponent implements OnInit, AfterViewChecked {
     }
 
     showTransactions(from: string, to: string, accountIdsSelect: ElementRef, alert: AlertComponent): void {
-        let accountIds = $(accountIdsSelect).val()
+        let accountIds = $(accountIdsSelect).val();
         if (from != "") {
             from = moment(from, 'DD.MM.YYYY').format('YYYY-MM-DD');
         } else {

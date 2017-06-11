@@ -42,3 +42,13 @@ CREATE TABLE IF NOT EXISTS category_manual_mapping (
   category_id BIGINT NOT NULL REFERENCES category (id),
   PRIMARY KEY (store_id, category_id)
 );
+
+CREATE TABLE IF NOT EXISTS budget (
+  id           BIGSERIAL      NOT NULL PRIMARY KEY,
+  account_ids  BIGINT []      NOT NULL,
+  category_ids BIGINT []      NOT NULL,
+  name         VARCHAR(256)   NOT NULL,
+  "from"       DATE           NOT NULL,
+  "to"         DATE           NOT NULL,
+  amount       NUMERIC(15, 5) NOT NULL
+);

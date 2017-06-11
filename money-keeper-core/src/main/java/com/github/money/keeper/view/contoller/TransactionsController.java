@@ -37,7 +37,7 @@ public class TransactionsController implements REST {
     @GET
     public List<UnifiedTransactionReportView> getTransactions(@QueryParam("from") @Nullable LocalDate from,
                                                               @QueryParam("to") @Nullable LocalDate to,
-                                                              @QueryParam("account_ids") Set<Integer> accountIds) {
+                                                              @QueryParam("account_ids") Set<Long> accountIds) {
         List<RawTransaction> transactions = transactionRepo.load(from, to, accountIds);
         TransactionStoreInjector storeInjector = storeService.getStoreInjector(transactions);
 

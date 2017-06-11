@@ -4,7 +4,7 @@ import {ExtendedCategory} from "../model/extended.category";
 import {AbstractService} from "./abstract.service";
 
 @Injectable()
-export class CategoriesService extends AbstractService {
+export class CategoryService extends AbstractService {
 
     private headers = new Headers({'Content-Type': 'application/json'});
     private categoriesUrl = '/services/api/category';  // URL to web api

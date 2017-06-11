@@ -1,6 +1,6 @@
 import {AfterViewChecked, Component, ElementRef, OnInit} from "@angular/core";
 import {ExtendedCategory} from "./model/extended.category";
-import {CategoriesService} from "./service/category.service";
+import {CategoryService} from "./service/category.service";
 import {CategoryEditorComponent} from "./category-editor.component";
 
 @Component({
@@ -16,7 +16,7 @@ export class CategoryUnionComponent implements OnInit, AfterViewChecked {
     private selectCreated: boolean;
     private selectNeedRender: boolean;
 
-    constructor(private categoriesService: CategoriesService) {
+    constructor(private categoriesService: CategoryService) {
     }
 
     ngOnInit(): void {

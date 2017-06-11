@@ -6,5 +6,5 @@ import java.util.Set;
 public class ReportForm {
     public LocalDate from;
     public LocalDate to;
-    public Set<Integer> accountIds;
+    public Set<Long> accountIds;
 }

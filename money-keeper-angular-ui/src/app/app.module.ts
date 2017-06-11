@@ -10,7 +10,7 @@ import {ReportsComponent} from "./reports.component";
 import {PeriodReportComponent} from "./period-report.component";
 import {PeriodReportService} from "./service/period.report.service";
 import {CategoryEditorComponent} from "./category-editor.component";
-import {CategoriesService} from "./service/category.service";
+import {CategoryService} from "./service/category.service";
 import {StoresEditorComponent} from "./stores-editor.component";
 import {StoresService} from "./service/store.service";
 import {AlertComponent} from "./alert.component";
@@ -20,6 +20,9 @@ import {TransactionsComponent} from "./transactions.component";
 import {CategoryUnionComponent} from "./category.union.modal.component";
 import {PerMonthReportComponent} from "./per-month-report.component";
 import {PerMonthReportService} from "./service/per.month.report.service";
+import {BudgetsComponent} from "./budgets.component";
+import {BudgetService} from "./service/budget.service";
+import {ProgressComponent} from "./progress.component";
 
 @NgModule({
     imports: [
@@ -39,8 +42,10 @@ import {PerMonthReportService} from "./service/per.month.report.service";
         CategoryEditorComponent,
         StoresEditorComponent,
         TransactionsComponent,
+        BudgetsComponent,
 
         AlertComponent,
+        ProgressComponent,
         TransactionsDeduplicateComponent,
         CategoryUnionComponent
     ],
@@ -48,9 +53,10 @@ import {PerMonthReportService} from "./service/per.month.report.service";
         AccountService,
         PeriodReportService,
         PerMonthReportService,
-        CategoriesService,
+        CategoryService,
         StoresService,
-        TransactionsService
+        TransactionsService,
+        BudgetService
     ],
     bootstrap: [AppComponent]
 })

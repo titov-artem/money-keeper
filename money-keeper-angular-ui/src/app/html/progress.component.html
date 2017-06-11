@@ -1,0 +1,6 @@
+<div class="progress">
+    <div [ngClass]="getClasses()" role="progressbar" [attr.aria-valuemax]="getProgress()"
+         aria-valuemin="0" aria-valuemax="100" [style.width.%]="getProgress()">
+        <span>{{subtitle}}</span>
+    </div>
+</div>

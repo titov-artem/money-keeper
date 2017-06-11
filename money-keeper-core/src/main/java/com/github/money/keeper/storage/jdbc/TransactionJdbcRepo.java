@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
+import static com.github.money.keeper.storage.jdbc.SqlUtils.toDate;
 import static com.github.money.keeper.storage.jdbc.generated.Tables.TRANSACTION;
 import static java.util.stream.Collectors.toList;
 
@@ -44,7 +45,7 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
                         record.set(TRANSACTION.ID, transaction.getId());
                     }
                     record.set(TRANSACTION.ACCOUNT_ID, transaction.getAccountId());
-                    Date date = toUtilDate(transaction.getDate(), clock);
+                    Date date = toDate(transaction.getDate(), clock);
                     record.set(TRANSACTION.DATE, date);
                     record.set(TRANSACTION.SALE_POINT_ID, transaction.getSalePointId());
                     record.set(TRANSACTION.AMOUNT, transaction.getAmount());
@@ -64,10 +65,10 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
                                      @Nullable LocalDate to) {
         List<Condition> conditions = new ArrayList<>();
         if (from != null) {
-            conditions.add(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)));
+            conditions.add(TRANSACTION.DATE.greaterOrEqual(toDate(from, clock)));
         }
         if (to != null) {
-            conditions.add(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)));
+            conditions.add(TRANSACTION.DATE.lessOrEqual(toDate(to, clock)));
         }
         return jdbc.DSL().select().from(table)
                 .where(conditions)
@@ -80,13 +81,13 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
     @Override
     public List<RawTransaction> load(@Nullable LocalDate from,
                                      @Nullable LocalDate to,
-                                     @Nullable Set<Integer> accountIds) {
+                                     @Nullable Set<Long> accountIds) {
         List<Condition> conditions = new ArrayList<>();
         if (from != null) {
-            conditions.add(TRANSACTION.DATE.greaterOrEqual(toUtilDate(from, clock)));
+            conditions.add(TRANSACTION.DATE.greaterOrEqual(toDate(from, clock)));
         }
         if (to != null) {
-            conditions.add(TRANSACTION.DATE.lessOrEqual(toUtilDate(to, clock)));
+            conditions.add(TRANSACTION.DATE.lessOrEqual(toDate(to, clock)));
         }
         if (accountIds != null && !accountIds.isEmpty()) {
             conditions.add(TRANSACTION.ACCOUNT_ID.in(accountIds));
@@ -97,14 +98,6 @@ public class TransactionJdbcRepo extends AbstractJdbcRepo<Long, RawTransaction> 
                 .stream()
                 .map(MAPPER)
                 .collect(toList());
-    }
-
-    private static Date toUtilDate(LocalDate date, Clock clock) {
-        return new Date(Date.from(date
-                .atStartOfDay()
-                .atZone(clock.getZone())
-                .toInstant()
-        ).getTime());
     }
 
 }

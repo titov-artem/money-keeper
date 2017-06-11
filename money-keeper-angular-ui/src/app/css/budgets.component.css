@@ -1,0 +1,12 @@
+#budget-container {
+    margin-top: 15px;
+}
+
+.budget-name {
+    font-size: x-large;
+}
+
+.budget-amount {
+    font-size: x-large;
+    color: green;
+}
